@@ -1,0 +1,6 @@
+.github
+node_modules
+tests
+.gitmodules
+api-spec
+vite.config.ts

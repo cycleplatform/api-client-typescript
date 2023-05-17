@@ -1,5 +1,5 @@
 import createClient from "openapi-fetch";
-import { paths } from "./__generated/types";
+import type { paths } from "./generated/types";
 
 let authToken: string | undefined = undefined;
 let hubScope: string | undefined = undefined;
@@ -18,7 +18,7 @@ export function setBaseUrl(url: string) {
 }
 
 const baseClient = createClient<paths>();
-export default new Proxy(baseClient, {
+export const client = new Proxy(baseClient, {
   get(_, key: keyof typeof baseClient) {
     const headers: HeadersInit = {};
     if (authToken) {
