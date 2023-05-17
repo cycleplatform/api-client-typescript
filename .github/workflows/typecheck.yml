@@ -1,5 +1,4 @@
-# Automatically fetches the latest API spec (and commits the submodule update) and generates a new client
-name: Generate Client
+name: Type Check
 
 on:
  - push
