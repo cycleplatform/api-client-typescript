@@ -4,7 +4,7 @@ on:
  - push
  - workflow_dispatch
 jobs:
-  typecheck:
+  test:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
