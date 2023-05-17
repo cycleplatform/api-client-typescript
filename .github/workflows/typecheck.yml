@@ -13,6 +13,9 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         submodules: true
+        
+    - name: NPM Install
+      run: npm install
 
     - name: Run Type Checker
       run: npm run test:ts
