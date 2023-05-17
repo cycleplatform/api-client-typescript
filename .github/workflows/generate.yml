@@ -1,0 +1,34 @@
+  # Automatically fetches the latest API spec (and commits the submodule update) and generates a new client
+name: Generate Client
+on:
+  workflow_dispatch:
+jobs:
+  generate-and-tag:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        submodules: true
+        
+    - name: Git Submodule Update
+      run: |
+        git pull --recurse-submodules
+        git submodule update --remote --recursive
+
+    - name: NPM Install
+      run: npm install
+      
+    - name: Build Spec
+      run: (cd api-spec; npm run build:public && npm run build:internal)
+
+    - name: Generate Client
+      run: npm run build:client
+    
+    - name: Commit changes
+      run: |
+        git config --global user.name 'Git bot'
+        git config --global user.email 'bot@noreply.github.com'
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+        git commit -am "Auto generate client from latest API spec" && git push || echo "No changes to commit"
