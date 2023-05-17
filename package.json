@@ -1,0 +1,38 @@
+{
+  "name": "@cycleplatform/api-client-typescript",
+  "version": "1.0.0",
+  "description": "A Cycle API client for the web/nodejs",
+  "main": "index.ts",
+  "scripts": {
+    "test": "vitest",
+    "build:spec": "(cd api-spec; npm run build:public && npm run build:internal)",
+    "build:client": "npm run build:spec && npx openapi-typescript ./api-spec/dist/public-api.yml --output ./__generated/types.d.ts",
+    "build:lib": "vite build",
+    "test:ts": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cycleplatform/api-client-typescript.git"
+  },
+  "keywords": [
+    "cycleplatform",
+    "api",
+    "client"
+  ],
+  "author": "Alexander Mattoni",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/cycleplatform/api-client-typescript/issues"
+  },
+  "homepage": "https://github.com/cycleplatform/api-client-typescript#readme",
+  "dependencies": {
+    "openapi-fetch": "^0.1.4"
+  },
+  "devDependencies": {
+    "msw": "^1.2.1",
+    "openapi-typescript": "^6.2.4",
+    "typescript": "^5.0.4",
+    "vite": "^4.3.7",
+    "vitest": "^0.31.0"
+  }
+}
