@@ -19,9 +19,6 @@ jobs:
 
     - name: NPM Install
       run: npm install
-      
-    - name: Build Spec
-      run: (cd api-spec; npm run build:public && npm run build:internal)
 
     - name: Generate Client
       run: npm run build:client
