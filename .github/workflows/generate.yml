@@ -9,7 +9,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.API_SPEC_PAT }}
         submodules: true
         
     - name: Git Submodule Update
@@ -33,7 +33,7 @@ jobs:
     - name:  'Automated Version Bump'
       uses:  'phips28/gh-action-bump-version@master'
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.API_SPEC_PAT }}
       with:
         tag-prefix:  'v'
         
