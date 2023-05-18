@@ -3502,13 +3502,13 @@ export interface components {
       events: components["schemas"]["Events"];
     };
     /** IpState */
-    IpState: {
+    IpState: ({
       /**
        * @description The current state of the IP. 
        * @enum {string}
        */
       current: "assigning" | "assigned" | "releasing" | "available";
-    };
+    }) & components["schemas"]["State"];
     /**
      * Ip 
      * @description An IP resource.
@@ -3979,7 +3979,7 @@ export interface components {
           })[];
       };
       privileged?: boolean;
-      capabilities?: (("CAP_CHOWN" | "CAP_FSETID" | "CAP_DAC_OVERRIDE" | "CAP_FOWNER" | "CAP_SETFCAP" | "CAP_SETGID" | "CAP_SETUID" | "CAP_KILL" | "CAP_MKNOD" | "CAP_NET_BIND_SERVICE" | "CAP_NET_RAW" | "CAP_AUDIT_WRITE" | "CAP_SYS_CHROOT")[]) | (("CAP_SETPCAP" | "CAP_DAC_READ_SEARCH" | "CAP_NET_ADMIN" | "CAP_NET_BROADCAST" | "CAP_SYS_ADMIN" | "CAP_SYS_MODULE" | "CAP_SYS_NICE" | "CAP_SYS_PACCT" | "CAP_SYS_PTRACE" | "CAP_SYS_RAWIO" | "CAP_SYS_RESOURCE" | "CAP_SYS_TTY_CONFIG" | "CAP_SYSLOG" | "CAP_AUDIT_CONTROL" | "CAP_AUDIT_READ" | "CAP_IPC_LOCK" | "CAP_IPC_OWNER" | "CAP_LINUX_IMMUTABLE" | "CAP_MAC_ADMIN" | "CAP_MAC_OVERRIDE" | "CAP_BLOCK_SUSPEND")[]);
+      capabilities?: ("CAP_CHOWN" | "CAP_FSETID" | "CAP_DAC_OVERRIDE" | "CAP_FOWNER" | "CAP_SETFCAP" | "CAP_SETGID" | "CAP_SETUID" | "CAP_KILL" | "CAP_MKNOD" | "CAP_NET_BIND_SERVICE" | "CAP_NET_RAW" | "CAP_AUDIT_WRITE" | "CAP_SYS_CHROOT" | "CAP_SETPCAP" | "CAP_DAC_READ_SEARCH" | "CAP_NET_ADMIN" | "CAP_NET_BROADCAST" | "CAP_SYS_ADMIN" | "CAP_SYS_MODULE" | "CAP_SYS_NICE" | "CAP_SYS_PACCT" | "CAP_SYS_PTRACE" | "CAP_SYS_RAWIO" | "CAP_SYS_RESOURCE" | "CAP_SYS_TTY_CONFIG" | "CAP_SYSLOG" | "CAP_AUDIT_CONTROL" | "CAP_AUDIT_READ" | "CAP_IPC_LOCK" | "CAP_IPC_OWNER" | "CAP_LINUX_IMMUTABLE" | "CAP_MAC_ADMIN" | "CAP_MAC_OVERRIDE" | "CAP_BLOCK_SUSPEND")[];
       rootfs?: {
         readonly: boolean;
       };
@@ -4778,13 +4778,21 @@ export interface components {
       containers: components["schemas"]["ContainersIncludes"];
       environments: components["schemas"]["EnvironmentIncludes"];
     };
-    /** ContainerActionTask */
-    ContainerAction: {
+    /** ContainerStartActionTask */
+    ContainerStartAction: {
       /**
        * @description The name of the action to perform. 
        * @enum {string}
        */
-      action: "start" | "stop";
+      action: "start";
+    };
+    /** ContainerStopActionTask */
+    ContainerStopAction: {
+      /**
+       * @description The name of the action to perform. 
+       * @enum {string}
+       */
+      action: "stop";
     };
     /** ReconfigureContainer */
     ReconfigureContainer: {
@@ -4988,14 +4996,6 @@ export interface components {
       /** @description The SSH connection response address. */
       address: string;
     };
-    /** RevertMigrationAction */
-    RevertMigration: {
-      /**
-       * @description The name of the action to perform. 
-       * @enum {string}
-       */
-      action: "migrate_revert";
-    };
     /** MigrateAction */
     Migrate: {
       /**
@@ -5012,6 +5012,14 @@ export interface components {
           copy_volumes: boolean;
         };
       };
+    };
+    /** RevertMigrationAction */
+    RevertMigration: {
+      /**
+       * @description The name of the action to perform. 
+       * @enum {string}
+       */
+      action: "migrate_revert";
     };
     /**
      * DeployedVolume 
@@ -9049,7 +9057,7 @@ export interface operations {
     /** @description Parameters for creating a new container job. */
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["ContainerAction"] | components["schemas"]["ReconfigureContainer"] | components["schemas"]["ReconfigureVolumes"] | components["schemas"]["Reimage"] | components["schemas"]["Scale"];
+        "application/json": components["schemas"]["ContainerStartAction"] | components["schemas"]["ContainerStopAction"] | components["schemas"]["ReconfigureContainer"] | components["schemas"]["ReconfigureVolumes"] | components["schemas"]["Reimage"] | components["schemas"]["Scale"];
       };
     };
     responses: {
