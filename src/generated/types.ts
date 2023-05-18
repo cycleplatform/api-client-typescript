@@ -7211,11 +7211,7 @@ export interface components {
   parameters: {
     /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
     SortParam?: (string)[];
-    FilterParam?: {
-      [key: string]: (OneOf<[string, (string)[], {
-        [key: string]: string | undefined;
-      }]>) | undefined;
-    };
+    FilterParam?: Record<string, never>;
     /** @description In a list return, the data associated with the page number and size returned. 20 results per page, page 2 would be `page[size]=20&page[number]=2` */
     PageParam?: {
       /** @description The page to jump to */
@@ -8090,22 +8086,16 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Identifier
-         * `filter[identifier]=value` List only those environments matching this identifier. May return multiple results.
-         * 
-         * ### Search 
-         * `filter[search]=value` search for a value associated with a field on the given environment(s).
-         * 
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the environment's current state.
-         * 
-         * ### Stack Build
-         * `filter[stack_build]=ID` stack build filtering by ID.  Submit the ID of the stack build you wish to filter for and the return sill be any environments that have the stack build deployed to them.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[identifier]=value` List only those environments matching this identifier. May return multiple results. */
+          identifier?: string;
+          /** @description `filter[search]=value` search for a value associated with a field on the given environment(s). */
+          search?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the environment's current state. */
+          state?: string;
+          /** @description `filter[stack_build]=ID` stack build filtering by ID.  Submit the ID of the stack build you wish to filter for and the return sill be any environments that have the stack build deployed to them. */
+          stack_build?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -8622,13 +8612,12 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Range 
-         * `filter[range-start]=timestamp&filter[range-end]=timestamp` filter by range giving two times a `start` time and an `end` time. Date format `2023-03-07T14:55:17-08:00`.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description The start date from when to pull instance telemetry data */
+          "range-start"?: components["schemas"]["DateTime"];
+          /** @description The end date from when to pull instance telemetry data */
+          "range-end"?: components["schemas"]["DateTime"];
         };
       };
       path: {
@@ -8658,16 +8647,14 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Search 
-         * `filter[search]=value` search for a value associated with a field on the given scoped variable(s).
-         * 
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the scoped variable's current state.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[identifier]=value` List only those environments matching this identifier. May return multiple results. */
+          identifier?: string;
+          /** @description `filter[search]=value` search for a value associated with a field on the given scoped variable(s). */
+          search?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the scoped variable's current state. */
+          state?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -8839,37 +8826,26 @@ export interface operations {
         /**
          * @description ## Filter Field
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Identifier
-         * `filter[identifier]=value` List only those containers matching this identifier. May return multiple results.
-         * 
-         * ### Search
-         * `filter[search]=value` search containers for a value associated with a field on the given container(s).
-         * 
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the container's current state.
-         * 
-         * ### Service
-         * `filter[service]=value` service filtering will allow you to filter by service type: `loadbalancer`, `discovery`, `vpn`.
-         * 
-         * ### Public Network
-         * `filter[public_network]=value` public network filtering will allow you to filter by the containers network settings: `enabled`, `disabled`, `egress-only`.
-         * 
-         * ### Image 
-         * `filter[image]=ID` image filtering by ID.  Submit the ID of the image you wish to filter for and the return will be any containers currently using the image.
-         * 
-         * ### Environment
-         * `filter[environment]=ID` environment filtering by ID.  Submit the ID of the environment you wish to filter for and the return will be any containers in that environment.
-         * 
-         * ### Tags
-         * `filter[tags]=tagone,tagtwo,tagthree` container filtering using server tags. If the container has the tags you submit it will be part of the return. 
-         * 
-         * ### Stacks
-         * `filter[stack]=ID` stack filtering by ID.  Submit the ID of the stack you wish to filter for and the return will be any containers deployed associated with 'containers' from the stack.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[identifier]=value` List only those containers matching this identifier. May return multiple results. */
+          identifier?: string;
+          /** @description `filter[search]=value` search containers for a value associated with a field on the given container(s). */
+          search?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the container's current state. */
+          state?: string;
+          /** @description `filter[service]=value` service filtering will allow you to filter by service type: `loadbalancer`, `discovery`, `vpn`. */
+          service?: string;
+          /** @description `filter[public_network]=value` public network filtering will allow you to filter by the containers network settings: `enabled`, `disabled`, `egress-only`. */
+          public_network?: string;
+          /** @description `filter[image]=ID` image filtering by ID.  Submit the ID of the image you wish to filter for and the return will be any containers currently using the image. */
+          image?: string;
+          /** @description `filter[environment]=ID` environment filtering by ID.  Submit the ID of the environment you wish to filter for and the return will be any containers in that environment. */
+          environment?: string;
+          /** @description `filter[tags]=tagone,tagtwo,tagthree` container filtering using server tags. If the container has the tags you submit it will be part of the return. */
+          tags?: string;
+          /** @description `filter[stack]=ID` stack filtering by ID.  Submit the ID of the stack you wish to filter for and the return will be any containers deployed associated with 'containers' from the stack. */
+          stack?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -9084,19 +9060,14 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the instance's current state.
-         * 
-         * ### Search 
-         * `filter[search]=value` search instances for a value associated with a field on the given instance(s).
-         * 
-         * ### Server
-         * `filter[server]=ID` server filtering by ID.  Submit the ID of the server you wish to filter for and the return will be any instances of the container currently deployed to the given server.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the instance's current state. */
+          state?: string;
+          /** @description `filter[search]=value` search instances for a value associated with a field on the given instance(s). */
+          search?: string;
+          /** @description `filter[server]=ID` server filtering by ID. Submit the ID of the server you wish to filter for and the return will be any instances of the container currently deployed to the given server. */
+          server?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -9355,13 +9326,12 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Range 
-         * `filter[range-start]=timestamp&filter[range-end]=timestamp` filter by range giving two times a `start` time and an `end` time. Date format `2023-03-07T14:55:17-08:00`
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description The start date from when to pull instance telemetry data */
+          "range-start"?: components["schemas"]["DateTime"];
+          /** @description The end date from when to pull instance telemetry data */
+          "range-end"?: components["schemas"]["DateTime"];
         };
       };
       path: {
@@ -9625,13 +9595,12 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Range 
-         * `filter[range-start]=timestamp&filter[range-end]=timestamp` filter by range giving two times a `start` time and an `end` time. Date format `2023-03-07T14:55:17-08:00`.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description The start date from when to pull instance telemetry data */
+          "range-start"?: components["schemas"]["DateTime"];
+          /** @description The end date from when to pull instance telemetry data */
+          "range-end"?: components["schemas"]["DateTime"];
         };
       };
       path: {
@@ -9663,13 +9632,10 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the DNS zone's current state.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the DNS zone's current state. */
+          state?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -9846,13 +9812,10 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the record's current state.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the DNS record's current state. */
+          state?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -10013,13 +9976,10 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Domain
-         * `filter[domain]=value` filter the return for TLS attempts by domain.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[domain]=value` filter the return for TLS attempts by domain. */
+          domain?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -10072,19 +10032,14 @@ export interface operations {
         /**
          * @description ## Filter Field
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Identifier
-         * `filter[identifier]=value` List only those hubs matching this identifier. May return multiple results.
-         * 
-         * ### Search
-         * `filter[search]=value` search hubs for a value associated with a field on the given hub(s).
-         * 
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the hub's current state.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[identifier]=value` List only those environments matching this identifier. May return multiple results. */
+          identifier?: string;
+          /** @description `filter[search]=value` search hubs for a value associated with a field on the given hub(s). */
+          search?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the hub's current state. */
+          state?: string;
         };
       };
     };
@@ -10217,41 +10172,31 @@ export interface operations {
         /**
          * @description ## Filter Field
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Search
-         * `filter[search]=value` search activities for a value associated with a field on the given activity(s).
-         * 
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the activity's current state.
-         * 
-         * ### User 
-         * `filter[user]=ID` user filtering by ID.  Submit the ID of the user you wish to filter for and the return will be any activity from that user.
-         * 
-         * ### Environment
-         * `filter[environment]=ID` environment filtering by ID.  Submit the ID of the environment you wish to filter for and the return will be any activity from that environment.
-         * 
-         * ### container
-         * `filter[container]=ID` container filtering by ID.  Submit the ID of the container you wish to filter for and the return will be any activity from that container.
-         * 
-         * ### Instance
-         * `filter[instance]=ID` instance filtering by ID.  Submit the ID of the instance you wish to filter for and the return will be any activity from that instance.
-         * 
-         * ### Server
-         * `filter[server]=ID` server filtering by ID.  Submit the ID of the server you wish to filter for and the return will be any activity from that server.
-         * 
-         * ### Event
-         * `filter[event]=value` filter by event occurrence. Example: `filter[event]=environment.services.vpn.login`
-         * 
-         * ### Verbosity
-         * `filter[verbosity]=integer` filter the activity return by verbosity. The verbosity can be:
-         * 
-         *   `0` - Activity that users would find useful.
-         *   `1` - Activity that can be useful when tracking down how something happened. 
-         *   `2` - Full activity, can be useful in debugging problems.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[search]=value` search activities for a value associated with a field on the given activity(s). */
+          search?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the activity's current state. */
+          state?: string;
+          /** @description `filter[user]=ID` user filtering by ID. Submit the ID of the user you wish to filter for and the return will be any activity from that user. */
+          user?: string;
+          /** @description `filter[environment]=ID` environment filtering by ID. Submit the ID of the environment you wish to filter for and the return will be any activity from that environment. */
+          environment?: string;
+          /** @description `filter[container]=ID` container filtering by ID. Submit the ID of the container you wish to filter for and the return will be any activity from that container. */
+          container?: string;
+          /** @description `filter[instance]=ID` instance filtering by ID. Submit the ID of the instance you wish to filter for and the return will be any activity from that instance. */
+          instance?: string;
+          /** @description `filter[server]=ID` server filtering by ID. Submit the ID of the server you wish to filter for and the return will be any activity from that server. */
+          server?: string;
+          /** @description `filter[event]=value` filter by event occurrence. Example: `filter[event]=environment.services.vpn.login` */
+          event?: string;
+          /**
+           * @description `filter[verbosity]=integer` filter the activity return by verbosity. The verbosity can be:
+           *   `0` - Activity that users would find useful.
+           *   `1` - Activity that can be useful when tracking down how something happened. 
+           *   `2` - Full activity, can be useful in debugging problems.
+           */
+          verbosity?: number;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -10723,22 +10668,18 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Search 
-         * `filter[search]=value` search for a value associated with a field on the given image(s).
-         * 
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the image's current state.
-         * 
-         * ### Source Type
-         * `filter[source_type]=value` filter images by the image source's type.  Can be: `direct` or `stack_build`
-         * 
-         * ### Source
-         * `filter[source_id]=ID` image filtering by source ID.  Submit the ID of the image source you wish to filter for and the return will be any images created from that source.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[identifier]=value` List only those images matching this identifier. May return multiple results. */
+          identifier?: string;
+          /** @description `filter[search]=value` search for a value associated with a field on the given image(s). */
+          search?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the image's current state. */
+          state?: string;
+          /** @description `filter[source_type]=value` filter images by the image source's type.  Can be: `direct` or `stack_build` */
+          source_type?: string;
+          /** @description `filter[source_id]=ID` image filtering by source ID.  Submit the ID of the image source you wish to filter for and the return will be any images created from that source. */
+          source_id?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -10987,19 +10928,14 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Identifier
-         * `filter[identifier]=value` List only those image sources matching this identifier. May return multiple results.
-         * 
-         * ### Search 
-         * `filter[search]=value` search for a value associated with a field on the given image source(s).
-         * 
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the image source's current state.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[identifier]=value` List only those image sources matching this identifier. May return multiple results. */
+          identifier?: string;
+          /** @description `filter[search]=value` search for a value associated with a field on the given image source(s). */
+          search?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the image source's current state. */
+          state?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -11157,13 +11093,10 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Search 
-         * `filter[cluster]=value` return an infrastructure summary only for the specified cluster.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[cluster]=value` return an infrastructure summary only for the specified cluster. */
+          cluster?: string;
         };
       };
     };
@@ -11191,13 +11124,10 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Search 
-         * `filter[search]=value` search for a value associated with a field on the given native provider(s).
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[search]=value` search for a value associated with a field on the given native provider(s). */
+          search?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -11281,16 +11211,12 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Search 
-         * `filter[search]=value` search for a value associated with a field on the given provider(s).
-         * 
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the provider's current state.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[search]=value` search for a value associated with a field on the given provider(s). */
+          search?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the provider's current state. */
+          state?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -11491,22 +11417,16 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the provider's current state.
-         * 
-         * ### Tags
-         * `filter[tags]=tagone,tagtwo,tagthree` filtering by server tag.  Enter one or more tags (comma separated) and the return will include servers that match any tags in the list.
-         * 
-         * ### Clusters
-         * `filter[clusters]=clusterone,clustertwo` filtering by cluster.  Enter one or more clusters (commas separated) and the return will include servers that match any clusters in the list.
-         * 
-         * ### Providers
-         * `filter[providers]=providerone,providertwo` filtering by provider.  Enter one or more providers (commas separated) and the return will include servers that match any providers in the list.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the provider's current state. */
+          state?: string;
+          /** @description `filter[tags]=tagone,tagtwo,tagthree` filtering by server tag.  Enter one or more tags (comma separated) and the return will include servers that match any tags in the list. */
+          tags?: string;
+          /** @description `filter[clusters]=clusterone,clustertwo` filtering by cluster.  Enter one or more clusters (commas separated) and the return will include servers that match any clusters in the list. */
+          clusters?: string;
+          /** @description `filter[providers]=providerone,providertwo` filtering by provider.  Enter one or more providers (commas separated) and the return will include servers that match any providers in the list. */
+          providers?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -11681,13 +11601,12 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Range 
-         * `filter[range-start]=timestamp&filter[range-end]=timestamp` filter by range giving two times a `start` time and an `end` time. Date format `2023-03-07T14:55:17-08:00`.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description The start date from when to pull server telemetry data */
+          "range-start"?: components["schemas"]["DateTime"];
+          /** @description The end date from when to pull server telemetry data */
+          "range-end"?: components["schemas"]["DateTime"];
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -11777,13 +11696,10 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Cluster
-         * `filter[cluster]=clusterone,clustertwo` filtering by cluster.  Enter one or more clusters (commas separated) and the return will include tags from servers that match any cluster(s) in the list.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[cluster]=clusterone,clustertwo` filtering by cluster.  Enter one or more clusters (commas separated) and the return will include tags from servers that match any cluster(s) in the list. */
+          cluster?: string;
         };
       };
     };
@@ -11971,19 +11887,16 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Range 
-         * `filter[range-start]=timestamp&filter[range-end]=timestamp` filter by range giving two times a `start` time and an `end` time. Date format `2023-03-07T14:55:17-08:00`.
-         * 
-         * ### Search
-         * `filter[search]=value` search jobs for a value associated with a field on the given job(s).
-         * 
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the job's current state.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description The start date from when to fetch jobs */
+          "range-start"?: components["schemas"]["DateTime"];
+          /** @description The end date from when to fetch jobs */
+          "range-end"?: components["schemas"]["DateTime"];
+          /** @description `filter[search]=value` search jobs for a value associated with a field on the given job(s). */
+          search?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the job's current state. */
+          state?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -12054,21 +11967,16 @@ export interface operations {
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
         include?: ("creators")[];
         /**
-         * @description ## Filter Field
+         * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Identifier
-         * `filter[identifier]=value` List only those stacks matching this identifier. May return multiple results.
-         * 
-         * ### Search
-         * `filter[search]=value` search stacks for a value associated with a field on the given stack(s).
-         * 
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the stack's current state.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[identifier]=value` List only those stacks matching this identifier. May return multiple results. */
+          identifier?: string;
+          /** @description `filter[search]=value` search for a value associated with a field on the given stack(s). */
+          search?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the stack's current state. */
+          state?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -12264,18 +12172,14 @@ export interface operations {
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
         include?: ("stack_id" | "hub_id" | "about" | "instructions" | "events" | "state")[];
         /**
-         * @description ## Filter Field
+         * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Search
-         * `filter[search]=value` search stack builds for a value associated with a field on the given stack build(s).
-         * 
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the stack build's current state.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[search]=value` search for a value associated with a field on the given stack build(s). */
+          search?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the stack build's current state. */
+          state?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -12421,18 +12325,14 @@ export interface operations {
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
         include?: ("creators" | "environments")[];
         /**
-         * @description ## Filter Field
+         * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Search
-         * `filter[search]=value` search networks for a value associated with a field on the given network(s).
-         * 
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the network's current state.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[search]=value` search for a value associated with a field on the given network(s). */
+          search?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the network's current state. */
+          state?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -12613,21 +12513,16 @@ export interface operations {
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
         include?: ("creators" | "name" | "components")[];
         /**
-         * @description ## Filter Field
+         * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Identifier
-         * `filter[identifier]=value` List only those pipelines matching this identifier. May return multiple results.
-         * 
-         * ### Search
-         * `filter[search]=value` search pipelines for a value associated with a field on the given pipeline(s).
-         * 
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the pipeline's current state.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[identifier]=value` List only those pipelines matching this identifier. May return multiple results. */
+          identifier?: string;
+          /** @description `filter[search]=value` search for a value associated with a field on the given pipelines(s). */
+          search?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the pipeline's current state. */
+          state?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -12838,18 +12733,14 @@ export interface operations {
     parameters: {
       query: {
         /**
-         * @description ## Filter Field
+         * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Search
-         * `filter[search]=value` search trigger keys for a value associated with a field on the given trigger key(s).
-         * 
-         * ### State
-         * `filter[state]=value1,value2` state filtering will allow you to filter by the trigger key's current state.
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[search]=value` search for a value associated with a field on the given trigger key(s). */
+          search?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the trigger key's current state. */
+          state?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
@@ -13077,16 +12968,12 @@ export interface operations {
         /**
          * @description ## Filter Field 
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         * 
-         * ## Possible Values
-         * ### Environment
-         * `filter[environment]=<Environment ID>` fetch the security report for the specified environment
-         * 
-         * ### Event
-         * `filter[event]=value` filter by event occurrence. Example: `filter[event]=environment.services.vpn.login`
          */
         filter?: {
-          [key: string]: (string | (string)[]) | undefined;
+          /** @description `filter[environment]=<Environment ID>` fetch the security report for the specified environment */
+          environment?: string;
+          /** @description `filter[event]=value` filter by event occurrence. Example: `filter[event]=environment.services.vpn.login` */
+          event?: string;
         };
       };
     };
