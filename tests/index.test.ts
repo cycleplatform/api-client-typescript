@@ -81,7 +81,7 @@ test("test changing auth token between requests", async () => {
   expect(resp2.response.headers.get("x-auth-token")).toBe(`Bearer ${token2}`);
 });
 
-test.only("test query params are properly serialized", async () => {
+test("test query params are properly serialized", async () => {
   const baseUrl = "https://api.dev.cycle.io";
   setBaseUrl(baseUrl);
 
