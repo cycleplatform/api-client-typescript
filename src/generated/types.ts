@@ -463,6 +463,13 @@ export interface paths {
      */
     get: operations["getInstanceResourcesTelemetryReport"];
   };
+  "/v1/containers/{containerId}/instances/{instanceId}/telemetry/resources/stream": {
+    /**
+     * Instance Telemetry Stream Credentials 
+     * @description Requires the `containers-view` capability. Retrieves an access token and URL to open a websocket to for streaming instance telemetry live. This connects directly to the compute layer on the server the instance is hosted on, and streams telemetry in real time.
+     */
+    get: operations["getInstanceResourcesTelemetryStream"];
+  };
   "/v1/containers/{containerId}/servers": {
     /**
      * List Container Servers 
@@ -680,6 +687,13 @@ export interface paths {
      * @description Requires the `hubs-members-view` capability.
      */
     get: operations["getHubMembers"];
+  };
+  "/v1/hubs/current/membership": {
+    /**
+     * List Hub Memberships 
+     * @description Gets the membership information for the current hub for the requesting account.
+     */
+    get: operations["getHubMembership"];
   };
   "/v1/hubs/current/members/{memberId}": {
     /**
@@ -1202,13 +1216,6 @@ export interface paths {
      */
     get: operations["instanceConsoleAuth"];
   };
-  "/v1/containers/{containerId}/instances/{instanceId}/telemetry/resources/stream": {
-    /**
-     * Instance Telemetry Stream Credentials 
-     * @description Requires the `containers-view` capability. Retrieves an access token and URL to open a websocket to for streaming instance telemetry live. This connects directly to the compute layer on the server the instance is hosted on, and streams telemetry in real time.
-     */
-    get: operations["getInstanceResourcesTelemetryStream"];
-  };
   "/v1/security/report": {
     /**
      * Get Security Report 
@@ -1396,27 +1403,37 @@ export interface components {
     HubMembership: {
       id: components["schemas"]["ID"];
       /** @description An ID for the account associated with the given membership. */
-      account_id: string;
+      account_id?: string;
       hub_id: components["schemas"]["HubID"];
-      /** @description A number that maps to the currently set role of the member. */
-      role: number;
       /**
        * MembershipEvents 
        * @description A collection of timestamps for each event in the membership's lifetime.
        */
       events: {
         /** @description The timestamp of when the membership was created. */
-        created: components["schemas"]["DateTime"];
+        created?: components["schemas"]["DateTime"];
         /** @description The timestamp of when the membership was updated. */
-        updated: components["schemas"]["DateTime"];
+        updated?: components["schemas"]["DateTime"];
         /** @description The timestamp of when the membership was deleted. */
-        deleted: components["schemas"]["DateTime"];
+        deleted?: components["schemas"]["DateTime"];
         /** @description The timestamp of when the membership was accepted. */
         joined: components["schemas"]["DateTime"];
       };
-      state: components["schemas"]["MembershipState"];
-      invitation: components["schemas"]["Invitation"];
-      /** @description Information about this members permissions for a given hub. */
+      /**
+       * @description A number that maps to the currently set role of the member.
+       * 
+       * ## Roles
+       * 0 = DEFAULT
+       * 1 = OWNER
+       * 2 = ADMIN
+       * 4 = DEVELOPER
+       * 8 = ANALYST
+       */
+      role: number;
+      /**
+       * HubMembershipPermissions 
+       * @description Information about this member's permissions for a given hub.
+       */
       permissions: {
         /** @description A boolean where true represents the member has access to view and manage all environments for the hub. */
         all_environments: boolean;
@@ -1427,8 +1444,11 @@ export interface components {
             manage: boolean;
           })[];
       };
-      /** @description Preference information set by the user for the membership. */
-      prefereneces: {
+      /**
+       * HubMembershipPreferences 
+       * @description Preference information set by the user for the membership.
+       */
+      preferences?: {
         portal: {
           notifications: {
             jobs: {
@@ -1439,13 +1459,15 @@ export interface components {
         email: {
           notificaitons?: {
             server: {
-              new?: boolean;
-              offline?: boolean;
+              new: boolean | null;
+              offline: boolean | null;
             };
           };
         };
       };
-      /** @description Information about the membership as it pertains to the account holders affiliation with being a Cycle employee. Cycle employee accounts do not consume a "membership" for a given hub. */
+      state: components["schemas"]["MembershipState"];
+      invitation: components["schemas"]["Invitation"];
+      /** @description If this member is a Cycle employee, their employee ID will be listed here. Cycle employee accounts do not consume a "membership" for a given hub. */
       cycle?: {
         /** @description The ID of the employee this membership is associated with. */
         employee_id: string;
@@ -1570,9 +1592,9 @@ export interface components {
       /** @description Information about the plan associated with this hub. */
       plans: {
         /** @description An ID referencing the pricing tier applied to this hub. */
-        tier_id: string;
+        tier_id: string | null;
         /** @description An ID referencing the support plan applied to this hub. */
-        support_id: string;
+        support_id: string | null;
       };
       /** @description An array of email addresses to whom the billing invoices will be sent to. If left empty, they will be sent to the owner of this hub. */
       emails: (string)[] | null;
@@ -2439,9 +2461,10 @@ export interface components {
       /** @description Whether or not legacy networking mode is enabled on this environment. */
       legacy_networking: boolean;
     };
-    HAProxyConfig: {
+    /** HAProxyConfig */
+    HaProxyConfig: {
       /** @description Settings that describe how incoming traffic to the load balancer is handled. */
-      frontend: ({
+      frontend: {
         /**
          * @description The type of traffic expected by the load balancer for this port. Can be either: 
          *  - tcp: Traffic is forwarded without any parsing or additional manipulation. 
@@ -2462,9 +2485,9 @@ export interface components {
           /** @description The number of milliseconds the load balancer will wait for a complete HTTP request. See the [HAProxy Docs](https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#4.2-timeout%20http-request) for more information. (`http` mode only) */
           http_request_ms: number | null;
         }) | null;
-      }) | null;
+      };
       /** @description Settings related to how the load balancer routes connections to container instances. */
-      backend: ({
+      backend: {
         /**
          * @description How connections are balanced across your container instances. Can be one of the following: 
          *  - `roundrobin`: Each container instance is used in turns. 
@@ -2488,6 +2511,25 @@ export interface components {
           /** @description The number of milliseconds the load balancer will allow for inactivity on a bidirectional tunnel. See the [HAProxy Docs](https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#4-timeout%20tunnel) for more information. */
           tunnel_secs: number | null;
         }) | null;
+      };
+    };
+    /**
+     * LoadBalancerConfig 
+     * @description The config object for the loadbalancer service.
+     */
+    LoadBalancerConfig: {
+      /** @enum {string} */
+      version: "haproxy" | "v1";
+      /** @description Describes settings that are passed to HAProxy within the load balancer. */
+      haproxy: ({
+        default: components["schemas"]["HaProxyConfig"];
+        ports: {
+          [key: string]: components["schemas"]["HaProxyConfig"] | undefined;
+        };
+        /** @description Allow / disallow traffic to be routed via IPv4. */
+        ipv4?: boolean;
+        /** @description Allow / disallow traffic to be routed via IPv6. */
+        ipv6?: boolean;
       }) | null;
     };
     /**
@@ -2498,23 +2540,10 @@ export interface components {
       /** @description Whether or not the loadbalancer service is enabled. */
       enable: boolean;
       /** @description The ID of the loadbalancer service container */
-      container_id: string;
+      container_id: string | null;
       /** @description A boolean representing if this service container is set to high availability mode or not. */
       high_availability: boolean;
-      /** @description The config object for the loadbalancer service. */
-      config: ({
-        /** @description Describes settings that are passed to HAProxy within the load balancer. */
-        haproxy: ({
-          default: components["schemas"]["HAProxyConfig"];
-          ports: {
-            [key: string]: components["schemas"]["HAProxyConfig"] | undefined;
-          };
-        }) | null;
-        /** @description Allow / disallow traffic to be routed via IPv4. */
-        ipv4: boolean | null;
-        /** @description Allow / disallow traffic to be routed via IPv6. */
-        ipv6: boolean | null;
-      }) | null;
+      config: components["schemas"]["LoadBalancerConfig"] | null;
     }) | null;
     /**
      * DiscoveryEnvironmentService 
@@ -2834,45 +2863,6 @@ export interface components {
       };
     };
     /**
-     * LoadBalancerInfoReturn 
-     * @description Information about an environments load balancer configuration, state, and availability settings.
-     */
-    LoadBalancerInfoReturn: {
-      /** @description The default configuration of the load balancer. */
-      default_config: {
-        /** @description Describes settings that are passed to HAProxy within the load balancer. */
-        haproxy?: {
-          default: components["schemas"]["HAProxyConfig"];
-          ports: components["schemas"]["HAProxyConfig"];
-        } | null;
-        /** @description Allow / disallow traffic to be routed via IPv4. */
-        ipv4?: boolean | null;
-        /** @description Allow / disallow traffic to be routed via IPv6. */
-        ipv6?: boolean | null;
-      };
-      /** @description Contains information about the status of the load balancer, as well as configuration overrides. */
-      service: {
-        /** @description Whether or not the loadbalancer service is enabled. */
-        enable: boolean;
-        /** @description The ID of the loadbalancer service container */
-        container_id: string;
-        /** @description A boolean representing if this service container is set to high availability mode or not. */
-        high_availability: boolean;
-        /** @description Contains custom configuration overrides for the load balancer. If null, the default config will be used. */
-        config?: {
-          /** @description Describes settings that are passed to HAProxy within the load balancer. */
-          haproxy?: {
-            default: components["schemas"]["HAProxyConfig"];
-            ports: components["schemas"]["HAProxyConfig"];
-          } | null;
-          /** @description Allow / disallow traffic to be routed via IPv4. */
-          ipv4?: boolean | null;
-          /** @description Allow / disallow traffic to be routed via IPv6. */
-          ipv6?: boolean | null;
-        };
-      };
-    };
-    /**
      * VPNInfo 
      * @description A summary of a VPN service for a given environment.
      */
@@ -3110,8 +3100,7 @@ export interface components {
             all?: (string)[];
           };
         };
-        /** @description An array of container identifiers the platform will send the start signal to before sending the start signal to this container. */
-        containers?: (string)[];
+        secrets?: (string)[];
       };
       /** @description Configuration for what to do during container shutdown. */
       shutdown?: {
@@ -3124,11 +3113,6 @@ export interface components {
       startup?: {
         /** @description A value in seconds representing how long the platform will wait before sending the start signal to the given container. */
         delay?: number;
-      };
-      /** @description Configurations for how the container behaves when updating. */
-      update?: {
-        parallelism: number;
-        delay: number;
       };
       /** @description Configurations for container restart events. */
       restart?: {
@@ -3320,12 +3304,17 @@ export interface components {
           cron_string?: string;
         };
         /** @description Configuration settings for restoring from a backup. */
-        restore: {
+        restore: ({
           /** @description The command to run for restoring from a backup. */
           command: string;
           /** @description The time in seconds for the restore to appempt to complete before timing out. */
           timeout?: number | null;
-        };
+        }) | null;
+        /**
+         * @description How long (in seconds) to keep backups. Default is 1 year. 
+         * @default 31536000
+         */
+        retention: number | null;
       };
     };
     /**
@@ -3585,6 +3574,8 @@ export interface components {
       stateful: boolean;
       /** @description A boolean where true signifies the container is marked as deprecated. */
       deprecate?: boolean;
+      /** @description When set to true, prevents this container from being deleted. */
+      lock?: boolean;
       state: components["schemas"]["ContainerState"];
       /**
        * ContainerEvents 
@@ -3602,11 +3593,13 @@ export interface components {
       };
       meta?: components["schemas"]["ContainersMeta"];
     };
-    /** DockerHubSource */
-    DockerHubSource: {
+    /**
+     * DockerHubOrigin 
+     * @description An image origin where the image is pulled from DockerHub.
+     */
+    DockerHubOrigin: {
       /** @enum {string} */
       type?: "docker-hub";
-      /** @description An image source origin that pulls from DockerHub. */
       details?: {
         /** @description The DockerHub target string. ex - `mysql:5.7` */
         target: string;
@@ -3676,11 +3669,13 @@ export interface components {
         /** @description A token for authentication. */
         token?: string;
       })[];
-    /** DockerfileFileSource */
-    DockerfileFileSource: {
+    /**
+     * DockerFileOrigin 
+     * @description An image origin where the image is built from a Dockerfile located in a git repository.
+     */
+    DockerFileOrigin: {
       /** @enum {string} */
       type?: "docker-file";
-      /** @description An image source origin that creates an image from a Dockerfile that's listed in a repository. */
       details?: {
         repo?: components["schemas"]["RepoType"];
         /** @description An endpoint that serves the tar file. */
@@ -3692,11 +3687,13 @@ export interface components {
         credentials?: components["schemas"]["DockerfileCredentials"];
       };
     };
-    /** DockerRegistrySource */
-    DockerRegistrySource: {
+    /**
+     * DockerRegistryOrigin 
+     * @description An image origin where the image is pulled from a private Docker registry.
+     */
+    DockerRegistryOrigin: {
       /** @enum {string} */
       type?: "docker-registry";
-      /** @description An image source origin that pulls from a private Docker registry. */
       details?: {
         /** @description The image name on the registry. */
         target: string;
@@ -3711,17 +3708,85 @@ export interface components {
       };
     };
     /**
-     * ImageSourceOrigin 
+     * CycleUploadOrigin 
+     * @description An image origin where the image is pushed directly to the factory, bypassing the need for a registry or external source.
+     * 
+     * In order to utilize this image origin type, a tar file of an OCI compliant image will need to be generated and pushed directly to the factory. The authentication token is generated when this image is created, and expires at the provided time.
+     * Once you have a token, it can be uploaded as multipart form data under the key `file.tar`, directly to the factory at `https://factory.cycle.io:9414/v1/images/<IMAGE ID>/upload?hub-id=<HUB ID>&token=<TOKEN>`.
+     */
+    CycleUploadOrigin: {
+      /** @enum {string} */
+      type?: "cycle-upload";
+      details?: {
+        /** @description The date-time at which the authorization token for uploading this image expires. */
+        expires: components["schemas"]["DateTime"];
+        /** @description The token that is required by the factory to accept an upload for this image. */
+        token: string;
+      };
+    };
+    /**
+     * CycleSourceOrigin 
+     * @description An image origin that references an image source on Cycle. 
+     * 
+     * This origin will never be embedded in an image source. It is for use in stacks, describing an image which is already a part of an image source on Cycle.
+     */
+    CycleSourceOrigin: {
+      /** @enum {string} */
+      type?: "cycle-source";
+      details?: {
+        /** @description The ID referencing the image source where this image originated. */
+        source_id: components["schemas"]["ID"];
+      };
+    };
+    /**
+     * NoneOrigin 
+     * @description An empty origin. No details are provided for this image.
+     */
+    NoneOrigin: {
+      /** @enum {string} */
+      type?: "none";
+      details?: Record<string, never>;
+    };
+    /**
+     * ImageOrigin 
      * @description The origin of the given image source.
      */
-    ImageSourceOrigin: components["schemas"]["DockerHubSource"] | components["schemas"]["DockerfileFileSource"] | components["schemas"]["DockerRegistrySource"];
+    ImageOrigin: components["schemas"]["DockerHubOrigin"] | components["schemas"]["DockerFileOrigin"] | components["schemas"]["DockerRegistryOrigin"] | components["schemas"]["CycleUploadOrigin"] | components["schemas"]["CycleSourceOrigin"] | components["schemas"]["NoneOrigin"];
+    /** StackImageSource */
+    StackImageSourceType: {
+      /** @enum {string} */
+      type?: "stack-build";
+      details?: {
+        id: string;
+        stack_id: string;
+        containers: (components["schemas"]["Identifier"])[];
+        origin: components["schemas"]["ImageOrigin"];
+      };
+      override?: {
+        target?: string;
+        targz_url?: string;
+      };
+    };
+    /** DirectImageSource */
+    DirectImageSourceType: {
+      /** @enum {string} */
+      type?: "direct" | "bucket";
+      details?: {
+        id: string;
+        origin: components["schemas"]["ImageOrigin"];
+      };
+      override?: {
+        target?: string;
+        targz_url?: string;
+      };
+    };
     /** ImageState */
     ImageState: ({
       /**
        * @description The current state of the image. 
        * @enum {string}
        */
-      current: "new" | "downloading" | "building" | "verifying" | "saving" | "live" | "deleting" | "deleted";
+      current: "new" | "uploading" | "downloading" | "building" | "verifying" | "saving" | "live" | "deleting" | "deleted";
     }) & components["schemas"]["State"];
     /**
      * ImageMeta 
@@ -3732,21 +3797,13 @@ export interface components {
     };
     /**
      * Image 
-     * @description An Image Resource, which is a point in time build on a given image source.
+     * @description An image is a point in time build on a given image source, and what is distributed by Cycle to run containers.
      */
     Image: {
       id: components["schemas"]["ID"];
       hub_id: components["schemas"]["HubID"];
       /** @description A user defined name for the image. */
       name: string;
-      /** @description If the image is part of a stack, that information will be available here. */
-      stack: {
-        id: components["schemas"]["ID"];
-        /** @description A unique identifier for the build the image is assocaited with. */
-        build_id: string;
-        /** @description If this image is being used for any containers their identifiers are listed here. */
-        containers: (string)[];
-      };
       /** @description The image size in bytes. */
       size: number;
       /** @description An object that holds information about the image. */
@@ -3759,14 +3816,23 @@ export interface components {
         /** @description The provider where this image is hosted. */
         provider: string;
         /** @description The size of the image in bytes. */
-        size: string;
+        size: number;
         /** @description A file name for the image, used by the platform. */
         file_name: string;
         /** @description A file id for the image, used by the platform. */
         file_id: string;
       };
-      /** @description Tags that describe the version, package, or data about the image. */
-      tags: (string)[];
+      /** @description Any restrictions or requirements needed to run this image as a container. */
+      requires: {
+        nvidia_gpu?: boolean;
+      };
+      /** @description Any additional build details for this image */
+      build: ({
+        /** @description Arguments to pass to the factory during a build of this image. */
+        args?: {
+          [key: string]: string | undefined;
+        };
+      }) | null;
       /** @description Configuration settings for the image. */
       config: {
         /** @description The linux user this image runs its processes as. */
@@ -3783,11 +3849,11 @@ export interface components {
           [key: string]: string | undefined;
         };
         /** @description Image labels. */
-        labels: string;
+        labels: {
+          [key: string]: string | undefined;
+        };
         /** @description The CMD array used to start the container. */
         command: (string)[];
-        /** @description Additional commands to run at build time. */
-        onbuild: (string)[];
         /** @description An entrypoint command. */
         entrypoint: (string)[];
         /** @description Volumes information for the given image. */
@@ -3805,22 +3871,17 @@ export interface components {
         /** @description A set command to be run if a signal is called. */
         signal_stop: string;
       };
-      source?: {
-        type: string;
-        details: {
-          id: string;
-          stack_id: string;
-          origin: components["schemas"]["ImageSourceOrigin"];
-        };
-      };
+      source?: components["schemas"]["DirectImageSourceType"] | components["schemas"]["StackImageSourceType"];
       creator?: components["schemas"]["CreatorScope"];
       /** @description Identifies which factory the image was built on and when. */
-      factory?: {
+      factory: {
         /** @description The node holding the factory service that was responsible for building the image. */
         node_id: string;
+        /** @description A date timestamp for when the node cached the image. */
+        cached: components["schemas"]["DateTime"];
         /** @description A date timestamp for when the node acknowledged the image import job. */
         acknowledged: components["schemas"]["DateTime"];
-      };
+      } | null;
       state: components["schemas"]["ImageState"];
       /**
        * ImageEvents 
@@ -3843,6 +3904,88 @@ export interface components {
     ImagesIncludes: {
       [key: string]: components["schemas"]["Image"] | undefined;
     };
+    /** StackSpecContainerImage */
+    StackSpecContainerImage: {
+      name: string | null;
+      origin: components["schemas"]["ImageOrigin"];
+      build?: {
+        args: {
+          [key: string]: string | undefined;
+        };
+      };
+    };
+    /** StackContainerConfigRuntime */
+    StackContainerConfigRuntime: {
+      workdir?: string;
+      command?: {
+        path?: string;
+        args?: string;
+      };
+      environment_vars?: {
+        [key: string]: string | undefined;
+      };
+      namespaces?: ("ipc" | "pid" | "uts" | "network" | "mount" | "user" | "cgroup")[];
+      sysctl?: {
+        [key: string]: string | undefined;
+      };
+      rlimits?: {
+        [key: string]: {
+          hard: number;
+          soft: number;
+        } | undefined;
+      };
+      seccomp?: {
+        disable: boolean;
+        rules: ({
+            capabilities: {
+              includes: string;
+              excludes: string;
+            };
+            syscall: {
+              names: (string)[];
+              /** @enum {string} */
+              action: "SCMP_ACT_KILL" | "SCMP_ACT_KILL_PROCESS" | "SCMP_ACT_KILL_THREAD" | "SCMP_ACT_TRAP" | "SCMP_ACT_ERRNO" | "SCMP_ACT_TRACE" | "SCMP_ACT_ALLOW" | "SCMP_ACT_LOG" | "SCMP_ACT_NOTIFY";
+              errnoRet?: number;
+              args?: ({
+                  index: number;
+                  value: number;
+                  valuetwo?: number;
+                  /** @enum {string} */
+                  op: "SCMP_CMP_NE" | "SCMP_CMP_LT" | "SCMP_CMP_LE" | "SCMP_CMP_EQ" | "SCMP_CMP_GE" | "SCMP_CMP_GT" | "SCMP_CMP_MASKED_EQ";
+                })[];
+            };
+          })[];
+      };
+      privileged: boolean;
+      capabilities?: ("CAP_CHOWN" | "CAP_FSETID" | "CAP_DAC_OVERRIDE" | "CAP_FOWNER" | "CAP_SETFCAP" | "CAP_SETGID" | "CAP_SETUID" | "CAP_KILL" | "CAP_MKNOD" | "CAP_NET_BIND_SERVICE" | "CAP_NET_RAW" | "CAP_AUDIT_WRITE" | "CAP_SYS_CHROOT" | "CAP_SETPCAP" | "CAP_DAC_READ_SEARCH" | "CAP_NET_ADMIN" | "CAP_NET_BROADCAST" | "CAP_SYS_ADMIN" | "CAP_SYS_MODULE" | "CAP_SYS_NICE" | "CAP_SYS_PACCT" | "CAP_SYS_PTRACE" | "CAP_SYS_RAWIO" | "CAP_SYS_RESOURCE" | "CAP_SYS_BOOT" | "CAP_SYS_TIME" | "CAP_SYS_TTY_CONFIG" | "CAP_SYSLOG" | "CAP_AUDIT_CONTROL" | "CAP_AUDIT_READ" | "CAP_IPC_LOCK" | "CAP_IPC_OWNER" | "CAP_LINUX_IMMUTABLE" | "CAP_MAC_ADMIN" | "CAP_MAC_OVERRIDE" | "CAP_BLOCK_SUSPEND" | "CAP_LEASE" | "CAP_WAKE_ALARM")[];
+      rootfs?: {
+        readonly: boolean;
+      };
+    };
+    /** StackContainerConfigResources */
+    StackContainerConfigResources: {
+      cpu: {
+        shares?: {
+          limit: number;
+          reserve: number;
+        };
+        cpus?: string;
+      };
+      ram: {
+        limit?: string;
+        reserve?: string;
+        swappiness?: number;
+      };
+    };
+    /** StackSpecTestContainer */
+    StackSpecTestContainer: {
+      name: string;
+      image: components["schemas"]["StackSpecContainerImage"] | null;
+      config: ({
+        runtime?: components["schemas"]["StackContainerConfigRuntime"] | null;
+        resources?: components["schemas"]["StackContainerConfigResources"] | null;
+      }) | null;
+    };
     /** StackContainerConfigNetwork.yml */
     StackContainerConfigNetwork: {
       /** @enum {string} */
@@ -3854,31 +3997,11 @@ export interface components {
     StackContainerConfigDeploy: {
       instances: number;
       /** @enum {string} */
-      strategy?: "resource-density" | "manual" | "high-availability" | "first-available" | "ephemeral";
+      strategy?: "resource-density" | "manual" | "high-availability" | "first-available" | "node" | "edge";
       stateful?: {
-        instances: ({
-            match: {
-              hostname?: string;
-            };
-            first_start?: {
-              command?: {
-                path?: string;
-                args?: string;
-              };
-              environment_vars?: {
-                [key: string]: string | undefined;
-              };
-            };
-            start?: {
-              command?: {
-                path?: string;
-                args?: string;
-              };
-              environment_vars?: {
-                [key: string]: string | undefined;
-              };
-            };
-          })[];
+        options: ({
+          use_base_hostname?: boolean | null;
+        }) | null;
       };
       constraints?: {
         node?: {
@@ -3891,11 +4014,11 @@ export interface components {
         containers?: (string)[];
       };
       shutdown?: {
-        graceful_timeout: number;
-        signals?: ("SIGTERM" | "SIGINT" | "SIGUSR1" | "SIGUSR2" | "SIGHUP")[];
+        graceful_timeout?: number | null;
+        signals?: (string)[];
       };
       startup?: {
-        delay?: number;
+        delay?: number | null;
       };
       restart?: {
         /** @enum {string} */
@@ -3919,10 +4042,6 @@ export interface components {
         interval: number;
         disable: boolean;
       };
-      update?: {
-        parallelism: number;
-        delay: number;
-      };
     };
     /** StackContainerConfigScaling.yml */
     StackContainerConfigScaling: {
@@ -3936,69 +4055,6 @@ export interface components {
           metric: "ram";
           threshold: string;
         };
-      };
-    };
-    /** StackContainerConfigRuntime */
-    StackContainerConfigRuntime: {
-      workdir?: string;
-      command?: {
-        path: string;
-        args: string;
-      };
-      environment_vars?: {
-        [key: string]: string | undefined;
-      };
-      namespaces?: ("ipc" | "pid" | "uts" | "network" | "mount" | "user")[];
-      sysctl?: {
-        [key: string]: string | undefined;
-      };
-      rlimits?: {
-        [key: string]: {
-          hard: number;
-          soft: number;
-        } | undefined;
-      };
-      seccomp?: {
-        disable: boolean;
-        rules?: ({
-            capabilities: {
-              includes: string;
-              excludes: string;
-            };
-            specs: {
-              names: (string)[];
-              action: string;
-              arrnoRet?: number;
-              args: ({
-                  index: number;
-                  value: number;
-                  valuetwo?: number;
-                  op: string;
-                })[];
-            };
-          })[];
-      };
-      privileged?: boolean;
-      capabilities?: ("CAP_CHOWN" | "CAP_FSETID" | "CAP_DAC_OVERRIDE" | "CAP_FOWNER" | "CAP_SETFCAP" | "CAP_SETGID" | "CAP_SETUID" | "CAP_KILL" | "CAP_MKNOD" | "CAP_NET_BIND_SERVICE" | "CAP_NET_RAW" | "CAP_AUDIT_WRITE" | "CAP_SYS_CHROOT" | "CAP_SETPCAP" | "CAP_DAC_READ_SEARCH" | "CAP_NET_ADMIN" | "CAP_NET_BROADCAST" | "CAP_SYS_ADMIN" | "CAP_SYS_MODULE" | "CAP_SYS_NICE" | "CAP_SYS_PACCT" | "CAP_SYS_PTRACE" | "CAP_SYS_RAWIO" | "CAP_SYS_RESOURCE" | "CAP_SYS_TTY_CONFIG" | "CAP_SYSLOG" | "CAP_AUDIT_CONTROL" | "CAP_AUDIT_READ" | "CAP_IPC_LOCK" | "CAP_IPC_OWNER" | "CAP_LINUX_IMMUTABLE" | "CAP_MAC_ADMIN" | "CAP_MAC_OVERRIDE" | "CAP_BLOCK_SUSPEND")[];
-      rootfs?: {
-        readonly: boolean;
-      };
-    };
-    /** StackContainerConfigResources */
-    StackContainerConfigResources: {
-      cpu: {
-        shares?: {
-          limit: number;
-          reserve: number;
-        };
-        cpus?: string;
-      };
-      ram: {
-        limit?: string;
-        reserve?: string;
-        swappiness?: number;
-        kernel?: string;
-        kernel_tcp?: string;
       };
     };
     /** StackContainerConfigIntegrations */
@@ -4024,10 +4080,9 @@ export interface components {
           destination: string;
         })[];
       backups?: {
-        /** @enum {string} */
-        destination: "backblaze-b2";
+        destination: string;
         backup: {
-          command: number | null;
+          command: string;
           timeout: number | null;
           cron_string: string | null;
         };
@@ -4035,82 +4090,101 @@ export interface components {
           command: string;
           timeout: number | null;
         }) | null;
-      };
-    };
-    /** StackContainerVolume.yml */
-    StackContainerVolume: {
-      read_only: boolean;
-      local?: {
-        max_size: string;
-        storage_pool: boolean;
-      };
-      destination: string;
-      remote_access?: {
-        enable: boolean;
-        ips?: ({
-            ip: string;
-            read_only: boolean;
-            password: ({
-              /** @enum {string} */
-              algorithm: "raw" | "sha512" | "md5";
-              data: string;
-            }) | null;
-          })[];
-        web_hook?: string;
-        password: {
-          /** @enum {string} */
-          algorithm: "raw" | "sha512" | "md5";
-          data: string;
-        };
+        retention: number | null;
       };
     };
     /**
      * StackContainer 
-     * @description A list of records defining the stacks containers.
+     * @description Records defining the containers within the stack.
      */
     StackContainer: {
-      [key: string]: {
+      [key: string]: ({
         name: string;
-        image: {
-          name: string;
-          origin: components["schemas"]["ImageSourceOrigin"];
-          stateful?: boolean;
-          config?: {
-            network: components["schemas"]["StackContainerConfigNetwork"];
-            deploy: components["schemas"]["StackContainerConfigDeploy"];
-            scaling?: components["schemas"]["StackContainerConfigScaling"];
-            runtime?: components["schemas"]["StackContainerConfigRuntime"];
-            resources?: components["schemas"]["StackContainerConfigResources"];
-            integrations?: components["schemas"]["StackContainerConfigIntegrations"];
-          };
-          /** @enum {string} */
-          role?: "orchestrator";
-          volumes?: (components["schemas"]["StackContainerVolume"])[];
+        image: components["schemas"]["StackSpecContainerImage"];
+        /** @description Additional meta info about the container. */
+        annotations: Record<string, never>;
+        stateful: boolean;
+        /** StackSpecContainerConfig */
+        config?: {
+          network: components["schemas"]["StackContainerConfigNetwork"];
+          deploy: components["schemas"]["StackContainerConfigDeploy"];
+          scaling?: components["schemas"]["StackContainerConfigScaling"];
+          runtime?: components["schemas"]["StackContainerConfigRuntime"];
+          resources?: components["schemas"]["StackContainerConfigResources"];
+          integrations?: components["schemas"]["StackContainerConfigIntegrations"];
         };
-      } | undefined;
+        /** @enum {string} */
+        role?: "conductor";
+        pod?: string;
+        volumes?: ({
+            local?: {
+              max_size: string;
+              storage_pool?: boolean;
+            };
+            destination: string;
+            read_only: boolean;
+            remote_access?: {
+              enable: boolean;
+              ips?: (string)[];
+              web_hook?: string;
+              password: {
+                /** @enum {string} */
+                algorithm?: "raw" | "sha512" | "md5";
+                data: string;
+              };
+            };
+          })[];
+        deprecate?: boolean;
+        lock?: boolean;
+      }) | undefined;
     };
-    /**
-     * StackSpec 
-     * @description A stack spec resource.
-     */
+    /** StackSpec */
     StackSpec: {
-      /** @enum {string} */
-      type: "raw";
-      details: {
-        /** @description A string defining the version of the stack spec. */
+      /** @description A string defining the version of the stack spec. */
+      version: string;
+      /** @description Information about the stack. */
+      about?: {
+        /** @description Internal version information set by the user. */
         version: string;
-        /** @description Information about the stack. */
-        about?: {
-          /** @description Internal version information set by the user. */
-          version: string;
-          /** @description Information describing the stack. */
-          description: string;
+        /** @description Information describing the stack. */
+        description: string;
+      };
+      tests?: (components["schemas"]["StackSpecTestContainer"])[];
+      containers: components["schemas"]["StackContainer"];
+      /** StackSpecServices */
+      services?: {
+        loadbalancer?: {
+          haproxy?: {
+            haproxy?: ({
+              default: components["schemas"]["HaProxyConfig"];
+              ports: {
+                [key: string]: components["schemas"]["HaProxyConfig"] | undefined;
+              };
+            }) | null;
+          };
+          ipv4?: boolean;
+          ipv6?: boolean;
+          egress_gateways?: {
+            name: string;
+            destinations: (string)[];
+            ports: {
+              internal: number;
+              external: number;
+            };
+          };
         };
-        containers: (components["schemas"]["StackContainer"])[] | null;
-        /** @description Additional meta info about the stack. */
-        annotations?: {
-          [key: string]: string | undefined;
+        vpn?: {
+          auth: {
+            webhook?: string;
+            cycle_accounts: boolean;
+            vpn_accounts: boolean;
+          };
+          allow_internet: boolean;
         };
+      };
+      /** @description Additional meta info about the stack. */
+      annotations?: {
+        [key: string]: string | undefined;
       };
     };
     /**
@@ -4201,10 +4275,10 @@ export interface components {
       [key: string]: components["schemas"]["StackBuild"] | undefined;
     };
     /**
-     * StackRepoSourceType 
+     * StackRepoSource 
      * @description A repo source type for a stack.
      */
-    RepoSpec: {
+    StackRepoSource: {
       /** @enum {string} */
       type: "git-repo";
       details: {
@@ -4227,10 +4301,19 @@ export interface components {
       };
     };
     /**
+     * StackRawSource 
+     * @description A stack spec resource.
+     */
+    StackRawSource: {
+      /** @enum {string} */
+      type: "raw";
+      details: components["schemas"]["StackSpec"];
+    };
+    /**
      * StackSource 
      * @description A source for a stack to be created from.
      */
-    StackSource: components["schemas"]["RepoSpec"] | components["schemas"]["StackSpec"];
+    StackSource: components["schemas"]["StackRepoSource"] | components["schemas"]["StackRawSource"];
     /** StackState */
     StackState: ({
       /**
@@ -5154,6 +5237,18 @@ export interface components {
       limit?: number;
     };
     /**
+     * InstanceTelemetryNetworkSnapshot 
+     * @description A snapshot of network usage statistics.
+     */
+    NetworkSnapshot: {
+      /** @description An array of network interfaces attached to this instance. */
+      interfaces: ({
+          name: string;
+          rx_bytes: number;
+          tx_bytes: number;
+        })[];
+    };
+    /**
      * HugeTLB 
      * @description HugeTLB data.
      */
@@ -5182,6 +5277,7 @@ export interface components {
       cpu: components["schemas"]["CPUSnapshot"];
       memory: components["schemas"]["MemorySnapshot"];
       processes: components["schemas"]["ProcessesSnapshot"];
+      network: components["schemas"]["NetworkSnapshot"];
       hugetlb?: components["schemas"]["HugeTLB"];
     };
     /**
@@ -5601,14 +5697,18 @@ export interface components {
      * ActivitySession 
      * @description Session info about the activity entry.
      */
-    Session: ({
+    Session: {
       /** @description URL endpoint assocaited with the activity context - does not include domain. */
       url: string;
       /** @description The IP of the account associated with the session. */
       ip: string;
+      token: {
+        application_id: components["schemas"]["ID"];
+        application_capabilities_version: number;
+      } | null;
       /** @description The API key ID. */
       api_key: string | null;
-    }) | null;
+    };
     /**
      * ActivityDetail 
      * @description Details about a given event that is part of an activity.
@@ -5631,6 +5731,55 @@ export interface components {
       after?: components["schemas"]["Detail"];
     };
     /**
+     * ActivitySecurity 
+     * @description Security information pertaining to this activity.
+     */
+    ActivitySecurity: {
+      /**
+       * @description A risk level assessed by the platform. Depending on the nature of the incident, this may change even if the event type is the same.
+       *  
+       * @enum {string}
+       */
+      risk: "info" | "low" | "medium" | "high" | "critical";
+      /**
+       * @description From where the platform has determined this security event originated from. 
+       * @enum {string}
+       */
+      surface: "network" | "service" | "fs" | "api";
+      /**
+       * @description How the platform has handled this security event. 
+       * @enum {string}
+       */
+      event: "suggestion" | "notice" | "prevention" | "detection" | "reaction";
+      /**
+       * @description The type of attack the platform has determined has occurred. 
+       * @enum {string}
+       */
+      attack: "none" | "auth-failure" | "brute-force" | "exploit-vulnerability" | "social-engineer" | "service-interruption" | "access-elevation";
+    };
+    /**
+     * ActivityMonitor 
+     * @description Details related to the monitor that raised this activity event.
+     */
+    ActivityMonitor: {
+      /**
+       * @description The severity of the event.
+       *  
+       * @enum {string}
+       */
+      level: "info" | "low" | "medium" | "high" | "critical";
+      /**
+       * @description How the platform has handled this monitor event. 
+       * @enum {string}
+       */
+      event: "suggestion" | "notice" | "prevention" | "detection" | "reaction";
+      /**
+       * @description The current state of the monitored resource 
+       * @enum {string}
+       */
+      state: "none" | "unknown" | "unreachable" | "flux" | "recovered";
+    };
+    /**
      * Activity 
      * @description A resource representing information about activity taking place on a given hub.
      */
@@ -5644,13 +5793,20 @@ export interface components {
          * @enum {string}
          */
         type: "account" | "environment" | "platform" | "platform-pipeline" | "employee" | "api-key" | "visitor";
-        /** @description The given users ID. */
+        /** @description The given user's ID. */
         id: string;
       };
-      /** @description A number representing how verbose the acitivty reporting is for a given hub. */
+      /**
+       * @description A number representing the detail level (verbosity) of this activity.
+       * 
+       * ## Levels
+       * - 0: activity that other users would find useful
+       * - 1: activity that can be useful in tracking down how a user did something
+       * - 2: full activity, can be useful in debugging problems
+       */
       verbosity: number;
       context: components["schemas"]["Context"];
-      session?: components["schemas"]["Session"];
+      session: components["schemas"]["Session"] | null;
       /** @description An array of changes. */
       changes: (components["schemas"]["Change"])[];
       /** @description A record of additional annotations for the activity. */
@@ -5674,14 +5830,94 @@ export interface components {
        * @description A status for the given activity. 
        * @enum {string}
        */
-      status: "info" | "warning" | "request" | "success" | "error" | "alert" | "recovery";
+      status: "info" | "warn" | "request" | "success" | "error" | "alert";
+      security?: components["schemas"]["ActivitySecurity"];
+      monitor?: components["schemas"]["ActivityMonitor"];
       /**
        * @description The activity event. 
        * @enum {string}
        */
-      event: "hub.task.delete" | "hub.update" | "hub.create" | "hub.images.prune" | "hub.task.images.prune" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.task.start" | "environment.task.stop" | "environment.task.initialize" | "environment.delete" | "environment.task.delete" | "environment.update" | "environment.create" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "image.import" | "image.task.import" | "image.update" | "image.create" | "image.delete" | "image.task.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "container.create" | "container.update" | "container.initialize" | "container.start" | "container.task.start" | "container.stop" | "container.task.stop" | "container.reconfigure" | "container.task.reconfigure" | "container.reconfigure.volumes" | "container.task.reconfigure.volumes" | "container.reimage" | "container.task.reimage" | "container.scale" | "container.task.scale" | "container.delete" | "container.task.delete" | "container.instance.error" | "container.instance.sftp.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instances.delete" | "container.instances.create" | "container.instance.healthcheck.restarted" | "container.backup.create" | "container.backup.restore" | "container.backup.task.restore" | "container.backup.delete" | "container.backup.task.delete" | "dns.zone.task.verify" | "dns.zone.task.delete" | "dns.zone.update" | "dns.zone.create" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.cert.generate" | "dns.zone.record.delete" | "dns.zone.record.update" | "dns.zone.record.create" | "dns.zone.record.task.delete" | "dns.zone.record.task.cert.generate" | "stack.task.delete" | "stack.update" | "stack.create" | "stack.task.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.generate" | "stack.build.task.delete" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.task.provision" | "infrastructure.server.update" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.compute.restart" | "infrastructure.server.provision" | "infrastructure.server.live" | "infrastructure.server.services.sftp.lockdown.auto" | "infrastructure.server.reconfigure.features" | "infrastructure.server.task.reconfigure.features" | "infrastructure.provider.create" | "infrastructure.provider.update" | "infrastructure.provider.delete" | "sdn.network.task.delete" | "sdn.network.update" | "sdn.network.create" | "sdn.network.task.reconfigure" | "infrastructure.ips.pool.task.delete" | "billing.order.task.confirm" | "billing.order.confirm" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.task.pay" | "billing.invoice.pay" | "billing.method.update" | "billing.method.create" | "billing.method.delete" | "billing.method.task.delete" | "hub.apikey.create" | "hub.apikey.update" | "hub.apikey.delete" | "hub.membership.create" | "hub.membership.delete" | "pipeline.update" | "pipeline.task.delete" | "pipeline.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.trigger" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create";
+      event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.vpn.user.create" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.reconfigure" | "container.reconfigure" | "container.task.reconfigure.volumes" | "container.reconfigure.volumes" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instance.healthcheck.restarted" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migrate_revert" | "container.instance.task.migrate" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "stack.update" | "stack.task.delete" | "stack.create" | "stack.task.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.reconfigure.features" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.reconfigure.features" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create" | "infrastructure.ips.pool.task.delete";
       /** @description A timestamp for when the activity took place. */
       time: components["schemas"]["DateTime"];
+    };
+    /**
+     * ImageSourceType 
+     * @description The type of images in this source. 
+     * @enum {string}
+     */
+    ImageSourceType: "stack-build" | "direct" | "bucket";
+    /**
+     * ImageSourceAbout 
+     * @description Information about the image source resource.
+     */
+    ImageSourceAbout: {
+      /** @description Some information about the image source resource. */
+      description: string;
+    };
+    /** ImageSourceState */
+    ImageSourceState: ({
+      /**
+       * @description The current state of the image source. 
+       * @enum {string}
+       */
+      current: "live" | "deleting" | "deleted";
+    }) & components["schemas"]["State"];
+    /**
+     * ImageSourceMeta 
+     * @description A list of meta fields that can be applied to this environment.
+     */
+    ImageSourceMeta: {
+      images_count?: {
+        /** @description Number of image sources */
+        total: number;
+        state: {
+          /** @description Number of images in this source with state new */
+          new: number;
+          /** @description Number of images in this source with state downloading */
+          downloading: number;
+          /** @description Number of images in this source with state building */
+          building: number;
+          /** @description Number of images in this source with state verifying */
+          verifying: number;
+          /** @description Number of images in this source with state saving */
+          saving: number;
+          /** @description Number of images in this source with state live */
+          live: number;
+          /** @description Number of images in this source with state deleting */
+          deleting: number;
+        };
+      };
+    };
+    /**
+     * ImageSource 
+     * @description An image source is a set of resources that direct the platform on where it can find the resources needed to build an image resource.
+     */
+    ImageSource: {
+      id: components["schemas"]["ID"];
+      /** @description A human readable slugged identifier for this image source. */
+      identifier: components["schemas"]["Identifier"];
+      type: components["schemas"]["ImageSourceType"];
+      hub_id: components["schemas"]["HubID"];
+      /** @description A name for the image source resource. */
+      name: string;
+      about?: components["schemas"]["ImageSourceAbout"];
+      origin: components["schemas"]["ImageOrigin"];
+      creator: components["schemas"]["CreatorScope"];
+      state: components["schemas"]["ImageSourceState"];
+      /**
+       * ImageSourceEvents 
+       * @description A collection of timestamps for each event in the iamge source's lifetime.
+       */
+      events: {
+        /** @description The timestamp of when the iamge source was created. */
+        created: components["schemas"]["DateTime"];
+        /** @description The timestamp of when the iamge source was updated. */
+        updated: components["schemas"]["DateTime"];
+        /** @description The timestamp of when the iamge source was deleted. */
+        deleted: components["schemas"]["DateTime"];
+      };
+      meta?: components["schemas"]["ImageSourceMeta"];
     };
     /**
      * IPPoolProvider 
@@ -5866,14 +6102,6 @@ export interface components {
       };
     };
     /**
-     * ImageSourceAbout 
-     * @description Information about the image source resource.
-     */
-    ImageSourceAbout: {
-      /** @description Some information about the image source resource. */
-      description: string;
-    };
-    /**
      * ImageSourceCreateStep 
      * @description Settings for the image source create step for a pipeline.
      */
@@ -5892,7 +6120,7 @@ export interface components {
         name: string;
         type: string;
         about?: components["schemas"]["ImageSourceAbout"];
-        origin: components["schemas"]["ImageSourceOrigin"];
+        origin: components["schemas"]["ImageOrigin"];
       };
     };
     /**
@@ -6405,7 +6633,7 @@ export interface components {
      * @description A resource thats assocaited with activity.
      */
     ComponentsIncludes: {
-      [key: string]: (components["schemas"]["Container"] | components["schemas"]["Instance"] | components["schemas"]["Environment"] | components["schemas"]["Image"] | components["schemas"]["Server"] | components["schemas"]["Pool"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["Zone"] | components["schemas"]["Record"] | components["schemas"]["ApiKey"] | components["schemas"]["Provider"] | components["schemas"]["SDNNetwork"] | components["schemas"]["HubMembership"] | components["schemas"]["Pipeline"] | components["schemas"]["TriggerKey"]) | undefined;
+      [key: string]: (components["schemas"]["Container"] | components["schemas"]["Instance"] | components["schemas"]["Environment"] | components["schemas"]["Image"] | components["schemas"]["ImageSource"] | components["schemas"]["Server"] | components["schemas"]["Pool"] | components["schemas"]["Provider"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["Zone"] | components["schemas"]["Record"] | components["schemas"]["ApiKey"] | components["schemas"]["SDNNetwork"] | components["schemas"]["HubMembership"] | components["schemas"]["Pipeline"] | components["schemas"]["TriggerKey"] | components["schemas"]["ScopedVariable"] | components["schemas"]["Hub"] | components["schemas"]["Invoice"] | components["schemas"]["Method"]) | undefined;
     };
     /**
      * ActivityIncludes 
@@ -6485,74 +6713,6 @@ export interface components {
       servers: {
         [key: string]: components["schemas"]["Component"] | undefined;
       };
-    };
-    /** ImageSourceState */
-    ImageSourceState: ({
-      /**
-       * @description The current state of the image source. 
-       * @enum {string}
-       */
-      current: "live" | "deleting" | "deleted";
-    }) & components["schemas"]["State"];
-    /**
-     * ImageSourceMeta 
-     * @description A list of meta fields that can be applied to this environment.
-     */
-    ImageSourceMeta: {
-      images_count?: {
-        /** @description Number of image sources */
-        total: number;
-        state: {
-          /** @description Number of images in this source with state new */
-          new: number;
-          /** @description Number of images in this source with state downloading */
-          downloading: number;
-          /** @description Number of images in this source with state building */
-          building: number;
-          /** @description Number of images in this source with state verifying */
-          verifying: number;
-          /** @description Number of images in this source with state saving */
-          saving: number;
-          /** @description Number of images in this source with state live */
-          live: number;
-          /** @description Number of images in this source with state deleting */
-          deleting: number;
-        };
-      };
-    };
-    /**
-     * ImageSource 
-     * @description An image source is a set of resources that direct the platform on where it can find the resources needed to build an image resource.
-     */
-    ImageSource: {
-      id: components["schemas"]["ID"];
-      /** @description A human readable slugged identifier for this image source. */
-      identifier: components["schemas"]["Identifier"];
-      hub_id: components["schemas"]["HubID"];
-      /** @description A name for the image source resource. */
-      name: string;
-      about?: components["schemas"]["ImageSourceAbout"];
-      origin: components["schemas"]["ImageSourceOrigin"];
-      creator: components["schemas"]["CreatorScope"];
-      state: components["schemas"]["ImageSourceState"];
-      /**
-       * ImageSourceEvents 
-       * @description A collection of timestamps for each event in the iamge source's lifetime.
-       */
-      events: {
-        /** @description The timestamp of when the iamge source was created. */
-        created: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the iamge source was updated. */
-        updated: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the iamge source was deleted. */
-        deleted: components["schemas"]["DateTime"];
-      };
-      /** @description Information about a server resource this image requires to function properly. */
-      requires: {
-        /** @description A boolean where true represents this image requies an Nvidia GPU to run properly. */
-        nvidia_gpu: boolean | null;
-      };
-      meta?: components["schemas"]["ImageSourceMeta"];
     };
     /**
      * ImageSourceIncludes 
@@ -8316,7 +8476,11 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["LoadBalancerInfoReturn"];
+            /** @description Information about an environments load balancer configuration, state, and availability settings. */
+            data?: {
+              default_config: components["schemas"]["LoadBalancerConfig"];
+              service: components["schemas"]["LoadBalancerEnvironmentService"];
+            };
           };
         };
       };
@@ -8350,16 +8514,17 @@ export interface operations {
             high_availability?: boolean;
             /** @description The config object for the loadbalancer service. */
             config?: ({
-              version?: string;
+              /** @enum {string} */
+              version?: "v1" | "haproxy";
               /** @description Allow / disallow traffic to be routed via IPv4. */
               ipv4?: boolean | null;
               /** @description Allow / disallow traffic to be routed via IPv6. */
               ipv6?: boolean | null;
               /** @description Describes settings that are passed to HAProxy within the load balancer. */
-              haproxy: ({
-                default: components["schemas"]["HAProxyConfig"];
+              haproxy?: ({
+                default: components["schemas"]["HaProxyConfig"];
                 ports: {
-                  [key: string]: components["schemas"]["HAProxyConfig"] | undefined;
+                  [key: string]: components["schemas"]["HaProxyConfig"] | undefined;
                 };
               }) | null;
             }) | null;
@@ -8883,6 +9048,8 @@ export interface operations {
           /** @description A boolean where true represents this container is stateful. */
           stateful: boolean;
           config: components["schemas"]["Config"];
+          /** @description When set to true, prevents this container from being deleted. */
+          lock?: boolean;
           volumes?: (components["schemas"]["ContainerVolume"])[];
           /** @description User defined meta data for the container. */
           annotations?: {
@@ -8977,6 +9144,8 @@ export interface operations {
           identifier?: string;
           /** @description Sets whether container should be deprecated. */
           deprecate?: boolean;
+          /** @description When set to true, prevents this container from being deleted. */
+          lock?: boolean;
           /** @description User meta data for the container. */
           annotation?: {
             [key: string]: string | undefined;
@@ -9347,6 +9516,40 @@ export interface operations {
         content: {
           "application/json": {
             data?: components["schemas"]["InstanceTelemetryReport"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Instance Telemetry Stream Credentials 
+   * @description Requires the `containers-view` capability. Retrieves an access token and URL to open a websocket to for streaming instance telemetry live. This connects directly to the compute layer on the server the instance is hosted on, and streams telemetry in real time.
+   */
+  getInstanceResourcesTelemetryStream: {
+    parameters: {
+      path: {
+        /** @description The ID of the requested container. */
+        containerId: string;
+        /** @description The ID for the container instance. */
+        instanceId: string;
+      };
+    };
+    responses: {
+      /** @description Returns credentials for connecting to an instance telemetry stream. */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * InstanceTelemetryStreamCredentials 
+             * @description Credentials for connecting to the instance telemetry stream on compute.
+             */
+            data?: {
+              /** @description The authentication token passed into the address as a URL parameter (?token). */
+              token: string;
+              /** @description The URL address to open a websocket to for streaming instance telemetry data. */
+              address: string;
+            };
           };
         };
       };
@@ -9909,7 +10112,7 @@ export interface operations {
         recordId: string;
       };
     };
-    /** @description Parameters for updateing a DNS record. The name value cannot be updated and is ommitted from the properties. */
+    /** @description Parameters for updating a DNS record. The name value cannot be updated and is omitted from the properties. */
     requestBody?: {
       content: {
         "application/json": {
@@ -10029,6 +10232,7 @@ export interface operations {
   getHubs: {
     parameters: {
       query: {
+        page?: components["parameters"]["PageParam"];
         /**
          * @description ## Filter Field
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
@@ -10379,6 +10583,35 @@ export interface operations {
     };
   };
   /**
+   * List Hub Memberships 
+   * @description Gets the membership information for the current hub for the requesting account.
+   */
+  getHubMembership: {
+    parameters: {
+      query: {
+        /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
+        meta?: ("capabilities")[];
+        /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
+        include?: ("accounts")[];
+        sort?: components["parameters"]["SortParam"];
+        filter?: components["parameters"]["FilterParam"];
+        page?: components["parameters"]["PageParam"];
+      };
+    };
+    responses: {
+      /** @description Returns a hub membership. */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["HubMembership"];
+            includes?: components["schemas"]["HubMembershipIncludes"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
    * Fetch Hub Member 
    * @description Requires the `hubs-members-view` capability.
    */
@@ -10720,8 +10953,10 @@ export interface operations {
           };
           /** @description An override object to be used for a single image create request. */
           override?: {
-            /** @description A target to be used for overridding the default target. */
-            target: string;
+            /** @description For image sources with `docker-hub` or `docker-registry` origin types. A target to be used for overridding the default target - should include an image and a tag. */
+            target?: string;
+            /** @description For image sources with `docker-file` origin types. A URL pointing to a .tar.gz file of a repo with a Dockerfile in it - can be used instead of linking Cycle directly to a repository. */
+            targz_url?: string;
           };
         };
       };
@@ -10966,12 +11201,8 @@ export interface operations {
           /** @description A name for the image source. */
           name?: string;
           identifier?: components["schemas"]["Identifier"];
-          /**
-           * @description A value identifiying the type of image. 
-           * @enum {string}
-           */
-          type: "stack_build" | "direct";
-          origin: components["schemas"]["ImageSourceOrigin"];
+          type: components["schemas"]["ImageSourceType"];
+          origin: components["schemas"]["ImageOrigin"];
           /** @description User defined information about the image source. */
           about?: {
             /** @description A description of the image source. */
@@ -11062,7 +11293,7 @@ export interface operations {
         "application/json": {
           /** @description A name for the image source. */
           name?: string;
-          origin?: components["schemas"]["ImageSourceOrigin"];
+          origin?: components["schemas"]["ImageOrigin"];
           /** @description User defined information about the image source. */
           about?: {
             /** @description A description of the image source. */
@@ -12446,8 +12677,6 @@ export interface operations {
         "application/json": {
           /** @description The name of the network. */
           name?: string;
-          /** @description A network identifier used to construct http calls that specifically use this network over another. */
-          identifier?: string;
         };
       };
     };
@@ -12925,40 +13154,6 @@ export interface operations {
     };
   };
   /**
-   * Instance Telemetry Stream Credentials 
-   * @description Requires the `containers-view` capability. Retrieves an access token and URL to open a websocket to for streaming instance telemetry live. This connects directly to the compute layer on the server the instance is hosted on, and streams telemetry in real time.
-   */
-  getInstanceResourcesTelemetryStream: {
-    parameters: {
-      path: {
-        /** @description The ID of the requested container. */
-        containerId: string;
-        /** @description The ID for the container instance. */
-        instanceId: string;
-      };
-    };
-    responses: {
-      /** @description Returns credentials for connecting to an instance telemetry stream. */
-      200: {
-        content: {
-          "application/json": {
-            /**
-             * InstanceTelemetryStreamCredentials 
-             * @description Credentials for connecting to the instance telemetry stream on compute.
-             */
-            data?: {
-              /** @description The authentication token passed into the address as a URL parameter (?token). */
-              token: string;
-              /** @description The URL address to open a websocket to for streaming instance telemetry data. */
-              address: string;
-            };
-          };
-        };
-      };
-      default: components["responses"]["DefaultError"];
-    };
-  };
-  /**
    * Get Security Report 
    * @description Returns a report detailing incidents logged by the platform around security related events.
    */
@@ -12970,6 +13165,10 @@ export interface operations {
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
          */
         filter?: {
+          /** @description The start date from when to pull the security report */
+          "range-start"?: components["schemas"]["DateTime"];
+          /** @description The end date from when to pull the security report */
+          "range-end"?: components["schemas"]["DateTime"];
           /** @description `filter[environment]=<Environment ID>` fetch the security report for the specified environment */
           environment?: string;
           /** @description `filter[event]=value` filter by event occurrence. Example: `filter[event]=environment.services.vpn.login` */
