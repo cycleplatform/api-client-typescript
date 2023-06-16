@@ -1,4 +1,10 @@
-import {client, setAuthToken, setHubScope, setBaseUrl } from "../src/index";
+import {
+  client,
+  setAuthToken,
+  setHubScope,
+  setBaseUrl,
+  querySerializer,
+} from "../src/index";
 import { expect, test } from "vitest";
 
 test("test setting base URL", async () => {
@@ -73,4 +79,27 @@ test("test changing auth token between requests", async () => {
 
   // Mocked by msw to inject into this header
   expect(resp2.response.headers.get("x-auth-token")).toBe(`Bearer ${token2}`);
+});
+
+test("test query params are properly serialized", async () => {
+  const baseUrl = "https://api.dev.cycle.io";
+  setBaseUrl(baseUrl);
+
+  const envs = client.get("/v1/environments", {
+    params: {
+      query: {
+        page: { size: 100, number: 1 },
+        filter: {
+          state: "live,stopped",
+        },
+      },
+    },
+    querySerializer,
+  });
+  const resp = await envs;
+
+  // Mocked by msw to inject into this header
+  expect(resp.response.url).toBe(
+    "https://api.dev.cycle.io/v1/environments?page%5Bsize%5D=100&page%5Bnumber%5D=1&filter%5Bstate%5D=live%2Cstopped"
+  );
 });
