@@ -81,6 +81,13 @@ export interface paths {
      */
     post: operations["disableTwoFa"];
   };
+  "/v1/account/2fa/recover": {
+    /**
+     * Disable TwoFa 
+     * @description Disable TwoFa for an account
+     */
+    post: operations["recoverTwoFa"];
+  };
   "/v1/announcements": {
     /**
      * List Announcements 
@@ -274,6 +281,28 @@ export interface paths {
      * @description Creates a task that will update the load balancer's configuration.
      */
     post: operations["reconfigureLoadBalancer"];
+  };
+  "/v1/environments/{environmentId}/services/lb/telemetry/report": {
+    /**
+     * Fetch load balancer v1 telemetry report 
+     * @description ## Permissions
+     * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested environment.
+     * 
+     * ## Details
+     * Fetches a telemetry report for Cycle's native load balancer for the specified range.
+     */
+    get: operations["getLoadBalancerTelemetryReport"];
+  };
+  "/v1/environments/{environmentId}/services/lb/telemetry/latest": {
+    /**
+     * Fetch the latest load balancer v1 telemetry. 
+     * @description ## Permissions
+     * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested environment.
+     * 
+     * ## Details
+     * Fetches the latest telemetry report for Cycle's native load balancer. Provides detailed information on a per-instance basis.
+     */
+    get: operations["getLoadBalancerLatestTelemetryReport"];
   };
   "/v1/environments/{environmentId}/services/discovery/tasks": {
     /**
@@ -1096,29 +1125,29 @@ export interface paths {
   };
   "/v1/sdn/networks": {
     /**
-     * List SDNs 
+     * List SDN Network 
      * @description Requires the `sdn-networks-view` capability.
      */
     get: operations["getNetworks"];
     /**
-     * Create SDN 
+     * Create SDN Network 
      * @description Requires the `sdn-networks-manage` capability.
      */
     post: operations["createSDNNetwork"];
   };
   "/v1/sdn/networks/{networkId}": {
     /**
-     * Fetch SDN 
+     * Fetch SDN Network 
      * @description Requires the `sdn-networks-view` capability.
      */
     get: operations["getNetwork"];
     /**
-     * Remove SDN 
+     * Remove SDN Network 
      * @description Requires the `sdn-networks-manage` capability.
      */
     delete: operations["removeSDNNetwork"];
     /**
-     * Update SDN 
+     * Update SDN Network 
      * @description Requires the `sdn-networks-manage` capability.
      */
     patch: operations["updateSDNNetwork"];
@@ -1129,6 +1158,35 @@ export interface paths {
      * @description Requires the `sdn-networks-manage` capability.
      */
     post: operations["createNetworkJob"];
+  };
+  "/v1/sdn/global-lbs": {
+    /**
+     * List Global Load Balancers 
+     * @description Requires the `sdn-global-lbs-view` capability.
+     */
+    get: operations["getGlobalLoadBalancers"];
+    /**
+     * Create Global Load Balancer 
+     * @description Requires the `sdn-global-lbs-manage` capability.
+     */
+    post: operations["createGlobalLoadBalancer"];
+  };
+  "/v1/sdn/global-lbs/{lbId}": {
+    /**
+     * Fetch a Global Load Balancer 
+     * @description Requires the `sdn-global-lbs-view` capability.
+     */
+    get: operations["getGlobalLoadBalancer"];
+    /**
+     * Remove Global Load Balancer 
+     * @description Requires the `sdn-global-lbs-manage` capability.
+     */
+    delete: operations["removeGlobalLoadBalancer"];
+    /**
+     * Update Global Load Balancer 
+     * @description Requires the `sdn-global-lbs-manage` capability.
+     */
+    patch: operations["updateGlobalLoadBalancer"];
   };
   "/v1/pipelines": {
     /**
@@ -1259,7 +1317,7 @@ export interface components {
     ErrorEnvelope: {
       error: components["schemas"]["Error"];
       /** @description Data will always be `null` here. */
-      data: Record<string, never>;
+      data: Record<string, unknown> | null;
     };
     /**
      * ID 
@@ -1388,7 +1446,7 @@ export interface components {
      * @description A capability that a user or API key that represents what an API key or a user can do. 
      * @enum {string}
      */
-    Capability: "hubs-update" | "hubs-delete" | "hubs-invites-send" | "hubs-invites-manage" | "hubs-members-manage" | "hubs-members-view" | "hubs-notifications-listen" | "hubs-integrations-manage" | "billing-methods-manage" | "billing-invoices-view" | "billing-invoices-pay" | "billing-orders-manage" | "billing-services-view" | "billing-credits-view" | "sdn-networks-view" | "sdn-networks-manage" | "pipelines-manage" | "pipelines-view" | "pipelines-trigger" | "environments-create" | "environments-delete" | "environments-view" | "environments-update" | "environments-state" | "environments-services-manage" | "environments-vpn" | "environments-vpn-manage" | "environments-scopedvariables-manage" | "environments-scopedvariables-view" | "containers-deploy" | "containers-view" | "containers-console" | "containers-ssh" | "containers-update" | "containers-delete" | "containers-state" | "containers-volumes-manage" | "containers-volumes-view" | "containers-instances-migrate" | "containers-backups-manage" | "containers-backups-view" | "stacks-manage" | "stacks-view" | "stacks-builds-manage" | "stacks-builds-deploy" | "images-view" | "images-import" | "images-update" | "images-delete" | "images-build" | "images-sources-view" | "images-sources-manage" | "jobs-view" | "api-keys-manage" | "ips-manage" | "servers-provision" | "servers-view" | "servers-update" | "servers-login" | "servers-state" | "servers-decommission" | "infrastructure-providers-manage" | "infrastructure-providers-view" | "usage-view" | "dns-view" | "dns-manage" | "dns-certs-view";
+    Capability: "hubs-update" | "hubs-delete" | "hubs-invites-send" | "hubs-invites-manage" | "hubs-members-manage" | "hubs-members-view" | "hubs-notifications-listen" | "hubs-integrations-manage" | "hubs-usage-view" | "billing-methods-manage" | "billing-invoices-view" | "billing-invoices-pay" | "billing-orders-manage" | "billing-services-view" | "billing-credits-view" | "sdn-networks-view" | "sdn-networks-manage" | "sdn-global-lbs-manage" | "sdn-global-lbs-view" | "pipelines-manage" | "pipelines-view" | "pipelines-trigger" | "environments-create" | "environments-delete" | "environments-view" | "environments-update" | "environments-state" | "environments-services-manage" | "environments-vpn" | "environments-vpn-manage" | "environments-scopedvariables-manage" | "environments-scopedvariables-view" | "containers-deploy" | "containers-view" | "containers-console" | "containers-ssh" | "containers-update" | "containers-delete" | "containers-state" | "containers-volumes-manage" | "containers-volumes-view" | "containers-instances-migrate" | "containers-backups-manage" | "containers-backups-view" | "stacks-manage" | "stacks-view" | "stacks-builds-manage" | "stacks-builds-deploy" | "images-view" | "images-import" | "images-update" | "images-delete" | "images-build" | "images-sources-view" | "images-sources-manage" | "jobs-view" | "api-keys-manage" | "ips-manage" | "servers-provision" | "servers-view" | "servers-update" | "servers-login" | "servers-state" | "servers-decommission" | "infrastructure-providers-manage" | "infrastructure-providers-view" | "security-view" | "security-manage" | "monitor-view" | "monitor-manage" | "dns-view" | "dns-manage" | "dns-certs-view";
     /**
      * HubMembershipMeta 
      * @description A list of meta fields that can be applied to a membership.
@@ -1476,7 +1534,7 @@ export interface components {
     };
     /**
      * Events 
-     * @description Cycle resources usually contain an events field, the event being the key and a formatted time string being the value.
+     * @description Describes the date and time at which certain events occurred in the lifetime of this resource.
      */
     Events: {
       [key: string]: components["schemas"]["DateTime"] | undefined;
@@ -2462,7 +2520,7 @@ export interface components {
       legacy_networking: boolean;
     };
     /** HAProxyConfig */
-    HaProxyConfig: {
+    HaProxyConfigSet: {
       /** @description Settings that describe how incoming traffic to the load balancer is handled. */
       frontend: {
         /**
@@ -2513,25 +2571,80 @@ export interface components {
         }) | null;
       };
     };
+    /** @description Describes settings that are passed to HAProxy within the load balancer. */
+    HaProxyConfig: {
+      /** @description Settings that are applied to any port that is not overridden in the following ports section. */
+      default: components["schemas"]["HaProxyConfigSet"];
+      /** @description An object that defines how HAProxy will act on a specific port. The key is a custom port, and the value is the same settings object found under `default` above. */
+      ports: {
+        [key: string]: components["schemas"]["HaProxyConfigSet"] | undefined;
+      };
+    };
+    /** HaProxyLbType */
+    HaProxyLbType: {
+      /** @enum {string} */
+      type: "haproxy";
+      details: components["schemas"]["HaProxyConfig"] | null;
+    };
+    /** V1LbConfigRouter */
+    V1LbConfigRouter: {
+      identifier: string;
+      /** @enum {string} */
+      mode: "random" | "round-robin";
+      config: {
+        performance: boolean;
+        sticky_sessions: boolean;
+        destination_retries: number;
+        transport: Record<string, never>;
+        timeouts: {
+          idle: number;
+        };
+      };
+    };
+    /** V1LbConfig */
+    V1LbConfig: {
+      controllers: {
+        [key: string]: ({
+          identifier: components["schemas"]["Identifier"];
+          /** V1LbControllerTransport */
+          transport: {
+            /** @enum {string} */
+            mode: "tcp" | "http";
+            performance: boolean;
+            ingress: {
+              port: number;
+              tls: boolean;
+            };
+            timeouts: {
+              idle: number;
+            };
+            routers: (components["schemas"]["V1LbConfigRouter"])[];
+          };
+        }) | undefined;
+      };
+    };
+    /** V1LbType */
+    V1LbType: {
+      /** @enum {string} */
+      type: "v1";
+      details: components["schemas"]["V1LbConfig"] | null;
+    };
+    /** DefaultLbType */
+    DefaultLbType: {
+      /** @enum {string} */
+      type: "default";
+      details: Record<string, unknown> | null;
+    };
     /**
      * LoadBalancerConfig 
      * @description The config object for the loadbalancer service.
      */
-    LoadBalancerConfig: {
-      /** @enum {string} */
-      version: "haproxy" | "v1";
-      /** @description Describes settings that are passed to HAProxy within the load balancer. */
-      haproxy: ({
-        default: components["schemas"]["HaProxyConfig"];
-        ports: {
-          [key: string]: components["schemas"]["HaProxyConfig"] | undefined;
-        };
-        /** @description Allow / disallow traffic to be routed via IPv4. */
-        ipv4?: boolean;
-        /** @description Allow / disallow traffic to be routed via IPv6. */
-        ipv6?: boolean;
-      }) | null;
-    };
+    LoadBalancerConfig: ({
+      /** @description Allow / disallow traffic to be routed via IPv4. */
+      ipv4: boolean;
+      /** @description Allow / disallow traffic to be routed via IPv6. */
+      ipv6: boolean;
+    } & (components["schemas"]["V1LbType"] | components["schemas"]["HaProxyLbType"] | components["schemas"]["DefaultLbType"])) | null;
     /**
      * LoadBalancerEnvironmentService 
      * @description Information about the environments loadbalancer service(s).
@@ -2543,13 +2656,13 @@ export interface components {
       container_id: string | null;
       /** @description A boolean representing if this service container is set to high availability mode or not. */
       high_availability: boolean;
-      config: components["schemas"]["LoadBalancerConfig"] | null;
+      config: components["schemas"]["LoadBalancerConfig"];
     }) | null;
     /**
      * DiscoveryEnvironmentService 
      * @description Information about the environments discovery service(s).
      */
-    DiscoveryEnvironmentService: {
+    DiscoveryEnvironmentService: ({
       /** @description Whether or not the discovery service is enabled. */
       enable: boolean;
       /** @description The ID of the discovery service container */
@@ -2557,8 +2670,8 @@ export interface components {
       /** @description A boolean representing if this service container is set to high availability mode or not. */
       high_availability: boolean;
       /** @description The config object for the discovery service. */
-      config: Record<string, never>;
-    } | null;
+      config: Record<string, unknown> | null;
+    }) | null;
     /**
      * VpnEnvironmentService 
      * @description Information about the environments vpn service(s).
@@ -2691,7 +2804,7 @@ export interface components {
       container_subnet: string;
       ipv6: components["schemas"]["IPNet"];
       legacy: components["schemas"]["LegacyNetwork"];
-    };
+    } | null;
     /**
      * ContainerSummary 
      * @description Contains useful and relevant data/statistics for a container that would otherwise be several separate API calls.
@@ -2863,6 +2976,113 @@ export interface components {
       };
     };
     /**
+     * Range 
+     * @description A start and end date-time pair indicating a range of time
+     */
+    Range: {
+      start: components["schemas"]["DateTime"];
+      end: components["schemas"]["DateTime"];
+    };
+    /** LoadBalancerTelemetryControllerMetrics */
+    LoadBalancerTelemetryControllerMetrics: {
+      /** LoadBalancerTelemetryControllerDisconnectsMetrics */
+      disconnects: {
+        no_error: number;
+        request_invalid: number;
+        timeout_idle: number;
+        router_none: number;
+        router_nomatch: number;
+        destination_unavailable: number;
+        unknown_error: number;
+      };
+      connections: number;
+      requests: number;
+      bytes_transmitted: number;
+      bytes_received: number;
+    };
+    /**
+     * LoadBalancerTelemetryReport 
+     * @description Aggregated load balancer telemetry across all instances for a given range.
+     */
+    LoadBalancerTelemetryReport: {
+      created: components["schemas"]["DateTime"];
+      range: components["schemas"]["Range"];
+      snapshots: ({
+          time: components["schemas"]["DateTime"];
+          controller: components["schemas"]["Identifier"];
+          metrics: components["schemas"]["LoadBalancerTelemetryControllerMetrics"];
+        })[] | null;
+    };
+    /** LoadBalancerTelemetryRouterMetrics */
+    LoadBalancerTelemetryRouterMetrics: {
+      destinations: {
+        [key: string]: ({
+          connections: ({
+            sucess?: number;
+            unavailable: number;
+            errors?: {
+              [key: string]: number | undefined;
+            };
+          }) | null;
+          requests: ({
+            total: number;
+            responses?: {
+              [key: string]: number | undefined;
+            };
+            errors?: {
+              [key: string]: number | undefined;
+            };
+          }) | null;
+          latency?: (number)[];
+        }) | undefined;
+      };
+    };
+    /** LoadBalancerTelemetryUrlMetrics */
+    LoadBalancerTelemetryUrlMetrics: {
+      destinations: {
+        [key: string]: ({
+          requests: ({
+            total: number;
+            responses?: {
+              [key: string]: number | undefined;
+            };
+            errors?: {
+              [key: string]: number | undefined;
+            };
+          }) | null;
+        }) | undefined;
+      };
+    };
+    /** LoadBalancerTelemetrySnapshot */
+    LoadBalancerTelemetrySnapshot: {
+      time: components["schemas"]["DateTime"];
+      dataset_id: number;
+      router?: components["schemas"]["LoadBalancerTelemetryRouterMetrics"];
+      urls?: components["schemas"]["LoadBalancerTelemetryUrlMetrics"];
+      metrics: components["schemas"]["LoadBalancerTelemetryControllerMetrics"];
+    };
+    /**
+     * LoadBalancerLatestTelemetry 
+     * @description Snapshots of the latest load balancer telemetry
+     */
+    LoadBalancerLatestTelemetry: ({
+        time: components["schemas"]["DateTime"];
+        controller: components["schemas"]["Identifier"];
+        instances: ({
+            id: components["schemas"]["ID"];
+            hub_id: components["schemas"]["HubID"];
+            environment_id: components["schemas"]["ID"];
+            container_id: components["schemas"]["ID"];
+            instance_id: components["schemas"]["ID"];
+            server_id: components["schemas"]["ID"];
+            cluster: components["schemas"]["Identifier"];
+            time: components["schemas"]["DateTime"];
+            controller: components["schemas"]["Identifier"];
+            latest?: components["schemas"]["LoadBalancerTelemetrySnapshot"] | null;
+            snapshots?: (components["schemas"]["LoadBalancerTelemetrySnapshot"])[];
+          })[];
+      })[];
+    /**
      * VPNInfo 
      * @description A summary of a VPN service for a given environment.
      */
@@ -3032,12 +3252,16 @@ export interface components {
      * @description A summary of the image this container was created from.
      */
     ImageSummary: {
-      id?: components["schemas"]["ID"];
+      id: string | null;
+      /** @description An image that is packaged with Cycle directly, such as the global load balancer. */
+      extension: {
+        identifier: components["schemas"]["Identifier"];
+      } | null;
       /**
        * @description If a service container, the identifier specifying which service it is. 
        * @enum {string|null}
        */
-      service?: "loadbalancer" | "discovery" | "vpn" | null;
+      service: "loadbalancer" | "discovery" | "vpn" | null;
     };
     /**
      * ContainerStackSummary 
@@ -3075,6 +3299,12 @@ export interface components {
      */
     DeploymentStrategyName: "resource-density" | "high-availability" | "first-available" | "node" | "edge" | "manual";
     /**
+     * Duration 
+     * @description A string signifying a duration of time. Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h", "d", "w", "y". 
+     * @example 72h45m2s
+     */
+    Duration: string;
+    /**
      * ContainerDeploy 
      * @description Deployment configuration for the given container.
      */
@@ -3104,15 +3334,15 @@ export interface components {
       };
       /** @description Configuration for what to do during container shutdown. */
       shutdown?: {
-        /** @description The time in seconds the platform will wait for a container to stop gracefully. */
-        graceful_timeout: number;
+        /** @description How long the platform will wait for a container to stop gracefully. */
+        graceful_timeout: components["schemas"]["Duration"];
         /** @description Process signal sent to the container process. */
         signals: ("SIGTERM" | "SIGINT" | "SIGUSR1" | "SIGUSR2" | "SIGHUP" | "SIGQUIT")[];
       };
       /** @description Configurations for container startup. */
       startup?: {
-        /** @description A value in seconds representing how long the platform will wait before sending the start signal to the given container. */
-        delay?: number;
+        /** @description How long the platform will wait before sending the start signal to the given container. */
+        delay?: components["schemas"]["Duration"];
       };
       /** @description Configurations for container restart events. */
       restart?: {
@@ -3121,8 +3351,8 @@ export interface components {
          * @enum {string}
          */
         condition: "always" | "never" | "failure";
-        /** @description Time in seconds the platform will wait before trying to restart the container. */
-        delay: number;
+        /** @description How long the platform will wait before trying to restart the container. */
+        delay: components["schemas"]["Duration"];
         /** @description The amount of times the platform will attempt the restart policies. */
         max_attempts: number;
       };
@@ -3132,19 +3362,19 @@ export interface components {
         command: string;
         /** @description The number of times the platform will retry the command before marking the container unhealthy. */
         retries: number;
-        /** @description The number of seconds between retries. */
-        interval: number;
-        /** @description The number of time in seconds before a health check attempt times out. */
-        timeout: number;
+        /** @description How long to wait between restarts. */
+        interval: components["schemas"]["Duration"];
+        /** @description How long before a health check attempt times out. */
+        timeout: components["schemas"]["Duration"];
         /** @description A boolean where `true` represents the desire for a container to restart if unhealthy. */
         restart: boolean;
       };
       /** @description Configuration settings for container telemetery reporting. */
       telemetry?: {
-        /** @description The number in seconds for telemetry data to be retained. */
-        retention: number;
-        /** @description The number in seconds between samples. */
-        interval: number;
+        /** @description How long telemetry data should be retained. */
+        retention: components["schemas"]["Duration"];
+        /** @description The duration between samples. */
+        interval: components["schemas"]["Duration"];
         /** @description A boolean where true disables all telemetry reporting for this container. */
         disable: boolean;
         /** @description An endpoint to report the telemetry data to. */
@@ -3298,8 +3528,8 @@ export interface components {
         backup: {
           /** @description The command to run for the backup. */
           command: string;
-          /** @description The time in seconds for the backup to attempt to run before timing out. */
-          timeout?: number | null;
+          /** @description How long the backup will attempt to run before timing out. */
+          timeout?: string | null;
           /** @description A cron string that configures how often the backup will run. */
           cron_string?: string;
         };
@@ -3307,14 +3537,14 @@ export interface components {
         restore: ({
           /** @description The command to run for restoring from a backup. */
           command: string;
-          /** @description The time in seconds for the restore to appempt to complete before timing out. */
-          timeout?: number | null;
+          /** @description The time in seconds for the restore to attempt to complete before timing out. */
+          timeout?: string | null;
         }) | null;
         /**
-         * @description How long (in seconds) to keep backups. Default is 1 year. 
-         * @default 31536000
+         * @description How long the platform will keep backups. Default is 1 year. 
+         * @default 365d
          */
-        retention: number | null;
+        retention: string | null;
       };
     };
     /**
@@ -3438,8 +3668,6 @@ export interface components {
       };
       /** @description A Linked record is a record special to Cycle.  It represents a url that points to a specific container, however the IP address mapping in handled automatically by the platform. */
       linked?: {
-        /** @description The ID of the container this record is related to. */
-        container_id?: string;
         /** @description Features associated with this record. */
         features: {
           /** @description TLS properties of the record. */
@@ -3448,7 +3676,16 @@ export interface components {
             enable: boolean;
           };
         };
-      };
+      } & OneOf<[{
+        /** @description The ID of the container this record is related to. */
+        container_id: string;
+      }, {
+        /** @description If pointed at a global load balancer, the information about which container behind that global lb this record points to. Must point to a container identifier, and that identifier must be the same in every environment referenced by the global lb. */
+        global_lb: {
+          id: components["schemas"]["ID"];
+          container: components["schemas"]["Identifier"];
+        };
+      }]>;
     };
     /**
      * DNSRecordCertificate 
@@ -3562,9 +3799,9 @@ export interface components {
       instances: number;
       volumes?: (components["schemas"]["VolumeSummary"])[];
       /** @description Custom meta data for a given container */
-      annotations: ({
-        [key: string]: string | undefined;
-      }) | null;
+      annotations: {
+        [key: string]: unknown;
+      } | null;
       /**
        * @description The role of a given container if it has one. 
        * @enum {string|null}
@@ -3594,6 +3831,14 @@ export interface components {
       meta?: components["schemas"]["ContainersMeta"];
     };
     /**
+     * ExistingSource 
+     * @description In a stack, specifies an image source ID from which Cycle will derive any values not specified in the stack file. This is useful for avoiding direct placement of credentials in a stack file, for example.
+     */
+    ExistingSource: {
+      /** @description The ID of the image source this image should be built from. */
+      source_id?: components["schemas"]["ID"];
+    };
+    /**
      * DockerHubOrigin 
      * @description An image origin where the image is pulled from DockerHub.
      */
@@ -3601,6 +3846,7 @@ export interface components {
       /** @enum {string} */
       type?: "docker-hub";
       details?: {
+        existing?: components["schemas"]["ExistingSource"];
         /** @description The DockerHub target string. ex - `mysql:5.7` */
         target: string;
         /** @description For authentication, a username. */
@@ -3677,6 +3923,7 @@ export interface components {
       /** @enum {string} */
       type?: "docker-file";
       details?: {
+        existing?: components["schemas"]["ExistingSource"];
         repo?: components["schemas"]["RepoType"];
         /** @description An endpoint that serves the tar file. */
         targz_url?: string;
@@ -3695,6 +3942,7 @@ export interface components {
       /** @enum {string} */
       type?: "docker-registry";
       details?: {
+        existing?: components["schemas"]["ExistingSource"];
         /** @description The image name on the registry. */
         target: string;
         /** @description The url of the remote registry. */
@@ -3770,7 +4018,20 @@ export interface components {
     /** DirectImageSource */
     DirectImageSourceType: {
       /** @enum {string} */
-      type?: "direct" | "bucket";
+      type?: "direct";
+      details?: {
+        id: string;
+        origin: components["schemas"]["ImageOrigin"];
+      };
+      override?: {
+        target?: string;
+        targz_url?: string;
+      };
+    };
+    /** BucketImageSource */
+    BucketImageSourceType: {
+      /** @enum {string} */
+      type?: "bucket";
       details?: {
         id: string;
         origin: components["schemas"]["ImageOrigin"];
@@ -3871,7 +4132,7 @@ export interface components {
         /** @description A set command to be run if a signal is called. */
         signal_stop: string;
       };
-      source?: components["schemas"]["DirectImageSourceType"] | components["schemas"]["StackImageSourceType"];
+      source?: components["schemas"]["DirectImageSourceType"] | components["schemas"]["StackImageSourceType"] | components["schemas"]["BucketImageSourceType"];
       creator?: components["schemas"]["CreatorScope"];
       /** @description Identifies which factory the image was built on and when. */
       factory: {
@@ -4014,16 +4275,19 @@ export interface components {
         containers?: (string)[];
       };
       shutdown?: {
-        graceful_timeout?: number | null;
+        /** @description How long the platform will wait for a container to stop gracefully. */
+        graceful_timeout?: string | null;
         signals?: (string)[];
       };
       startup?: {
-        delay?: number | null;
+        /** @description How long the platform will wait before sending the start signal to the given container. */
+        delay?: string | null;
       };
       restart?: {
         /** @enum {string} */
         condition: "always" | "never" | "failure";
-        delay: number;
+        /** @description How long the platform will wait before trying to restart the container. */
+        delay: components["schemas"]["Duration"];
         max_attempts: number;
         notify?: {
           emails?: (string)[];
@@ -4033,13 +4297,17 @@ export interface components {
       health_check?: {
         command: string;
         retries: number;
-        interval: number;
-        timeout: number;
+        /** @description How long to wait between restarts. */
+        interval: components["schemas"]["Duration"];
+        /** @description How long before a health check attempt times out. */
+        timeout: components["schemas"]["Duration"];
         restart: boolean;
       };
       telemetry?: {
-        retention: number;
-        interval: number;
+        /** @description How long telemetry data should be retained. */
+        retention: components["schemas"]["Duration"];
+        /** @description The duration between samples. */
+        interval: components["schemas"]["Duration"];
         disable: boolean;
       };
     };
@@ -4083,14 +4351,20 @@ export interface components {
         destination: string;
         backup: {
           command: string;
-          timeout: number | null;
+          /** @description How long the backup will attempt to run before timing out. */
+          timeout: string | null;
           cron_string: string | null;
         };
         restore: ({
           command: string;
-          timeout: number | null;
+          /** @description The time in seconds for the restore to attempt to complete before timing out. */
+          timeout: string | null;
         }) | null;
-        retention: number | null;
+        /**
+         * @description How long the platform will keep backups. Default is 1 year. 
+         * @default 365d
+         */
+        retention: string | null;
       };
     };
     /**
@@ -4102,7 +4376,9 @@ export interface components {
         name: string;
         image: components["schemas"]["StackSpecContainerImage"];
         /** @description Additional meta info about the container. */
-        annotations: Record<string, never>;
+        annotations: {
+          [key: string]: unknown;
+        };
         stateful: boolean;
         /** StackSpecContainerConfig */
         config?: {
@@ -4138,6 +4414,16 @@ export interface components {
         lock?: boolean;
       }) | undefined;
     };
+    /**
+     * StackSpecLoadBalancerConfig 
+     * @description The config object for the loadbalancer service.
+     */
+    StackSpecLoadBalancerConfig: ({
+      /** @description Allow / disallow traffic to be routed via IPv4. */
+      ipv4: boolean | null;
+      /** @description Allow / disallow traffic to be routed via IPv6. */
+      ipv6: boolean | null;
+    }) & (components["schemas"]["HaProxyLbType"] | components["schemas"]["V1LbType"] | components["schemas"]["DefaultLbType"]);
     /** StackSpec */
     StackSpec: {
       /** @description A string defining the version of the stack spec. */
@@ -4153,26 +4439,7 @@ export interface components {
       containers: components["schemas"]["StackContainer"];
       /** StackSpecServices */
       services?: {
-        loadbalancer?: {
-          haproxy?: {
-            haproxy?: ({
-              default: components["schemas"]["HaProxyConfig"];
-              ports: {
-                [key: string]: components["schemas"]["HaProxyConfig"] | undefined;
-              };
-            }) | null;
-          };
-          ipv4?: boolean;
-          ipv6?: boolean;
-          egress_gateways?: {
-            name: string;
-            destinations: (string)[];
-            ports: {
-              internal: number;
-              external: number;
-            };
-          };
-        };
+        loadbalancer?: components["schemas"]["StackSpecLoadBalancerConfig"];
         vpn?: {
           auth: {
             webhook?: string;
@@ -4184,7 +4451,7 @@ export interface components {
       };
       /** @description Additional meta info about the stack. */
       annotations?: {
-        [key: string]: string | undefined;
+        [key: string]: unknown;
       };
     };
     /**
@@ -4733,7 +5000,7 @@ export interface components {
       abbreviation: string;
       /** @description Additional information about the given provider locaiton. */
       annotations: {
-        [key: string]: string | undefined;
+        [key: string]: unknown;
       };
     };
     /**
@@ -4931,11 +5198,8 @@ export interface components {
      * @description A summary of the provider a given resource is deployed to.
      */
     ProviderSummary: {
-      /**
-       * @description An identifier for the provider. Custom IAL providers will be listed as `abstraction-<ID>` where the ID is a MongoDB ID. 
-       * @enum {string}
-       */
-      identifier: "equinix-metal" | "vultr" | "aws" | "abstraction-<MongoID>";
+      /** @description An identifier for the provider. Custom IAL providers will be listed as `a-<ID>`. */
+      identifier: string;
       /** @description A location identifier associated with the provider. */
       location: string;
     };
@@ -5811,7 +6075,7 @@ export interface components {
       changes: (components["schemas"]["Change"])[];
       /** @description A record of additional annotations for the activity. */
       annotations: {
-        [key: string]: string | undefined;
+        [key: string]: unknown;
       };
       /** @description An object describing a given activity error. */
       error: {
@@ -5837,7 +6101,7 @@ export interface components {
        * @description The activity event. 
        * @enum {string}
        */
-      event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.vpn.user.create" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.reconfigure" | "container.reconfigure" | "container.task.reconfigure.volumes" | "container.reconfigure.volumes" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instance.healthcheck.restarted" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migrate_revert" | "container.instance.task.migrate" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "stack.update" | "stack.task.delete" | "stack.create" | "stack.task.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.reconfigure.features" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.reconfigure.features" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create" | "infrastructure.ips.pool.task.delete";
+      event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.vpn.user.create" | "environment.services.vpn.login" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.reconfigure" | "container.reconfigure" | "container.task.reconfigure.volumes" | "container.reconfigure.volumes" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instance.healthcheck.restarted" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migrate_revert" | "container.instance.task.migrate" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "stack.update" | "stack.task.delete" | "stack.create" | "stack.task.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.reconfigure.features" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.reconfigure.features" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create" | "infrastructure.ips.pool.task.delete";
       /** @description A timestamp for when the activity took place. */
       time: components["schemas"]["DateTime"];
     };
@@ -6048,10 +6312,10 @@ export interface components {
       current: "live" | "deleting" | "deleted";
     }) & components["schemas"]["State"];
     /**
-     * PrivateNetwork 
+     * NetworkPrivacySettings 
      * @description Private network information for a Cycle SDN.
      */
-    SDNPrivateNetwork: {
+    NetworkPrivacySettings: {
       /** @description A tag used to ensure proper routing. */
       vxlan_tag: number;
       /** @description The subnet of the private network. */
@@ -6067,10 +6331,10 @@ export interface components {
       };
     };
     /**
-     * SDNNetwork 
+     * Network 
      * @description SDN Network resource.
      */
-    SDNNetwork: {
+    Network: {
       id: components["schemas"]["ID"];
       /** @description The name of the network. */
       name: string;
@@ -6081,7 +6345,7 @@ export interface components {
       creator: components["schemas"]["CreatorScope"];
       hub_id: components["schemas"]["HubID"];
       state: components["schemas"]["NetworkState"];
-      private_network: components["schemas"]["SDNPrivateNetwork"];
+      private_network: components["schemas"]["NetworkPrivacySettings"];
       /** @description An array of environments and timestamps. */
       environments: ({
           id: components["schemas"]["ID"];
@@ -6090,7 +6354,7 @@ export interface components {
         })[];
       /**
        * NetworkEvents 
-       * @description A collection of timestamps for each event in the image's lifetime.
+       * @description A collection of timestamps for each event in the network's lifetime.
        */
       events: {
         /** @description The timestamp of when the image was created. */
@@ -6215,7 +6479,10 @@ export interface components {
         environment: components["schemas"]["ResourceLocation"];
         image: components["schemas"]["ResourceLocation"];
         stateful: boolean;
-        annotations: Record<string, never>;
+        /** @description Additional information about a container */
+        annotations: {
+          [key: string]: unknown;
+        };
         config: components["schemas"]["Config"];
         volumes: (components["schemas"]["ContainerVolume"])[];
       };
@@ -6507,8 +6774,8 @@ export interface components {
        */
       action: "sleep";
       details: {
-        /** @description Total duration (seconds) to run this step for, before moving on to the next step. */
-        seconds?: number;
+        /** @description Total duration to run this step for, before moving on to the next step. */
+        duration?: components["schemas"]["Duration"];
       };
     };
     /**
@@ -6557,7 +6824,7 @@ export interface components {
        * @description The current state of the pipeline. 
        * @enum {string}
        */
-      current: "live" | "deleting" | "deleted";
+      current: "live" | "acquiring" | "deleting" | "deleted";
     }) & components["schemas"]["State"];
     /**
      * Pipeline 
@@ -6633,7 +6900,7 @@ export interface components {
      * @description A resource thats assocaited with activity.
      */
     ComponentsIncludes: {
-      [key: string]: (components["schemas"]["Container"] | components["schemas"]["Instance"] | components["schemas"]["Environment"] | components["schemas"]["Image"] | components["schemas"]["ImageSource"] | components["schemas"]["Server"] | components["schemas"]["Pool"] | components["schemas"]["Provider"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["Zone"] | components["schemas"]["Record"] | components["schemas"]["ApiKey"] | components["schemas"]["SDNNetwork"] | components["schemas"]["HubMembership"] | components["schemas"]["Pipeline"] | components["schemas"]["TriggerKey"] | components["schemas"]["ScopedVariable"] | components["schemas"]["Hub"] | components["schemas"]["Invoice"] | components["schemas"]["Method"]) | undefined;
+      [key: string]: (components["schemas"]["Container"] | components["schemas"]["Instance"] | components["schemas"]["Environment"] | components["schemas"]["Image"] | components["schemas"]["ImageSource"] | components["schemas"]["Server"] | components["schemas"]["Pool"] | components["schemas"]["Provider"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["Zone"] | components["schemas"]["Record"] | components["schemas"]["ApiKey"] | components["schemas"]["Network"] | components["schemas"]["HubMembership"] | components["schemas"]["Pipeline"] | components["schemas"]["TriggerKey"] | components["schemas"]["ScopedVariable"] | components["schemas"]["Hub"] | components["schemas"]["Invoice"] | components["schemas"]["Method"]) | undefined;
     };
     /**
      * ActivityIncludes 
@@ -6663,6 +6930,7 @@ export interface components {
       id: string;
       /** @description Name of the component */
       name: string;
+      identifier?: components["schemas"]["Identifier"];
       /** @description State of the component */
       state: string;
       events: components["schemas"]["Events"];
@@ -6957,6 +7225,17 @@ export interface components {
       action: "compute.restart";
     };
     /**
+     * RestartComputeSpawner 
+     * @description A job that restarts compute service on a given server.
+     */
+    RestartComputeSpawner: {
+      /**
+       * @description The action to take. 
+       * @enum {string}
+       */
+      action: "compute.spawner.restart";
+    };
+    /**
      * ServerTags 
      * @description Tags for a given server.
      */
@@ -7192,6 +7471,69 @@ export interface components {
       environments?: components["schemas"]["EnvironmentIncludes"];
     };
     /**
+     * Creator 
+     * @description A creator object. Describes who created the resource.
+     */
+    Creator: {
+      id?: components["schemas"]["ID"];
+      /**
+       * @description The type of creator. 
+       * @enum {string}
+       */
+      type?: "account" | "employee" | "api-key" | "visitor" | "environments" | "";
+    };
+    /** GlobalLoadBalancerState */
+    GlobalLoadBalancerState: ({
+      /**
+       * @description The current state of the global load balancer. 
+       * @enum {string}
+       */
+      current: "new" | "live" | "deleting" | "deleted";
+    }) & components["schemas"]["State"];
+    /**
+     * GlobalLoadBalancer 
+     * @description A load balancer that sits outside of any environment and routes traffic between multiple environments. Global load balancers are used to manage rainbow/canary deployments and prevent downtime during an update.
+     */
+    GlobalLoadBalancer: {
+      id: components["schemas"]["ID"];
+      /** @description A custom name given to this global load balancer */
+      name: string;
+      identifier: components["schemas"]["Identifier"];
+      cluster: components["schemas"]["Identifier"];
+      creator: components["schemas"]["Creator"];
+      hub_id: components["schemas"]["ID"];
+      state: components["schemas"]["GlobalLoadBalancerState"];
+      /** @description An array where each item lists an environment ID and settings for the global load balancer to route traffic to them. */
+      environments: ({
+          id: components["schemas"]["ID"];
+          /** GlobalLoadBalancerEnvironmentTraffic */
+          traffic: {
+            /** @description The percentage of all traffic the global load balancer should route to this environment. Must add up to 100% across all environments. */
+            percentage: number;
+          };
+        })[] | null;
+      /**
+       * GlobalLoadBalancerEvents 
+       * @description Describes the date and time at which certain events occurred in the lifetime of this resource.
+       */
+      events: {
+        /** @description The timestamp of when the global lb was created. */
+        created: components["schemas"]["DateTime"];
+        /** @description The timestamp of when the global lb was updated. */
+        updated: components["schemas"]["DateTime"];
+        /** @description The timestamp of when the global lb was deleted. */
+        deleted: components["schemas"]["DateTime"];
+      };
+    };
+    /**
+     * GlobalLoadBalancerIncludes 
+     * @description All includable resource linkable to the given global load balancer.
+     */
+    GlobalLoadBalancerIncludes: {
+      creators?: components["schemas"]["CreatorInclude"];
+      environments?: components["schemas"]["EnvironmentIncludes"];
+    };
+    /**
      * PipelineIncludes 
      * @description All includable resources linkable to the given pipeline.
      */
@@ -7267,14 +7609,6 @@ export interface components {
       token: string;
       /** @description The protocol and url for connecting to the console. */
       address: string;
-    };
-    /**
-     * Range 
-     * @description A start and end date-time pair indicating a range of time
-     */
-    Range: {
-      start: components["schemas"]["DateTime"];
-      end: components["schemas"]["DateTime"];
     };
     /**
      * SecurityIncident 
@@ -7440,8 +7774,8 @@ export interface operations {
           name?: {
             first?: string;
             last?: string;
-            allow_support_login?: boolean;
           };
+          allow_support_login?: boolean;
         };
       };
     };
@@ -7643,6 +7977,35 @@ export interface operations {
         "application/json": {
           /** @description The token to authenticate TwoFa Disable. */
           token: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Returns a TwoFaDisableResponse resource. */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["TwoFaDisableResponse"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Disable TwoFa 
+   * @description Disable TwoFa for an account
+   */
+  recoverTwoFa: {
+    /** @description Parameters setting up TwoFa */
+    requestBody?: {
+      content: {
+        "application/json": {
+          /** @description The user’s email */
+          email: string;
+          password: string;
+          recovery_codes: (string)[];
+          token?: string;
         };
       };
     };
@@ -8479,6 +8842,12 @@ export interface operations {
             /** @description Information about an environments load balancer configuration, state, and availability settings. */
             data?: {
               default_config: components["schemas"]["LoadBalancerConfig"];
+              /** @enum {string} */
+              default_type: "haproxy" | "v1";
+              base_configs?: {
+                haproxy: components["schemas"]["HaProxyConfig"];
+                v1: components["schemas"]["V1LbConfig"];
+              };
               service: components["schemas"]["LoadBalancerEnvironmentService"];
             };
           };
@@ -8508,26 +8877,9 @@ export interface operations {
            */
           action: "reconfigure";
           contents: {
-            /** @description Boolean that sets custom vs default VPN configuration */
-            customize?: boolean;
             /** @description A boolean where `true` represents the desire to run the environment load balancer service in high availability mode. */
-            high_availability?: boolean;
-            /** @description The config object for the loadbalancer service. */
-            config?: ({
-              /** @enum {string} */
-              version?: "v1" | "haproxy";
-              /** @description Allow / disallow traffic to be routed via IPv4. */
-              ipv4?: boolean | null;
-              /** @description Allow / disallow traffic to be routed via IPv6. */
-              ipv6?: boolean | null;
-              /** @description Describes settings that are passed to HAProxy within the load balancer. */
-              haproxy?: ({
-                default: components["schemas"]["HaProxyConfig"];
-                ports: {
-                  [key: string]: components["schemas"]["HaProxyConfig"] | undefined;
-                };
-              }) | null;
-            }) | null;
+            high_availability?: boolean | null;
+            config?: components["schemas"]["LoadBalancerConfig"];
           };
         };
       };
@@ -8538,6 +8890,72 @@ export interface operations {
         content: {
           "application/json": {
             data?: components["schemas"]["TaskDescriptor"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Fetch load balancer v1 telemetry report 
+   * @description ## Permissions
+   * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested environment.
+   * 
+   * ## Details
+   * Fetches a telemetry report for Cycle's native load balancer for the specified range.
+   */
+  getLoadBalancerTelemetryReport: {
+    parameters: {
+      query: {
+        /**
+         * @description ## Filter Field 
+         * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
+         */
+        filter?: {
+          /** @description The start date from when to pull load balancer telemetry data */
+          "range-start"?: components["schemas"]["DateTime"];
+          /** @description The end date from when to pull load balancer telemetry data */
+          "range-end"?: components["schemas"]["DateTime"];
+        };
+      };
+      path: {
+        /** @description The environmentId where the load balancer resides. */
+        environmentId: string;
+      };
+    };
+    responses: {
+      /** @description Returns the load balancer telemetry report */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["LoadBalancerTelemetryReport"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Fetch the latest load balancer v1 telemetry. 
+   * @description ## Permissions
+   * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested environment.
+   * 
+   * ## Details
+   * Fetches the latest telemetry report for Cycle's native load balancer. Provides detailed information on a per-instance basis.
+   */
+  getLoadBalancerLatestTelemetryReport: {
+    parameters: {
+      path: {
+        /** @description The environmentId where the load balancer resides. */
+        environmentId: string;
+      };
+    };
+    responses: {
+      /** @description Returns the latest load balancer telemetry */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["LoadBalancerLatestTelemetry"];
           };
         };
       };
@@ -9053,7 +9471,7 @@ export interface operations {
           volumes?: (components["schemas"]["ContainerVolume"])[];
           /** @description User defined meta data for the container. */
           annotations?: {
-            [key: string]: string | undefined;
+            [key: string]: unknown;
           };
         };
       };
@@ -11902,7 +12320,7 @@ export interface operations {
     /** @description Parameters for creating the new server job. */
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["ReconfigureServer"] | components["schemas"]["RestartServer"] | components["schemas"]["RestartCompute"];
+        "application/json": components["schemas"]["ReconfigureServer"] | components["schemas"]["RestartServer"] | components["schemas"]["RestartCompute"] | components["schemas"]["RestartComputeSpawner"];
       };
     };
     responses: {
@@ -12547,7 +12965,7 @@ export interface operations {
     };
   };
   /**
-   * List SDNs 
+   * List SDN Network 
    * @description Requires the `sdn-networks-view` capability.
    */
   getNetworks: {
@@ -12574,7 +12992,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: (components["schemas"]["SDNNetwork"])[];
+            data?: (components["schemas"]["Network"])[];
             includes?: components["schemas"]["NetworkIncludes"];
           };
         };
@@ -12583,10 +13001,16 @@ export interface operations {
     };
   };
   /**
-   * Create SDN 
+   * Create SDN Network 
    * @description Requires the `sdn-networks-manage` capability.
    */
   createSDNNetwork: {
+    parameters: {
+      query: {
+        /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
+        include?: ("creators" | "environments")[];
+      };
+    };
     /** @description Parameters for creating a new network. */
     requestBody?: {
       content: {
@@ -12607,7 +13031,8 @@ export interface operations {
       201: {
         content: {
           "application/json": {
-            data?: components["schemas"]["SDNNetwork"];
+            data?: components["schemas"]["Network"];
+            includes?: components["schemas"]["NetworkIncludes"];
           };
         };
       };
@@ -12615,11 +13040,15 @@ export interface operations {
     };
   };
   /**
-   * Fetch SDN 
+   * Fetch SDN Network 
    * @description Requires the `sdn-networks-view` capability.
    */
   getNetwork: {
     parameters: {
+      query: {
+        /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
+        include?: ("creators" | "environments")[];
+      };
       path: {
         /** @description The ID of the network. */
         networkId: string;
@@ -12630,7 +13059,8 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["SDNNetwork"];
+            data?: components["schemas"]["Network"];
+            includes?: components["schemas"]["NetworkIncludes"];
           };
         };
       };
@@ -12638,7 +13068,7 @@ export interface operations {
     };
   };
   /**
-   * Remove SDN 
+   * Remove SDN Network 
    * @description Requires the `sdn-networks-manage` capability.
    */
   removeSDNNetwork: {
@@ -12661,11 +13091,15 @@ export interface operations {
     };
   };
   /**
-   * Update SDN 
+   * Update SDN Network 
    * @description Requires the `sdn-networks-manage` capability.
    */
   updateSDNNetwork: {
     parameters: {
+      query: {
+        /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
+        include?: ("creators" | "environments")[];
+      };
       path: {
         /** @description The ID of the network. */
         networkId: string;
@@ -12685,7 +13119,8 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["SDNNetwork"];
+            data?: components["schemas"]["Network"];
+            includes?: components["schemas"]["NetworkIncludes"];
           };
         };
       };
@@ -12726,6 +13161,173 @@ export interface operations {
         content: {
           "application/json": {
             data?: components["schemas"]["TaskDescriptor"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * List Global Load Balancers 
+   * @description Requires the `sdn-global-lbs-view` capability.
+   */
+  getGlobalLoadBalancers: {
+    parameters: {
+      query: {
+        /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
+        include?: ("creators" | "environments")[];
+        /**
+         * @description ## Filter Field 
+         * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
+         */
+        filter?: {
+          /** @description `filter[identifier]=value` only return global load balancers that match the identifier */
+          identifier?: string;
+          /** @description `filter[search]=value` search for a value associated with a field on the given global load balancer(s). */
+          search?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the global load balancer's current state. */
+          state?: string;
+        };
+        sort?: components["parameters"]["SortParam"];
+        page?: components["parameters"]["PageParam"];
+      };
+    };
+    responses: {
+      /** @description Returns a list of global load balancers associated with this hub. */
+      200: {
+        content: {
+          "application/json": {
+            data?: (components["schemas"]["GlobalLoadBalancer"])[];
+            includes?: components["schemas"]["GlobalLoadBalancerIncludes"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Create Global Load Balancer 
+   * @description Requires the `sdn-global-lbs-manage` capability.
+   */
+  createGlobalLoadBalancer: {
+    parameters: {
+      query: {
+        /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
+        include?: ("creators" | "environments")[];
+      };
+    };
+    /** @description Parameters for creating a new global load balancer. */
+    requestBody?: {
+      content: {
+        "application/json": {
+          /** @description The name of the global load balancer. */
+          name: string;
+          /** @description A human-readable identifier for referencing this global load balancer. Identifiers do not need to be unique. */
+          identifier: string;
+          /** @description The infrastructure cluster this global load balancer will be associated with. */
+          cluster: string;
+          /** @description An array of environment ids that this global load balancer will balance traffic across */
+          environments: (string)[];
+        };
+      };
+    };
+    responses: {
+      /** @description Returns a global load balancer resource. */
+      201: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["GlobalLoadBalancer"];
+            includes?: components["schemas"]["GlobalLoadBalancerIncludes"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Fetch a Global Load Balancer 
+   * @description Requires the `sdn-global-lbs-view` capability.
+   */
+  getGlobalLoadBalancer: {
+    parameters: {
+      query: {
+        /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
+        include?: ("creators" | "environments")[];
+      };
+      path: {
+        /** @description The ID of the global load balancer. */
+        lbId: string;
+      };
+    };
+    responses: {
+      /** @description Returns a single global load balancer resource. */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["GlobalLoadBalancer"];
+            includes?: components["schemas"]["GlobalLoadBalancerIncludes"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Remove Global Load Balancer 
+   * @description Requires the `sdn-global-lbs-manage` capability.
+   */
+  removeGlobalLoadBalancer: {
+    parameters: {
+      path: {
+        /** @description The ID of the global load balancer. */
+        lbId: string;
+      };
+    };
+    responses: {
+      /** @description Returns a task descriptor. */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["TaskDescriptor"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Update Global Load Balancer 
+   * @description Requires the `sdn-global-lbs-manage` capability.
+   */
+  updateGlobalLoadBalancer: {
+    parameters: {
+      query: {
+        /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
+        include?: ("creators" | "environments")[];
+      };
+      path: {
+        /** @description The ID of the global load balancer. */
+        lbId: string;
+      };
+    };
+    /** @description Parameters for updating a global load balancer. */
+    requestBody?: {
+      content: {
+        "application/json": {
+          /** @description A new name for this global load balancer. */
+          name?: string;
+          /** @description A new identifier for this global load balancer. */
+          identifier?: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Returns a global load balancer resource. */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["GlobalLoadBalancer"];
+            includes?: components["schemas"]["GlobalLoadBalancerIncludes"];
           };
         };
       };
