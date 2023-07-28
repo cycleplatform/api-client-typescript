@@ -8,7 +8,7 @@ _This is an auto-generated API client based on the [OpenAPI Spec for Cycle](http
 
 This client utilizes [openapi-typescript](https://github.com/drwpow/openapi-typescript) to generate the type definitions for our client. The client itself is a pre-built [openapi-fetch](https://github.com/drwpow/openapi-typescript/tree/main/packages/openapi-fetch) client for convenience.
 
-Every request should be typesafe, and only endpoints described in the spec will be valid in Typescript as the first parameter to `get`, `post`, `patch` etc.
+Every request should be typesafe, and only endpoints described in the spec will be valid in Typescript as the first parameter to `GET`, `POST`, `PATCH` etc.
 
 ## Usage
 
@@ -30,8 +30,7 @@ import {
 setAuthToken("secret_MY-API-KEY");
 setHubScope("myhubid");
 
-
-const resp = await client.get("/v1/containers/{containerId}", {
+const resp = await client.GET("/v1/containers/{containerId}", {
   params: { query: {}, path: { containerId: "abc123" } },
 });
 
@@ -47,23 +46,21 @@ import {
   client,
   setAuthToken,
   setHubScope,
-  setBaseUrl
+  setBaseUrl,
 } from "@cycleplatform/api-client-typescript";
 
 // Add this
-setBaseUrl("https://api.my-company.cycle.io")
+setBaseUrl("https://api.my-company.cycle.io");
 
 setAuthToken("secret_MY-API-KEY");
 setHubScope("myhubid");
 
-
-const resp = await client.get("/v1/containers/{containerId}", {
+const resp = await client.GET("/v1/containers/{containerId}", {
   params: { query: {}, path: { containerId: "abc123" } },
 });
 
 console.log(test.data, test.error);
 ```
-
 
 ## Development
 
