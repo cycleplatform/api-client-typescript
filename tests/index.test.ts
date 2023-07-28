@@ -11,7 +11,7 @@ test("test setting base URL", async () => {
   const baseUrl = "https://api.dev.cycle.io";
   setBaseUrl(baseUrl);
 
-  const envs = client.get("/v1/environments", {
+  const envs = client.GET("/v1/environments", {
     params: {
       query: {},
     },
@@ -26,7 +26,7 @@ test("test setting auth token", async () => {
   const token = "abc123";
   setAuthToken(token);
 
-  const envs = client.get("/v1/environments", {
+  const envs = client.GET("/v1/environments", {
     params: {
       query: {},
     },
@@ -41,7 +41,7 @@ test("test setting hub scope", async () => {
   const hubId = "abc123";
   setHubScope(hubId);
 
-  const envs = client.get("/v1/environments", {
+  const envs = client.GET("/v1/environments", {
     params: {
       query: {},
     },
@@ -58,7 +58,7 @@ test("test changing auth token between requests", async () => {
 
   setAuthToken(token1);
 
-  const envs = client.get("/v1/environments", {
+  const envs = client.GET("/v1/environments", {
     params: {
       query: {},
     },
@@ -70,7 +70,7 @@ test("test changing auth token between requests", async () => {
 
   setAuthToken(token2);
 
-  const envs2 = client.get("/v1/environments", {
+  const envs2 = client.GET("/v1/environments", {
     params: {
       query: {},
     },
@@ -85,7 +85,7 @@ test("test query params are properly serialized", async () => {
   const baseUrl = "https://api.dev.cycle.io";
   setBaseUrl(baseUrl);
 
-  const envs = client.get("/v1/environments", {
+  const envs = client.GET("/v1/environments", {
     params: {
       query: {
         page: { size: 100, number: 1 },
