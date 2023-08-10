@@ -1802,10 +1802,9 @@ export interface components {
     };
     /**
      * NativeProviderIdentifier
-     * @description An identifier for the provider
-     * @enum {string}
+     * @description An identifier for a native Cycle provider.
      */
-    NativeProviderIdentifier: "equinix-metal" | "coreweave" | "vultr" | "hivelocity" | "aws" | "azure" | "gcp" | "digitalocean";
+    NativeProviderIdentifier: string;
     /**
      * Announcement
      * @description An announcement from the Cycle team that has something to do with the current or future state of the platform.
@@ -2633,7 +2632,7 @@ export interface components {
     DefaultLbType: {
       /** @enum {string} */
       type: "default";
-      details: Record<string, unknown> | null;
+      details: (components["schemas"]["HaProxyConfig"] | components["schemas"]["V1LbConfig"]) | null;
     };
     /**
      * LoadBalancerConfig
@@ -3378,7 +3377,7 @@ export interface components {
         /** @description A boolean where true disables all telemetry reporting for this container. */
         disable: boolean;
         /** @description An endpoint to report the telemetry data to. */
-        webhook?: string;
+        web_hook?: string;
       };
     };
     /**
@@ -3678,7 +3677,7 @@ export interface components {
         };
       } & OneOf<[{
         /** @description The ID of the container this record is related to. */
-        container_id: string;
+        container_id?: string;
       }, {
         /** @description If pointed at a global load balancer, the information about which container behind that global lb this record points to. Must point to a container identifier, and that identifier must be the same in every environment referenced by the global lb. */
         global_lb: {
@@ -3844,8 +3843,8 @@ export interface components {
      */
     DockerHubOrigin: {
       /** @enum {string} */
-      type?: "docker-hub";
-      details?: {
+      type: "docker-hub";
+      details: {
         existing?: components["schemas"]["ExistingSource"];
         /** @description The DockerHub target string. ex - `mysql:5.7` */
         target: string;
@@ -3921,8 +3920,8 @@ export interface components {
      */
     DockerFileOrigin: {
       /** @enum {string} */
-      type?: "docker-file";
-      details?: {
+      type: "docker-file";
+      details: {
         existing?: components["schemas"]["ExistingSource"];
         repo?: components["schemas"]["RepoType"];
         /** @description An endpoint that serves the tar file. */
@@ -3940,8 +3939,8 @@ export interface components {
      */
     DockerRegistryOrigin: {
       /** @enum {string} */
-      type?: "docker-registry";
-      details?: {
+      type: "docker-registry";
+      details: {
         existing?: components["schemas"]["ExistingSource"];
         /** @description The image name on the registry. */
         target: string;
@@ -3953,6 +3952,73 @@ export interface components {
         token?: string;
         /** @description For authentication, a password. */
         password?: string;
+      };
+    };
+    /**
+     * RegistryAuthUser
+     * @description User/token based credentials for authentication to a third-party image source.
+     */
+    RegistryAuthUser: {
+      /** @enum {string} */
+      type: "user";
+      details: {
+        username?: string;
+        token?: string;
+      };
+    };
+    /**
+     * RegistryAuthProvider
+     * @description Credentials for authentication to a provider-native image registry, such as AWS ECR.
+     */
+    RegistryAuthProvider: {
+      /** @enum {string} */
+      type: "provider";
+      details: {
+        /** @enum {string} */
+        flavor: "ecr";
+        /** RegistryAuthProviderCredentials */
+        credentials: {
+          region?: string;
+          namespace?: string;
+          api_key?: string;
+          secret?: string;
+          subscription_id?: string;
+          client_id?: string;
+          /** @description A base64'd string of additional configuration options. */
+          config?: string;
+        };
+      };
+    };
+    /**
+     * RegistryAuthWebhook
+     * @description Webhook-based authentication to the provided URL. This webhook expects to receive a base-64 string that when decoded is in the format `username:password`
+     */
+    RegistryAuthWebhook: {
+      /** @enum {string} */
+      type: "webhook";
+      details: {
+        url: string;
+      };
+    };
+    /**
+     * RegistryAuth
+     * @description Authentication details for a third party image registry/source.
+     */
+    RegistryAuth: (components["schemas"]["RegistryAuthUser"] | components["schemas"]["RegistryAuthProvider"] | components["schemas"]["RegistryAuthWebhook"]) | null;
+    /**
+     * OciRegistryOrigin
+     * @description An image origin that pulls images fro an OCI-compatible registry. Also used for provider-native registries, such as AWS ECR.
+     */
+    OciRegistryOrigin: {
+      /** @enum {string} */
+      type: "oci-registry";
+      details: {
+        existing?: components["schemas"]["ExistingSource"];
+        /** @description The image name on the registry. */
+        target: string;
+        /** @description The url of the remote registry. */
+        url: string;
+        auth: components["schemas"]["RegistryAuth"];
       };
     };
     /**
@@ -3980,8 +4046,8 @@ export interface components {
      */
     CycleSourceOrigin: {
       /** @enum {string} */
-      type?: "cycle-source";
-      details?: {
+      type: "cycle-source";
+      details: {
         /** @description The ID referencing the image source where this image originated. */
         source_id: components["schemas"]["ID"];
       };
@@ -3992,14 +4058,14 @@ export interface components {
      */
     NoneOrigin: {
       /** @enum {string} */
-      type?: "none";
+      type: "none";
       details?: Record<string, never>;
     };
     /**
      * ImageOrigin
      * @description The origin of the given image source.
      */
-    ImageOrigin: components["schemas"]["DockerHubOrigin"] | components["schemas"]["DockerFileOrigin"] | components["schemas"]["DockerRegistryOrigin"] | components["schemas"]["CycleUploadOrigin"] | components["schemas"]["CycleSourceOrigin"] | components["schemas"]["NoneOrigin"];
+    ImageOrigin: components["schemas"]["DockerHubOrigin"] | components["schemas"]["DockerFileOrigin"] | components["schemas"]["DockerRegistryOrigin"] | components["schemas"]["OciRegistryOrigin"] | components["schemas"]["CycleUploadOrigin"] | components["schemas"]["CycleSourceOrigin"] | components["schemas"]["NoneOrigin"];
     /** StackImageSource */
     StackImageSourceType: {
       /** @enum {string} */
@@ -4755,6 +4821,19 @@ export interface components {
       /** @description CPU idle time. */
       cpu_idle?: number;
     };
+    /** ServerStatsCpuUsage */
+    ServerStatsCpuUsage: {
+      user?: number;
+      nice?: number;
+      system?: number;
+      idle?: number;
+      iowait?: number;
+      irq?: number;
+      soft_irq?: number;
+      steal?: number;
+      guest?: number;
+      guest_nice?: number;
+    };
     /**
      * ServerStatsCpu
      * @description Statistics about the CPU resources on a server.
@@ -4769,17 +4848,27 @@ export interface components {
           /** @description The speed of the processor. */
           speed?: number;
         }[];
+      usage?: components["schemas"]["ServerStatsCpuUsage"];
     };
     /**
      * ServerStatsLoad
      * @description Statistics about the current load on the server.
      */
     ServerStatsLoad: {
-      /** @description The 1 minute load average. */
+      /**
+       * Format: float
+       * @description The 1 minute load average.
+       */
       avg1m: number;
-      /** @description The 5 minute load average. */
+      /**
+       * Format: float
+       * @description The 5 minute load average.
+       */
       avg5m: number;
-      /** @description the 15 minute load average. */
+      /**
+       * Format: float
+       * @description the 15 minute load average.
+       */
       avg15m: number;
     };
     /**
@@ -6101,7 +6190,7 @@ export interface components {
        * @description The activity event.
        * @enum {string}
        */
-      event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.vpn.user.create" | "environment.services.vpn.login" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.reconfigure" | "container.reconfigure" | "container.task.reconfigure.volumes" | "container.reconfigure.volumes" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instance.healthcheck.restarted" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migrate_revert" | "container.instance.task.migrate" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "stack.update" | "stack.task.delete" | "stack.create" | "stack.task.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.reconfigure.features" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.reconfigure.features" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create" | "infrastructure.ips.pool.task.delete";
+      event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.services.vpn.user.create" | "environment.services.vpn.login" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.reconfigure" | "container.reconfigure" | "container.task.reconfigure.volumes" | "container.reconfigure.volumes" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instance.healthcheck.restarted" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migrate_revert" | "container.instance.task.migrate" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "stack.update" | "stack.task.delete" | "stack.create" | "stack.task.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.reconfigure.features" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.reconfigure.features" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create" | "infrastructure.ips.pool.task.delete";
       /** @description A timestamp for when the activity took place. */
       time: components["schemas"]["DateTime"];
     };
@@ -6391,7 +6480,7 @@ export interface components {
      * StepResourceLocation
      * @description Either a details ID or details from where the ID is an identifier for an existing resource and a from is an identifier from a previous step in this pipeline.
      */
-    ResourceLocation: Record<string, never> & OneOf<[{
+    ResourceLocation: OneOf<[{
       /** @description The ID of an existing resource that exists before the pipeline is run. */
       id?: string;
     }, {
@@ -7159,6 +7248,50 @@ export interface components {
       };
       features: string[];
     };
+    /** ServerStatsCpuUsageTelemetry */
+    ServerStatsCpuUsageTelemetry: {
+      /** Format: float */
+      user?: number;
+      /** Format: float */
+      nice?: number;
+      /** Format: float */
+      system?: number;
+      /** Format: float */
+      idle?: number;
+      /** Format: float */
+      iowait?: number;
+      /** Format: float */
+      irq?: number;
+      /** Format: float */
+      soft_irq?: number;
+      /** Format: float */
+      steal?: number;
+      /** Format: float */
+      guest?: number;
+      /** Format: float */
+      guest_nice?: number;
+    };
+    /**
+     * ServerStatsRamTelemetry
+     * @description Statistics about the RAM on a given server.
+     */
+    ServerStatsRamTelemetry: {
+      /**
+       * Format: float
+       * @description The available RAM on the server.
+       */
+      available: number;
+      /**
+       * Format: float
+       * @description The free RAM on the server.
+       */
+      free: number;
+      /**
+       * Format: float
+       * @description The total RAM on the server.
+       */
+      total: number;
+    };
     /**
      * ServerStatsTelemetry
      * @description Statistics about a given servers telemetery data.
@@ -7166,8 +7299,9 @@ export interface components {
     ServerStatsTelemetry: {
       /** @description The timestamp for when the telemetery data was collected. */
       time: components["schemas"]["DateTime"];
+      cpu_usage?: components["schemas"]["ServerStatsCpuUsageTelemetry"];
       load: components["schemas"]["ServerStatsLoad"];
-      ram: components["schemas"]["ServerStatsRam"];
+      ram: components["schemas"]["ServerStatsRamTelemetry"];
       /** @description Telemetry data for the base volume of a given server. */
       storage_base: {
         /** @description The amount of storage currently used in the base volume. */
@@ -10810,8 +10944,8 @@ export interface operations {
           instance?: string;
           /** @description `filter[server]=ID` server filtering by ID. Submit the ID of the server you wish to filter for and the return will be any activity from that server. */
           server?: string;
-          /** @description `filter[event]=value` filter by event occurrence. Example: `filter[event]=environment.services.vpn.login` */
-          event?: string;
+          /** @description `filter[events]=value` filter by event names. Example: `filter[event]=environment.services.vpn.login` */
+          events?: string;
           /**
            * @description `filter[verbosity]=integer` filter the activity return by verbosity. The verbosity can be:
            *   `0` - Activity that users would find useful.
