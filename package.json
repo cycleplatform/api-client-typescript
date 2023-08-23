@@ -16,7 +16,7 @@
     "test:ts": "tsc --noEmit",
     "build:spec": "(cd api-spec; npm run build:public && npm run build:internal)",
     "build:client": "npm run build:spec && npx openapi-typescript ./api-spec/dist/public-api.yml --output ./src/generated/types.ts",
-    "build:lib": "npm run build:client && vite build",
+    "build:lib": "npm run build:client && npm run vite build",
     "prepublishOnly": "npm run build:lib"
   },
   "repository": {
@@ -28,7 +28,7 @@
     "api",
     "client"
   ],
-  "author": "Alexander Mattoni",
+  "author": "Petrichor Holdings, Inc.",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/cycleplatform/api-client-typescript/issues"
