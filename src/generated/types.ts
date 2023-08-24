@@ -346,10 +346,10 @@ export interface paths {
   };
   "/v1/environments/{environmentId}/services/vpn/tasks": {
     /**
-     * Reconfigure VPN
-     * @description Requires the `environments-vpn-manage` capability.
+     * Create Environment VPN Job
+     * @description Used to reconfigure or reset the environment VPN. Requires the `environments-vpn-manage` capability.
      */
-    post: operations["reconfigureVPN"];
+    post: operations["createEnvironmentVpnTask"];
   };
   "/v1/environments/{environmentId}/telemetry/instances": {
     /**
@@ -1621,6 +1621,16 @@ export interface components {
       } | null;
     };
     /**
+     * HubWebhooks
+     * @description Hub related webhooks. When supplied, the given webhook will be called with a payload any time one of these events occurs.
+     */
+    HubWebhooks: {
+      /** @description A webhook that is called any time a server is deployed to this hub. The payload will be a `Server` object. */
+      server_deployed: string | null;
+      /** @description A webhook that is called any time a server in this hub is deleted. The payload will be a `Server` object. */
+      server_deleted: string | null;
+    };
+    /**
      * BillingTerm
      * @description Information about a billing term.
      */
@@ -1701,11 +1711,7 @@ export interface components {
       };
       state: components["schemas"]["HubState"];
       integrations: components["schemas"]["HubIntegrations"];
-      /** @description All hub webhooks for the given hub. */
-      webhooks: {
-        /** @description A webhook to report information to each time a server is deployed on the given hub. */
-        server_deployed: string | null;
-      };
+      webhooks: components["schemas"]["HubWebhooks"];
       billing: components["schemas"]["HubBillingProfile"] | null;
       meta?: components["schemas"]["HubMeta"];
     };
@@ -2585,38 +2591,167 @@ export interface components {
       type: "haproxy";
       details: components["schemas"]["HaProxyConfig"] | null;
     };
-    /** V1LbConfigRouter */
-    V1LbConfigRouter: {
-      identifier: string;
+    /**
+     * Duration
+     * @description A string signifying a duration of time. Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h", "d", "w", "y".
+     * @example 72h45m2s
+     */
+    Duration: string;
+    /**
+     * TcpTransportConfig
+     * @description Additional configuration options for the TCP transport mode.
+     */
+    TcpTransportConfig: {
       /** @enum {string} */
+      type: "tcp";
+      details: {
+        connections: {
+          [key: string]: unknown;
+        };
+      };
+    };
+    /**
+     * HttpTransportConfig
+     * @description Additional configuration options for the HTTP transport mode.
+     */
+    HttpTransportConfig: {
+      /** @enum {string} */
+      type: "http";
+      details: {
+        /** @description Defines extra configuration options connections to the load balancer */
+        connections: {
+          /** @description Maximum number of simultaneous connections (via http/2) per connection. */
+          max_idle_conns_per_connection: number | null;
+        };
+      };
+    };
+    /**
+     * TcpRouterConfig
+     * @description Additional configuration options for TCP mode routers
+     */
+    TcpRouterConfig: {
+      /** @enum {string} */
+      type: "tcp";
+      details: {
+        [key: string]: unknown;
+      };
+    };
+    /**
+     * HttpRouterConfig
+     * @description Additional configuration options for HTTP mode routers.
+     */
+    HttpRouterConfig: {
+      /** @enum {string} */
+      type: "http";
+      details: {
+        /** @description Defines a built-in redirect for HTTP mode routers */
+        redirect: ({
+          /** @description If enabled and a sibling controller exists for port 443, requests will be auto redirected to it. Essentially sets up automatic TLS redirection for this router. */
+          auto_https_redirect: boolean | null;
+          /** @description The port to redirect traffic to. */
+          port: number | null;
+          /** @description The scheme to redirect to. (i.e. `https`) */
+          scheme: string | null;
+          /** @description A specific URL to redirect to. */
+          url: string | null;
+        }) | null;
+        forward: ({
+          /** @enum {string|null} */
+          scheme: "tcp" | "http" | null;
+        }) | null;
+      };
+    };
+    /**
+     * V1LbRouterConfig
+     * @description A specific router configuration that describes how traffic matching the rule is handled.
+     */
+    V1LbConfigRouter: {
+      /** @description The ruleset for this router to be selected. If both `domains`` and `internal_port` are null, then this match acts as a wildcard and will match all. */
+      match: {
+        /** @description The specific domains to match against. */
+        domains: string[] | null;
+        /** @description The specific ports to match against. */
+        internal_port: number[] | null;
+      };
+      /**
+       * @description How to route the traffic to the destination.
+       * `random`: Pick a valid destination at random.
+       * `round-robin`: Send each request to the 'next' destination on the list, restarting from the beginning when the last destination is used.
+       *
+       * @enum {string}
+       */
       mode: "random" | "round-robin";
       config: {
-        performance: boolean;
+        /** @description If a request comes in from the same origin, ensure it hits the same destination. */
         sticky_sessions: boolean;
+        /** @description If a destination is unavailable, retry up to [x] times, instead of immediately failing with a 503/504 error. */
         destination_retries: number;
-        transport: Record<string, never>;
+        /** @description Defines how the length of various sorts of timeouts when communicating with the destination. */
         timeouts: {
-          idle: number;
+          /** @description The duration the load balancer will wait before timing out while attempting to connect to the destination. */
+          destination_connection: components["schemas"]["Duration"];
         };
+        /** @description Additional configuration options specific to the selected mode (tcp/http). */
+        extension?: components["schemas"]["TcpRouterConfig"] | components["schemas"]["HttpRouterConfig"];
       };
     };
     /** V1LbConfig */
     V1LbConfig: {
+      /** @description A configuration for a specific port. */
       controllers: {
         [key: string]: ({
-          identifier: components["schemas"]["Identifier"];
-          /** V1LbControllerTransport */
+          /** @description A human-readable identifier for this controller. It will default to the port, i.e. `port-443`, but can be renamed to anything, such as the service this controller represents. */
+          identifier: string;
+          /**
+           * V1LbControllerTransport
+           * @description Defines how traffic comes in to the load balancer, and how the load balancer handles it.
+           */
           transport: {
-            /** @enum {string} */
+            /**
+             * @description The kind of traffic (http/tcp) that will be sent to the load balancer.
+             * @enum {string}
+             */
             mode: "tcp" | "http";
-            performance: boolean;
-            ingress: {
-              port: number;
-              tls: boolean;
+            /** @description Defines how the transport for this controller operates. */
+            config: {
+              /**
+               * @description Enable/disable performance mode. If enabled, some telemetry will be disabled to dedicate full processing to handling requests.
+               * You will not see per-request breakdowns or URL logging if performance mode is enabled.
+               */
+              performance: boolean;
+              /** @description Defines how traffic gets into the load balancer. */
+              ingress: {
+                /** @description The port inbound trafic is accepted on. */
+                port: number;
+                /** @description TLS termination configuration. If null, the platform will use the default configuration. Port 443 by default has TLS termination enabled. */
+                tls: ({
+                  /** @description Allow TLS connections and enable TLS termination. */
+                  enable: boolean;
+                  /** @description [Advanced] Change the domain the controller listens on. */
+                  server_name: string | null;
+                  /** @description If enabled, accept TLS traffic with an invalid certificate. This is usually done for development/testing, and is not recommended for production use. */
+                  allow_insecure: boolean;
+                  /**
+                   * @description Defines how to validate the connecting TLS certificate.
+                   * `none`: Do not require a TLS certificate to be sent
+                   * `request`: Asks the client to send a TLS certificate, but does not require nor validate it.
+                   * `require`: Requires a certificate be sent for the request to be valid, but does not validate the certificate.
+                   * `require-verify`: Requires both that the client send a certificate, and that the certificate is valid. This is required when using https.
+                   *
+                   * @enum {string}
+                   */
+                  client_auth: "none" | "request" | "require" | "require-verify";
+                }) | null;
+              };
+              /** @description Defines settings for various types of timeouts. */
+              timeouts: {
+                /** @description The total amount of time a connection can be idle before being killed. */
+                idle: components["schemas"]["Duration"];
+              };
+              /** @description Extended configurations for the specified transport mode (http/tcp) */
+              extension?: components["schemas"]["TcpTransportConfig"] | components["schemas"]["HttpTransportConfig"];
             };
-            timeouts: {
-              idle: number;
-            };
+            /** @description Defines where traffic is sent. Many can be defined per controller. */
             routers: components["schemas"]["V1LbConfigRouter"][];
           };
         }) | undefined;
@@ -3135,6 +3270,44 @@ export interface components {
       };
     };
     /**
+     * VpnResetTask
+     * @description This will reset the VPN certificates and restart the container. Should be done when the certificates expire, every 1000 days. Then, you will need to redownload the VPN config in order to connect.
+     */
+    VpnResetTask: {
+      /**
+       * @description The name of the action to perform.
+       * @enum {string}
+       */
+      action: "reset";
+    };
+    /** VpnReconfigureTask */
+    VpnReconfigureTask: {
+      /**
+       * @description The action to take.
+       * @enum {string}
+       */
+      action: "reconfigure";
+      /** @description Additional information the platform needs to create this job. */
+      contents: {
+        /** @description A boolean where true means the VPN service is enabled. */
+        enable?: boolean;
+        /** @description The config object for the VPN service, in this case without the required fields normally found in a VPN config object. */
+        config?: ({
+          /** @description If true, routes all traffic through the VPN, even non-Cycle traffic. */
+          allow_internet?: boolean;
+          /** @description Auth configuration for the VPN. */
+          auth?: {
+            /** @description A webhook endpoint to hit. Will be passed the login credentials provided to the user, and should return a 200 status if the login is permitted. */
+            webhook: string | null;
+            /** @description If true, allows any Cycle account with access to the environment to log in to the VPN using their Cycle email and password. */
+            cycle_accounts: boolean;
+            /** @description If true, allows the custom VPN accounts to log in to the VPN. */
+            vpn_accounts?: boolean;
+          };
+        }) | null;
+      };
+    };
+    /**
      * InstanceTelemetryPoint
      * @description A point-in-time snapshot of a count of instances by state.
      */
@@ -3297,12 +3470,6 @@ export interface components {
      * @enum {string}
      */
     DeploymentStrategyName: "resource-density" | "high-availability" | "first-available" | "node" | "edge" | "manual";
-    /**
-     * Duration
-     * @description A string signifying a duration of time. Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h", "d", "w", "y".
-     * @example 72h45m2s
-     */
-    Duration: string;
     /**
      * ContainerDeploy
      * @description Deployment configuration for the given container.
@@ -3633,7 +3800,7 @@ export interface components {
       /** @description A DNS MX record */
       mx?: {
         /** @description The priority setting for this mx record. */
-        priority: string;
+        priority: number;
         /** @description The domain this mx record points to. */
         domain: string;
       };
@@ -5908,6 +6075,10 @@ export interface components {
      */
     Logs: {
       id: components["schemas"]["ID"];
+      /** @description An identifier for the container. */
+      container_id: string;
+      /** @description An identifier for the instance. */
+      instance_id: string;
       /** @description An identifier for the backup. */
       backup_id: string;
       hub_id: components["schemas"]["HubID"];
@@ -5918,6 +6089,15 @@ export interface components {
       type: "restore" | "backup";
       /** @description The log. */
       log: string;
+      error?: {
+        message: string;
+        message_internal?: string;
+        stack?: {
+            file: string;
+            function: string;
+            line: number;
+          }[];
+      } | null;
       /**
        * BackupLogEvents
        * @description A collection of timestamps for each event in the backup log's lifetime.
@@ -6482,10 +6662,10 @@ export interface components {
      */
     ResourceLocation: OneOf<[{
       /** @description The ID of an existing resource that exists before the pipeline is run. */
-      id?: string;
+      id: string;
     }, {
       /** @description The stage and step to report on. */
-      from?: {
+      from: {
         /** @description An identifier for the stage the step being reported on resides in. */
         stage?: string;
         /** @description An identifier for the step to be reported on. */
@@ -9266,45 +9446,20 @@ export interface operations {
     };
   };
   /**
-   * Reconfigure VPN
-   * @description Requires the `environments-vpn-manage` capability.
+   * Create Environment VPN Job
+   * @description Used to reconfigure or reset the environment VPN. Requires the `environments-vpn-manage` capability.
    */
-  reconfigureVPN: {
+  createEnvironmentVpnTask: {
     parameters: {
       path: {
         /** @description The ID of the environment the VPN service resides in. */
         environmentId: string;
       };
     };
-    /** @description An object to be submitted when reconfiguring a VPN service. */
+    /** @description The task contents used to build the environment VPN job. */
     requestBody?: {
       content: {
-        "application/json": {
-          /**
-           * @description The action to take.
-           * @enum {string}
-           */
-          action: "reconfigure";
-          /** @description Additional information the platform needs to create this job. */
-          contents: {
-            /** @description A boolean where true means the VPN service is enabled. */
-            enable?: boolean;
-            /** @description The config object for the VPN service, in this case without the required fields normally found in a VPN config object. */
-            config?: ({
-              /** @description If true, routes all traffic through the VPN, even non-Cycle traffic. */
-              allow_internet?: boolean;
-              /** @description Auth configuration for the VPN. */
-              auth?: {
-                /** @description A webhook endpoint to hit. Will be passed the login credentials provided to the user, and should return a 200 status if the login is permitted. */
-                webhook: string | null;
-                /** @description If true, allows any Cycle account with access to the environment to log in to the VPN using their Cycle email and password. */
-                cycle_accounts: boolean;
-                /** @description If true, allows the custom VPN accounts to log in to the VPN. */
-                vpn_accounts?: boolean;
-              };
-            }) | null;
-          };
-        };
+        "application/json": components["schemas"]["VpnResetTask"] | components["schemas"]["VpnReconfigureTask"];
       };
     };
     responses: {
@@ -10824,11 +10979,7 @@ export interface operations {
           name?: string;
           identifier?: components["schemas"]["Identifier"];
           integrations?: components["schemas"]["HubIntegrations"];
-          /** @description All hub webhooks for the given hub. */
-          webhooks?: {
-            /** @description A webhook to report information to each time a server is deployed on the given hub. */
-            server_deployed: string | null;
-          };
+          webhooks?: components["schemas"]["HubWebhooks"];
         };
       };
     };
@@ -10896,11 +11047,7 @@ export interface operations {
           /** @description A name for the hub. */
           name?: string;
           integrations?: components["schemas"]["HubIntegrations"];
-          /** @description All hub webhooks for the given hub. */
-          webhooks?: {
-            /** @description A webahook to report information to each time a server is deployed on the given hub. */
-            server_deployed: string | null;
-          };
+          webhooks?: components["schemas"]["HubWebhooks"];
         };
       };
     };
@@ -10944,7 +11091,7 @@ export interface operations {
           instance?: string;
           /** @description `filter[server]=ID` server filtering by ID. Submit the ID of the server you wish to filter for and the return will be any activity from that server. */
           server?: string;
-          /** @description `filter[events]=value` filter by event names. Example: `filter[event]=environment.services.vpn.login` */
+          /** @description `filter[events]=value` filter by event names. Example: `filter[events]=environment.services.vpn.login` */
           events?: string;
           /**
            * @description `filter[verbosity]=integer` filter the activity return by verbosity. The verbosity can be:
