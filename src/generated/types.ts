@@ -1712,7 +1712,7 @@ export interface components {
       state: components["schemas"]["HubState"];
       integrations: components["schemas"]["HubIntegrations"];
       webhooks: components["schemas"]["HubWebhooks"];
-      billing: components["schemas"]["HubBillingProfile"] | null;
+      billing: (Record<string, unknown> | null) & components["schemas"]["HubBillingProfile"];
       meta?: components["schemas"]["HubMeta"];
     };
     /**
@@ -2587,6 +2587,10 @@ export interface components {
     };
     /** HaProxyLbType */
     HaProxyLbType: {
+      /** @description Allow / disallow traffic to be routed via IPv4. */
+      ipv4: boolean;
+      /** @description Allow / disallow traffic to be routed via IPv6. */
+      ipv6: boolean;
       /** @enum {string} */
       type: "haproxy";
       details: components["schemas"]["HaProxyConfig"] | null;
@@ -2759,26 +2763,29 @@ export interface components {
     };
     /** V1LbType */
     V1LbType: {
+      /** @description Allow / disallow traffic to be routed via IPv4. */
+      ipv4: boolean;
+      /** @description Allow / disallow traffic to be routed via IPv6. */
+      ipv6: boolean;
       /** @enum {string} */
       type: "v1";
       details: components["schemas"]["V1LbConfig"] | null;
     };
     /** DefaultLbType */
     DefaultLbType: {
+      /** @description Allow / disallow traffic to be routed via IPv4. */
+      ipv4: boolean;
+      /** @description Allow / disallow traffic to be routed via IPv6. */
+      ipv6: boolean;
       /** @enum {string} */
       type: "default";
-      details: (components["schemas"]["HaProxyConfig"] | components["schemas"]["V1LbConfig"]) | null;
+      details: (Record<string, unknown> | null) & (components["schemas"]["HaProxyConfig"] | components["schemas"]["V1LbConfig"]);
     };
     /**
      * LoadBalancerConfig
      * @description The config object for the loadbalancer service.
      */
-    LoadBalancerConfig: ({
-      /** @description Allow / disallow traffic to be routed via IPv4. */
-      ipv4: boolean;
-      /** @description Allow / disallow traffic to be routed via IPv6. */
-      ipv6: boolean;
-    } & (components["schemas"]["V1LbType"] | components["schemas"]["HaProxyLbType"] | components["schemas"]["DefaultLbType"])) | null;
+    LoadBalancerConfig: (components["schemas"]["V1LbType"] | components["schemas"]["HaProxyLbType"] | components["schemas"]["DefaultLbType"]) | null;
     /**
      * LoadBalancerEnvironmentService
      * @description Information about the environments loadbalancer service(s).
@@ -3510,6 +3517,11 @@ export interface components {
         /** @description How long the platform will wait before sending the start signal to the given container. */
         delay?: components["schemas"]["Duration"];
       };
+      /** @description Configurations for container updates. */
+      update?: {
+        /** @description When set, Cycle will pick a random time from `0 - this duration`, and stagger the instances so they all start at different times (up to the time specified here). */
+        stagger?: components["schemas"]["Duration"];
+      };
       /** @description Configurations for container restart events. */
       restart?: {
         /**
@@ -3528,6 +3540,8 @@ export interface components {
         command: string;
         /** @description The number of times the platform will retry the command before marking the container unhealthy. */
         retries: number;
+        /** @description How long to wait before performing an initial health check when the instance starts. The `state.health.healthy` field of the instance will be `null`` until the first check is performed. */
+        delay?: components["schemas"]["Duration"];
         /** @description How long to wait between restarts. */
         interval: components["schemas"]["Duration"];
         /** @description How long before a health check attempt times out. */
@@ -4516,6 +4530,11 @@ export interface components {
         /** @description How long the platform will wait before sending the start signal to the given container. */
         delay?: string | null;
       };
+      /** @description Configurations for container updates. */
+      update?: {
+        /** @description When set, Cycle will pick a random time from `0 - this duration`, and stagger the instances so they all start at different times (up to the time specified here). */
+        stagger?: components["schemas"]["Duration"];
+      };
       restart?: {
         /** @enum {string} */
         condition: "always" | "never" | "failure";
@@ -4651,12 +4670,7 @@ export interface components {
      * StackSpecLoadBalancerConfig
      * @description The config object for the loadbalancer service.
      */
-    StackSpecLoadBalancerConfig: ({
-      /** @description Allow / disallow traffic to be routed via IPv4. */
-      ipv4: boolean | null;
-      /** @description Allow / disallow traffic to be routed via IPv6. */
-      ipv6: boolean | null;
-    }) & (components["schemas"]["HaProxyLbType"] | components["schemas"]["V1LbType"] | components["schemas"]["DefaultLbType"]);
+    StackSpecLoadBalancerConfig: components["schemas"]["HaProxyLbType"] | components["schemas"]["V1LbType"] | components["schemas"]["DefaultLbType"];
     /** StackSpec */
     StackSpec: {
       /** @description A string defining the version of the stack spec. */
@@ -5241,7 +5255,7 @@ export interface components {
       id: string;
       /** @description A name for the location. */
       name: string;
-      geographic: components["schemas"]["Geographic"] | null;
+      geographic: (Record<string, unknown> | null) & components["schemas"]["Geographic"];
       provider: components["schemas"]["LocationProvider"];
       /** @description A boolean where true means the locaiton is supported by the platform. */
       compatible: boolean;
@@ -5477,12 +5491,17 @@ export interface components {
        */
       current: "new" | "starting" | "reimaging" | "migrating" | "running" | "stopping" | "stopped" | "failed" | "deleting" | "deleted";
       /** @description information about the health of the instance. */
-      health?: {
-        /** @description A boolean where true represents the instance being healthy. */
-        healthy: boolean;
+      health?: ({
+        /**
+         * @description Describes the healthiness of the instance. Health checks can be configured at the container level.
+         * - `true`: The instance is considered healthy.
+         * - `false`: The instance is considered unhealthy.
+         * - `null`: The instance has not yet reported its health, or a health check has not yet been performed.
+         */
+        healthy: boolean | null;
         /** @description A timestamp of the last time the instance health was updated. */
         updated: components["schemas"]["DateTime"];
-      };
+      }) | null;
     }) & components["schemas"]["State"];
     /**
      * Instance
@@ -8739,6 +8758,10 @@ export interface operations {
    */
   getInvoice: {
     parameters: {
+      query?: {
+        /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
+        meta?: "due"[];
+      };
       path: {
         /** @description The ID of the invoice. */
         invoiceId: string;
@@ -12086,7 +12109,7 @@ export interface operations {
         page?: components["parameters"]["PageParam"];
       };
       path: {
-        /** @description The ID for the given provider. */
+        /** @description The identifier for the given provider. Can be `aws`, `gcp`, `equinix-metal`, `vultr`. */
         providerId: string;
       };
     };
@@ -12113,7 +12136,7 @@ export interface operations {
         page?: components["parameters"]["PageParam"];
       };
       path: {
-        /** @description The ID for the given provider. */
+        /** @description The identifier for the given provider. Can be `aws`, `gcp`, `equinix-metal`, `vultr`. */
         providerId: string;
       };
     };
