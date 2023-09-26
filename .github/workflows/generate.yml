@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       commit:
-        description: "Commit Hash (If Not Latest)"
+        description: "API Spec Commit Hash (Latest If Empty)"
 jobs:
   generate-and-tag:
     runs-on: ubuntu-latest
