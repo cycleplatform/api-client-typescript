@@ -4547,13 +4547,21 @@ export interface components {
         };
       };
       health_check?: {
+        /**
+         * @description The command to run as your health check
+         * @example /bin/sh healthcheck.sh
+         */
         command: string;
+        /** @description The number of times to retry the command before marking an instance unhealthy */
         retries: number;
-        /** @description How long to wait between restarts. */
+        /** @description How long to wait between running health checks. */
         interval: components["schemas"]["Duration"];
         /** @description How long before a health check attempt times out. */
         timeout: components["schemas"]["Duration"];
+        /** @description A boolean where true represents the desire for the container to restart if any instance is unhealthy. */
         restart: boolean;
+        /** @description How long to wait after a container start event before starting health checks. */
+        delay?: components["schemas"]["Duration"];
       };
       telemetry?: {
         /** @description How long telemetry data should be retained. */
