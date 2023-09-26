@@ -2,8 +2,9 @@
 name: Generate Client
 on:
   workflow_dispatch:
-    commit:
-      description: "Commit Hash (If Not Latest)"
+    inputs:
+      commit:
+        description: "Commit Hash (If Not Latest)"
 jobs:
   generate-and-tag:
     runs-on: ubuntu-latest
