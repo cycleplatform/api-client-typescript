@@ -1,39 +1,44 @@
-  # Automatically fetches the latest API spec (and commits the submodule update) and generates a new client
+# Automatically fetches the latest API spec (and commits the submodule update) and generates a new client
 name: Generate Client
 on:
   workflow_dispatch:
+    commit:
+      description: "Commit Hash (If Not Latest)"
 jobs:
   generate-and-tag:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        token: ${{ secrets.API_SPEC_PAT }}
-        submodules: true
-        
-    - name: Git Submodule Update
-      run: |
-        git pull --recurse-submodules
-        git submodule update --remote --recursive
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.API_SPEC_PAT }}
+          submodules: true
 
-    - name: NPM Install
-      run: npm install
+      - name: Git Submodule Update
+        run: |
+          git pull --recurse-submodules
+          git submodule update --remote --recursive
 
-    - name: Generate Client
-      run: npm run build:client
-    
-#     - name: Commit changes
-#       run: |
-#         git config --global user.name 'Git bot'
-#         git config --global user.email 'bot@noreply.github.com'
-#         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-#         git commit -am "Auto generate client from latest API spec" && git push || echo "No changes to commit"
+      - name: Checkout Specific Submodule Commit
+        if: ${{ github.event.inputs.commit }}
+        run: (cd api-spec && git checkout ${{ github.event.inputs.commit }})
 
-    - name:  'Automated Version Bump'
-      uses:  'phips28/gh-action-bump-version@master'
-      env:
-        GITHUB_TOKEN: ${{ secrets.API_SPEC_PAT }}
-      with:
-        tag-prefix:  'v'
-        
+      - name: NPM Install
+        run: npm install
+
+      - name: Generate Client
+        run: npm run build:client
+
+      #     - name: Commit changes
+      #       run: |
+      #         git config --global user.name 'Git bot'
+      #         git config --global user.email 'bot@noreply.github.com'
+      #         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+      #         git commit -am "Auto generate client from latest API spec" && git push || echo "No changes to commit"
+
+      - name: "Automated Version Bump"
+        uses: "phips28/gh-action-bump-version@master"
+        env:
+          GITHUB_TOKEN: ${{ secrets.API_SPEC_PAT }}
+        with:
+          tag-prefix: "v"
