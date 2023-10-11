@@ -60,7 +60,14 @@ export interface paths {
      * Update Account Invite
      * @description Update a given invite.
      */
-    patch: operations["resetPassword"];
+    patch: operations["updatePassword"];
+  };
+  "/v1/account/reset-password": {
+    /**
+     * Update Account Invite
+     * @description Update a given invite.
+     */
+    post: operations["resetPassword"];
   };
   "/v1/account/2fa/setup": {
     /**
@@ -924,6 +931,35 @@ export interface paths {
      */
     post: operations["createProviderJob"];
   };
+  "/v1/infrastructure/auto-scale/groups": {
+    /**
+     * Get Auto-Scale Groups list
+     * @description Requires the `autoscale-groups-manage` capability.
+     */
+    get: operations["getAutoScaleGroups"];
+    /**
+     * Create Auto-Scale Group
+     * @description Requires the 'autoscale-groups-manage'
+     */
+    post: operations["createAutoScaleGroup"];
+  };
+  "/v1/infrastructure/auto-scale/groups/{groupId}": {
+    /**
+     * Fetch Auto-Scale Group
+     * @description Requires the `autoscale-groups-view` capability.
+     */
+    get: operations["getAutoScaleGroup"];
+    /**
+     * Remove Auto-Scale Group
+     * @description Requires the `autoscale-group-manage` capability.
+     */
+    delete: operations["removeAutoScaleGroup"];
+    /**
+     * Update Auto-Scale Group
+     * @description Requires the `autoscale-groups-manage` capability.
+     */
+    patch: operations["updateAutoScaleGroup"];
+  };
   "/v1/infrastructure/servers": {
     /**
      * List Servers
@@ -1322,6 +1358,7 @@ export interface components {
     /**
      * ID
      * @description A 24 character hex string used to identify a unique resource.
+     * @example 651586fca6078e98982dbd90
      */
     ID: string;
     /**
@@ -2024,8 +2061,6 @@ export interface components {
     TaskDescriptor: {
       /** @description The action that was taken. */
       action: string;
-      /** @description The ID of the job associated with this task. */
-      job_id?: string;
       /** @description Contains some basic information about the job associated with this task. */
       job?: {
         /** @description The ID of the job */
@@ -2159,6 +2194,8 @@ export interface components {
       advanced_features: {
         gpu: boolean;
         ial: boolean;
+        glb: boolean;
+        autoscale: boolean;
       };
       max_daily_api_requests: number | null;
       ram: components["schemas"]["BillingRam"];
@@ -3562,6 +3599,98 @@ export interface components {
       };
     };
     /**
+     * ScaleThresholdMetricRam
+     * @description Describes the RAM threshold at which scaling will occur
+     */
+    ScaleThresholdMetricRam: {
+      /** @enum {string} */
+      type: "ram";
+      details: {
+        /**
+         * @description The limit (maximum) amount of RAM each instance of the given container can use before triggering a scaling event.
+         * @example 1G, 2M
+         */
+        used: string;
+      };
+    };
+    /**
+     * ScaleThresholdMetricCpu
+     * @description Describes the CPU threshold at which scaling will occur
+     */
+    ScaleThresholdMetricCpu: {
+      /** @enum {string} */
+      type: "cpu";
+      details: {
+        utilization: number;
+      };
+    };
+    /**
+     * ScaleThresholdMetricNetworkConnections
+     * @description Describes the network connections threshold at which scaling will occur
+     */
+    ScaleThresholdMetricNetworkConnections: {
+      /** @enum {string} */
+      type: "network-connections";
+      details: {
+        connections_total: number;
+      };
+    };
+    /**
+     * ScaleThresholdMetricNetworkRequests
+     * @description Describes the network requests threshold at which scaling will occur
+     */
+    ScaleThresholdMetricNetworkRequests: {
+      /** @enum {string} */
+      type: "network-requests";
+      details: {
+        requests_total: number;
+      };
+    };
+    /**
+     * ScaleThresholdMetricNetworkThroughput
+     * @description Describes the network throughput threshold at which scaling will occur
+     */
+    ScaleThresholdMetricNetworkThroughput: {
+      /** @enum {string} */
+      type: "network-throughput";
+      details: {
+        private: boolean;
+        /**
+         * @description The limit (maximum) amount of throughput each instance of the given container can use before triggering a scaling event.
+         * @example 1G, 2M
+         */
+        bandwidth: string;
+      };
+    };
+    /**
+     * ScaleThresholdMetric
+     * @description Discriminated union describing the different types of scaling threshold and their respective details
+     */
+    ScaleThresholdMetric: components["schemas"]["ScaleThresholdMetricRam"] | components["schemas"]["ScaleThresholdMetricCpu"] | components["schemas"]["ScaleThresholdMetricNetworkConnections"] | components["schemas"]["ScaleThresholdMetricNetworkRequests"] | components["schemas"]["ScaleThresholdMetricNetworkThroughput"];
+    /**
+     * ContainerScale
+     * @description Network configuration for a container.
+     */
+    ContainerScale: {
+      /** @description The autoscaling group describes which servers should be deployed */
+      autoscale_group: string;
+      /** @description Describes how many instances should be running */
+      instances: {
+        /** @description Number of additional instances the auto-scaler will add/subtract per scaling event */
+        delta: number;
+        /** @description Maximum additional instances the auto-scaler will run at any time */
+        max: number;
+        /** @description Minimum number of instances per server */
+        max_server: number;
+        /** @description Minimum amount of time an instance will live */
+        min_ttl: components["schemas"]["Duration"];
+      };
+      /** @description Duration in which the auto-scaler will watch for changes */
+      window: components["schemas"]["Duration"];
+      /** @description An array of rules that dictate when a scaling event will be triggered */
+      thresholds: components["schemas"]["ScaleThresholdMetric"][];
+    };
+    /**
      * SeccompRule
      * @description Rules for controlling Linux seccomp inside a container.
      */
@@ -3596,7 +3725,7 @@ export interface components {
         args: string;
       };
       /** @description Namespaces the given container will have access to. */
-      namespaces?: ("ipc" | "pid" | "uts" | "network" | "mount" | "user")[];
+      namespaces?: ("ipc" | "pid" | "uts" | "network" | "mount" | "user" | "cgroup")[];
       /** @description A record of environment variables for the given container. */
       environment_vars?: {
         [key: string]: string | undefined;
@@ -3734,6 +3863,7 @@ export interface components {
     Config: {
       network: components["schemas"]["ContainerNetwork"];
       deploy: components["schemas"]["ContainerDeploy"];
+      scale?: components["schemas"]["ContainerScale"];
       runtime?: components["schemas"]["ContainerRuntime"];
       resources?: components["schemas"]["ContainerResources"];
       integrations?: components["schemas"]["ContainerIntegrations"];
@@ -4571,19 +4701,97 @@ export interface components {
         disable: boolean;
       };
     };
-    /** StackContainerConfigScaling.yml */
-    StackContainerConfigScaling: {
-      auto?: {
-        instances: {
-          min: number;
-          max: number;
-        };
-        rules?: {
-          /** @enum {string} */
-          metric: "ram";
-          threshold: string;
-        };
+    /**
+     * StackContainerScaleThresholdRam
+     * @description Describes the RAM threshold at which scaling will occur
+     */
+    StackContainerScaleThresholdRam: {
+      /** @enum {string} */
+      type: "ram";
+      details: {
+        /**
+         * @description The limit (maximum) amount of RAM each instance of the given container can use before triggering a scaling event.
+         * @example 1G, 2M
+         */
+        used: string;
       };
+    };
+    /**
+     * StackContainerScaleThresholdCpu
+     * @description Describes the CPU threshold at which scaling will occur
+     */
+    StackContainerScaleThresholdCpu: {
+      /** @enum {string} */
+      type: "cpu";
+      details: {
+        utilization: number;
+      };
+    };
+    /**
+     * StackContainerScaleThresholdNetworkConnections
+     * @description Describes the network connections threshold at which scaling will occur
+     */
+    StackContainerScaleThresholdNetworkConnections: {
+      /** @enum {string} */
+      type: "network-connections";
+      details: {
+        connections_total: number;
+      };
+    };
+    /**
+     * StackContainerScaleThresholdNetworkRequests
+     * @description Describes the network requests threshold at which scaling will occur
+     */
+    StackContainerScaleThresholdNetworkRequests: {
+      /** @enum {string} */
+      type: "network-requests";
+      details: {
+        requests_total: number;
+      };
+    };
+    /**
+     * StackContainerScaleThresholdNetworkThroughput
+     * @description Describes the network throughput threshold at which scaling will occur
+     */
+    StackContainerScaleThresholdNetworkThroughput: {
+      /** @enum {string} */
+      type: "network-throughput";
+      details: {
+        private: boolean;
+        /**
+         * @description The limit (maximum) amount of throughput each instance of the given container can use before triggering a scaling event.
+         * @example 1G, 2M
+         */
+        bandwidth: string;
+      };
+    };
+    /**
+     * StackContainerScaleThreshold
+     * @description Discriminated union describing the different types of scaling threshold and their respective details
+     */
+    StackContainerScaleThreshold: components["schemas"]["StackContainerScaleThresholdRam"] | components["schemas"]["StackContainerScaleThresholdCpu"] | components["schemas"]["StackContainerScaleThresholdNetworkConnections"] | components["schemas"]["StackContainerScaleThresholdNetworkRequests"] | components["schemas"]["StackContainerScaleThresholdNetworkThroughput"];
+    /**
+     * StackContainerConfigScaling.yml
+     * @description Network configuration for a container.
+     */
+    StackContainerConfigScaling: {
+      /** @description The autoscaling group describes which servers should be deployed */
+      autoscale_group: string;
+      /** @description Describes how many instances should be running */
+      instances: {
+        /** @description Number of additional instances the auto-scaler will add/subtract per scaling event */
+        delta: number;
+        /** @description Maximum additional instances the auto-scaler will run at any time */
+        max: number;
+        /** @description Minimum number of instances per server */
+        max_server: number;
+        /** @description Minimum amount of time an instance will live */
+        min_ttl: components["schemas"]["Duration"];
+      };
+      /** @description Duration in which the auto-scaler will watch for changes */
+      window: components["schemas"]["Duration"];
+      /** @description An array of rules that dictate when a scaling event will be triggered */
+      thresholds: components["schemas"]["StackContainerScaleThreshold"][];
     };
     /** StackContainerConfigIntegrations */
     StackContainerConfigIntegrations: {
@@ -5196,6 +5404,16 @@ export interface components {
       cluster: string;
       features: components["schemas"]["ServerFeatures"];
       constraints: components["schemas"]["ServerConstraints"];
+      autoscale: {
+        group_id: components["schemas"]["ID"];
+      } | null;
+      /** @description Set to true when a server is created as part of an auto-scale event. */
+      ephemeral: boolean;
+      /** @description Details about a server's evacuation status. When an evacuation is in progress, no new container instances will be permitted on the server. */
+      evacuate?: {
+        /** @description The time when this server began evacuating instances. */
+        started: components["schemas"]["DateTime"];
+      } | null;
       state: components["schemas"]["ServerState"];
       /**
        * ServerEvents
@@ -5208,10 +5426,14 @@ export interface components {
         updated: components["schemas"]["DateTime"];
         /** @description The timestamp of when the server was deleted. */
         deleted: components["schemas"]["DateTime"];
+        /** @description The timestamp of when the latest instance was deployed to this server. */
+        latest_instance: components["schemas"]["DateTime"];
         /** @description Information about the provisioning of the server. */
         provisioning: {
           /** @description A timestamp of when the server started provisioning. */
           started: components["schemas"]["DateTime"];
+          /** @description A timestamp of when the server failed provisioning. */
+          failed: components["schemas"]["DateTime"];
           /** @description A timestamp of when the server completed provisioning. */
           completed: components["schemas"]["DateTime"];
         };
@@ -5254,6 +5476,7 @@ export interface components {
       location: string;
       /** @description A location code returned from the provider. */
       code: string;
+      availability_zones?: string[];
     };
     /**
      * InfrastructureProviderLocation
@@ -5512,6 +5735,14 @@ export interface components {
       }) | null;
     }) & components["schemas"]["State"];
     /**
+     * InstanceAutoScale
+     * @description Auto-scale details for instances created by auto-scale events
+     */
+    InstanceAutoScale: {
+      sibling_id: components["schemas"]["ID"];
+      min_ttl: components["schemas"]["DateTime"];
+    };
+    /**
      * Instance
      * @description A container instance resource.
      */
@@ -5573,6 +5804,7 @@ export interface components {
        */
       service: "discovery" | "vpn" | "loadbalancer" | null;
       state: components["schemas"]["InstanceState"];
+      autoscale: components["schemas"]["InstanceAutoScale"] | null;
       /**
        * InstanceEvents
        * @description A collection of timestamps for each event in the instnaces lifetime.
@@ -6397,7 +6629,7 @@ export interface components {
        * @description The activity event.
        * @enum {string}
        */
-      event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.services.vpn.user.create" | "environment.services.vpn.login" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.reconfigure" | "container.reconfigure" | "container.task.reconfigure.volumes" | "container.reconfigure.volumes" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instance.healthcheck.restarted" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migrate_revert" | "container.instance.task.migrate" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "stack.update" | "stack.task.delete" | "stack.create" | "stack.task.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.reconfigure.features" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.reconfigure.features" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create" | "infrastructure.ips.pool.task.delete";
+      event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.services.vpn.user.create" | "environment.services.vpn.login" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.reconfigure" | "container.reconfigure" | "container.task.reconfigure.volumes" | "container.reconfigure.volumes" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instances.autoscale.up" | "container.instances.autoscale.down" | "container.instance.healthcheck.restarted" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migrate_revert" | "container.instance.task.migrate" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "stack.update" | "stack.task.delete" | "stack.create" | "stack.task.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.reconfigure.features" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.reconfigure.features" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "infrastructure.autoscale.group.create" | "infrastructure.autoscale.group.update" | "infrastructure.autoscale.group.task.delete" | "infrastructure.autoscale.group.delete" | "infrastructure.ips.pool.task.delete" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create";
       /** @description A timestamp for when the activity took place. */
       time: components["schemas"]["DateTime"];
     };
@@ -7191,12 +7423,73 @@ export interface components {
       /** @description An array of ips this trigger key is usable from. */
       ips: string[];
     };
+    /** AutoScaleGroupScale */
+    AutoScaleGroupScale: {
+      /** AutoScaleGroupScaleDown */
+      down?: {
+        /** @description The minimum TTL for the server once deployed through an autoscale event. */
+        min_ttl?: components["schemas"]["Duration"];
+        /** @description The amount of time between last instance deployed and when the server can begin to get deleted. */
+        inactivity_period?: components["schemas"]["Duration"];
+        /** @enum {string} */
+        method?: "fifo" | "lifo";
+      };
+      /** AutoScaleGroupScaleUp */
+      up?: {
+        maximum?: number;
+      };
+    };
+    /** AutoScaleGroupInfrastructure */
+    AutoScaleGroupInfrastructure: {
+      models: {
+          provider: string;
+          model_id: string;
+          priority: number;
+          locations: {
+              id: string;
+              availability_zones: string[];
+            }[];
+        }[];
+    };
+    /** AutoScaleGroup */
+    AutoScaleGroup: {
+      id: string;
+      name: string;
+      identifier: string;
+      creator: components["schemas"]["CreatorScope"];
+      hub_id: string;
+      cluster: string;
+      scale?: components["schemas"]["AutoScaleGroupScale"];
+      infrastructure: components["schemas"]["AutoScaleGroupInfrastructure"];
+      /** AutoScaleGroupState */
+      state: ({
+        /**
+         * @description The current state of the auto-scale group.
+         * @enum {string}
+         */
+        current: "new" | "live" | "deleting" | "deleted";
+      }) & components["schemas"]["State"];
+      /**
+       * AutoScaleGroupEvents
+       * @description A collection of timestamps for each event in the auto-scale group's lifetime.
+       */
+      events: {
+        /** @description The timestamp of when the auto-scale group was created. */
+        created: components["schemas"]["DateTime"];
+        /** @description The timestamp of when the auto-scale group was updated. */
+        updated: components["schemas"]["DateTime"];
+        /** @description The timestamp of when the auto-scale group was deleted. */
+        deleted: components["schemas"]["DateTime"];
+        /** @description The timestamp of when the auto-scale group was last synced. */
+        last_sync: components["schemas"]["DateTime"];
+      };
+    };
     /**
      * ComponentIncludes
      * @description A resource thats assocaited with activity.
      */
     ComponentsIncludes: {
-      [key: string]: (components["schemas"]["Container"] | components["schemas"]["Instance"] | components["schemas"]["Environment"] | components["schemas"]["Image"] | components["schemas"]["ImageSource"] | components["schemas"]["Server"] | components["schemas"]["Pool"] | components["schemas"]["Provider"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["Zone"] | components["schemas"]["Record"] | components["schemas"]["ApiKey"] | components["schemas"]["Network"] | components["schemas"]["HubMembership"] | components["schemas"]["Pipeline"] | components["schemas"]["TriggerKey"] | components["schemas"]["ScopedVariable"] | components["schemas"]["Hub"] | components["schemas"]["Invoice"] | components["schemas"]["Method"]) | undefined;
+      [key: string]: (components["schemas"]["Container"] | components["schemas"]["Instance"] | components["schemas"]["Environment"] | components["schemas"]["Image"] | components["schemas"]["ImageSource"] | components["schemas"]["Server"] | components["schemas"]["Pool"] | components["schemas"]["Provider"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["Zone"] | components["schemas"]["Record"] | components["schemas"]["ApiKey"] | components["schemas"]["Network"] | components["schemas"]["HubMembership"] | components["schemas"]["Pipeline"] | components["schemas"]["TriggerKey"] | components["schemas"]["ScopedVariable"] | components["schemas"]["Hub"] | components["schemas"]["Invoice"] | components["schemas"]["Method"] | components["schemas"]["AutoScaleGroup"]) | undefined;
     };
     /**
      * ActivityIncludes
@@ -7454,6 +7747,22 @@ export interface components {
         [key: string]: string | undefined;
       };
       features: string[];
+    };
+    /**
+     * ServerModelsIncludes
+     * @description A resource associated with a server models.
+     */
+    ServerModelsIncludes: {
+      [key: string]: components["schemas"]["ProviderServer"] | undefined;
+    };
+    /**
+     * AutoScaleGroupIncludes
+     * @description All includable resource linkable to the given auto-scale group.
+     */
+    AutoScaleGroupIncludes: {
+      providers?: components["schemas"]["ProvidersIncludes"];
+      models?: components["schemas"]["ServerModelsIncludes"];
+      locations?: components["schemas"]["LocationsIncludes"];
     };
     /** ServerStatsCpuUsageTelemetry */
     ServerStatsCpuUsageTelemetry: {
@@ -8240,7 +8549,7 @@ export interface operations {
    * Update Account Invite
    * @description Update a given invite.
    */
-  resetPassword: {
+  updatePassword: {
     /** @description Req body for updating account invite */
     requestBody?: {
       content: {
@@ -8258,6 +8567,38 @@ export interface operations {
         content: {
           "application/json": {
             data?: components["schemas"]["Account"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Update Account Invite
+   * @description Update a given invite.
+   */
+  resetPassword: {
+    /** @description Req body for updating account invite */
+    requestBody?: {
+      content: {
+        "application/json": OneOf<[{
+          email: {
+            address: string;
+          };
+        }, {
+          token: string;
+          password: string;
+        }]>;
+      };
+    };
+    responses: {
+      /** @description Returns success true */
+      200: {
+        content: {
+          "application/json": {
+            data?: {
+              success: boolean;
+            };
           };
         };
       };
@@ -8956,6 +9297,8 @@ export interface operations {
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
          */
         filter?: {
+          /** @description `filter[creator]=account-ID` filter for environments matching a particular creator, such as `account-ID`. */
+          creator?: string;
           /** @description `filter[identifier]=value` List only those environments matching this identifier. May return multiple results. */
           identifier?: string;
           /** @description `filter[search]=value` search for a value associated with a field on the given environment(s). */
@@ -9731,6 +10074,8 @@ export interface operations {
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
          */
         filter?: {
+          /** @description `filter[creator]=account-ID` filter for containers matching a particular creator, such as `account-ID` or `environment-ID` */
+          creator?: string;
           /** @description `filter[identifier]=value` List only those containers matching this identifier. May return multiple results. */
           identifier?: string;
           /** @description `filter[search]=value` search containers for a value associated with a field on the given container(s). */
@@ -12358,6 +12703,160 @@ export interface operations {
         content: {
           "application/json": {
             data?: components["schemas"]["TaskDescriptor"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Get Auto-Scale Groups list
+   * @description Requires the `autoscale-groups-manage` capability.
+   */
+  getAutoScaleGroups: {
+    parameters: {
+      query?: {
+        page?: components["parameters"]["PageParam"];
+        /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
+        include?: ("providers" | "models" | "locations")[];
+        /**
+         * @description ## Filter Field
+         * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
+         */
+        filter?: {
+          /** @description `filter[search]=value` search for a value associated with a field on the given auto-scale group(s). */
+          search?: string;
+          /** @description `filter[cluster]=value` return a list of auto-scale groups that are associated with the specified cluster. */
+          cluster?: string;
+          /** @description `filter[identifier]=value` list only those auto-scale groups matching this identifier. May return multiple results. */
+          identifier?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the provider's current state. */
+          state?: string;
+        };
+      };
+    };
+    responses: {
+      /** @description A collection of autoscale group resources. */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["AutoScaleGroup"][];
+            includes?: components["schemas"]["AutoScaleGroupIncludes"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Create Auto-Scale Group
+   * @description Requires the 'autoscale-groups-manage'
+   */
+  createAutoScaleGroup: {
+    /** @description Parameters for creating an auto-scale group */
+    requestBody?: {
+      content: {
+        "application/json": {
+          name: string;
+          identifier: string;
+          cluster: string;
+          scale: components["schemas"]["AutoScaleGroupScale"];
+          infrastructure: components["schemas"]["AutoScaleGroupInfrastructure"];
+        };
+      };
+    };
+    responses: {
+      /** @description Returns an auto-scale group resource. */
+      201: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["AutoScaleGroup"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Fetch Auto-Scale Group
+   * @description Requires the `autoscale-groups-view` capability.
+   */
+  getAutoScaleGroup: {
+    parameters: {
+      query?: {
+        /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
+        include?: ("providers" | "models" | "locations")[];
+      };
+      path: {
+        /** @description The ID for the given auto-scale group. */
+        groupId: string;
+      };
+    };
+    responses: {
+      /** @description A single auto-scale group resource. */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["AutoScaleGroup"];
+            includes?: components["schemas"]["AutoScaleGroupIncludes"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Remove Auto-Scale Group
+   * @description Requires the `autoscale-group-manage` capability.
+   */
+  removeAutoScaleGroup: {
+    parameters: {
+      path: {
+        /** @description The ID for the given autoscale group. */
+        groupId: string;
+      };
+    };
+    responses: {
+      /** @description Returns a task descriptor. */
+      202: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["TaskDescriptor"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Update Auto-Scale Group
+   * @description Requires the `autoscale-groups-manage` capability.
+   */
+  updateAutoScaleGroup: {
+    parameters: {
+      path: {
+        /** @description The ID for the given auto-scale group. */
+        groupId: string;
+      };
+    };
+    /** @description Parameters for creating an auto-scale group */
+    requestBody?: {
+      content: {
+        "application/json": {
+          name: string;
+          identifier: string;
+          cluster: string;
+          scale: components["schemas"]["AutoScaleGroupScale"];
+          infrastructure: components["schemas"]["AutoScaleGroupInfrastructure"];
+        };
+      };
+    };
+    responses: {
+      /** @description Returns an autoscale group resource. */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["AutoScaleGroup"];
           };
         };
       };
