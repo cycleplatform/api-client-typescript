@@ -1,6 +1,6 @@
 {
   "name": "@cycleplatform/api-client-typescript",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "description": "A Cycle API client for the web/nodejs",
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
