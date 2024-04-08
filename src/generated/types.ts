@@ -12,145 +12,149 @@ type OneOf<T extends any[]> = T extends [infer Only] ? Only : T extends [infer A
 export interface paths {
   "/v1/account": {
     /**
-     * Fetch Account
-     * @description Gets the account associated with the authenticated user token.
+     * Get Account
+     * @description Gets the Account associated with the authenticated bearer token.
      */
     get: operations["getAccount"];
     /**
      * Delete Account
-     * @description Deletes the current account
+     * @description Puts the Account into a `deleted` state. This will fail if the Account is the current `OWNER` of an active Hub.
      */
-    delete: operations["removeAccount"];
+    delete: operations["deleteAccount"];
     /**
      * Update Account
-     * @description Updates the current account
+     * @description Updates the Account.
      */
     patch: operations["updateAccount"];
   };
   "/v1/account/invites": {
     /**
      * List Account Invites
-     * @description Lists invites associated with a given account.
+     * @description Lists the pending Hub Memberships (also known as Invites) associated with the Account.
      */
     get: operations["getAccountInvites"];
   };
   "/v1/account/invites/{inviteId}": {
     /**
-     * Update Account Invite
-     * @description Update a given invite.
+     * Accept or reject an Invite to join a Hub
+     * @description Accept/reject a pending Invite to join a Hub.
      */
     patch: operations["updateAccountInvite"];
   };
   "/v1/account/memberships": {
     /**
-     * List Account Memberships
-     * @description Lists the memberships for a given account.
+     * Get Account Memberships
+     * @description Lists the Hub Memberships for a given account.
      */
     get: operations["getAccountMemberships"];
   };
   "/v1/account/logins": {
     /**
-     * List Account Logins
+     * Get Account Logins
      * @description Lists logins associated with a given account.
      */
     get: operations["getAccountLogins"];
   };
   "/v1/account/password": {
     /**
-     * Update Account Invite
-     * @description Update a given invite.
+     * Change Password
+     * @description Change the password on the Account. Requires the current password of the Account to be submitted.
      */
-    patch: operations["updatePassword"];
+    patch: operations["changePassword"];
   };
   "/v1/account/reset-password": {
     /**
-     * Update Account Invite
-     * @description Update a given invite.
+     * Reset Password
+     * @description Initiate a password reset for the Account. A confirmation email will be sent to the email associated with the Account, and the token in the email must be passed in a second call to this endpoint.
      */
     post: operations["resetPassword"];
   };
   "/v1/account/2fa/setup": {
     /**
-     * Get TwoFa setup info
-     * @description Get barcode and secret for TwoFa authentication
+     * Get Two-Factor Auth Setup
+     * @description Gets the barcode and secret required for setting up two-factor authentication for the Account.
      */
-    get: operations["getTwoFaInfo"];
+    get: operations["getTwoFactorAuthSetup"];
     /**
-     * Setup TwoFa
-     * @description Setup TwoFa for an account
+     * Enable Two-Factor Auth
+     * @description Enables two-factor auth for the Account. Retrieve the token from an authenticator app using the secret from `getTwoFactorAuthSetup`.
      */
-    post: operations["setupTwoFa"];
+    post: operations["enableTwoFactorAuth"];
   };
   "/v1/account/2fa/disable": {
     /**
-     * Disable TwoFa
-     * @description Disable TwoFa for an account
+     * Disable Two-Factor Auth
+     * @description Disables two-factor auth for the account.
      */
-    post: operations["disableTwoFa"];
+    post: operations["disableTwoFactorAuth"];
   };
   "/v1/account/2fa/recover": {
     /**
-     * Disable TwoFa
-     * @description Disable TwoFa for an account
+     * Recover Two-Factor Auth
+     * @description Returns a new two-factor auth setup to reset the Account's two-factor auth.
      */
-    post: operations["recoverTwoFa"];
+    post: operations["recoverTwoFactorAuth"];
   };
   "/v1/announcements": {
     /**
-     * List Announcements
-     * @description Lists any important updates posted by the Cycle team
+     * Get Announcements
+     * @description Lists any important updates posted by the Cycle team.
      */
-    get: operations["getAnnouncementsList"];
+    get: operations["getAnnouncements"];
   };
   "/v1/billing/orders": {
     /**
      * List Billing Orders
-     * @description Requires the `billing-orders-manage` capability.
+     * @description Requires the `billing-services-manage` capability.
      */
     get: operations["getOrders"];
     /**
-     * Create order
-     * @description Requires TODO capability.
+     * Create Billing Order
+     * @description Requires the `billing-orders-manage` capability.
      */
     post: operations["createOrder"];
   };
   "/v1/billing/orders/{orderId}": {
     /**
-     * Fetch Billing Order
-     * @description Requires the `billing-orders-manage` capability.
+     * Get Billing Order
+     * @description Requires the `billing-services-manage` capability.
      */
     get: operations["getBillingOrder"];
     /**
      * Update Billing Order
-     * @description Requires the `billing-orders-manage` capability.
+     * @description Requires the `billing-services-manage` capability.
      */
     patch: operations["updateBillingOrder"];
   };
   "/v1/billing/orders/{orderId}/tasks": {
     /**
-     * Create Order Job
-     * @description Used to confirm an order
+     * Create Billing Order Job
+     * @description Used to confirm a Billing Order.
+     *
+     * Requires the `billing-services-manage` capability.
      */
     post: operations["createOrderJob"];
   };
   "/v1/billing/plans/support": {
     /**
      * List Support Plans
-     * @description Doesn't require a specific capability to call.
+     * @deprecated
      */
     get: operations["getBillingSupportPlans"];
   };
   "/v1/billing/plans/tiers": {
     /**
-     * List Tiers
-     * @description Returns list of availiable tiers
+     * List Billing Tiers
+     * @description Returns list of availiable Billing Tiers.
      */
-    get: operations["getTiers"];
+    get: operations["getBillingTiers"];
   };
   "/v1/billing/methods": {
     /**
      * List Billing Methods
-     * @description Requires the `billing-methods-manage` capability.
+     * @description Lists the Billing Methods associated with the Hub defined in X-Hub-ID.
+     *
+     * Requires the `billing-methods-manage` capability.
      */
     get: operations["getBillingMethods"];
     /**
@@ -161,15 +165,16 @@ export interface paths {
   };
   "/v1/billing/methods/{methodId}": {
     /**
-     * Fetch Billing Method
+     * Get Billing Method
      * @description Requires the `billing-methods-manage` capability.
      */
     get: operations["getBillingMethod"];
     /**
      * Delete Biilling Method
-     * @description Requires the `billing-methods-manage` capability.
+     * @description Deletes the Billing Method. However, the primary payment method may not be deleted.
+     * Requires the `billing-methods-manage` capability.
      */
-    delete: operations["removeBillingMethod"];
+    delete: operations["deleteBillingMethod"];
     /**
      * Update Billing Invoice
      * @description Requires the `billing-methods-manage` capability.
@@ -179,13 +184,15 @@ export interface paths {
   "/v1/billing/invoices": {
     /**
      * List Billing Invoices
-     * @description Requires the `billing-invoices-view` capability.
+     * @description List the Invoices assoicated with the Hub.
+     *
+     * Requires the `billing-invoices-view` capability.
      */
     get: operations["getInvoices"];
   };
   "/v1/billing/invoices/{invoiceId}": {
     /**
-     * Fetch Billing Invoice
+     * Get Billing Invoice
      * @description Requires the `billing-invoices-view` capability.
      */
     get: operations["getInvoice"];
@@ -193,7 +200,9 @@ export interface paths {
   "/v1/billing/invoices/{invoiceId}/tasks": {
     /**
      * Create Invoice Job
-     * @description Requires the `billing-invoices-pay` capability.
+     * @description Creates a new Job on an Invoice. Generally used to make a payment on an Invoice.
+     *
+     * Requires the `billing-invoices-pay` capability.
      */
     post: operations["createInvoiceJob"];
   };
@@ -206,28 +215,27 @@ export interface paths {
   };
   "/v1/billing/services/{servicesId}": {
     /**
-     * Fetch Billing Service
+     * Get Billing Service
      * @description Requries the `billing-services-view` capability.
      */
     get: operations["getBillingService"];
   };
   "/v1/billing/services/overages": {
-    /**
-     * List Billing Overages
-     * @description Doesn't require a specific capability.
-     */
+    /** List Billing Overages */
     get: operations["getBillingOverages"];
   };
   "/v1/billing/credits": {
     /**
      * List Billing Credits
-     * @description Requires the `billing-credits-view` capability.
+     * @description Lists the Billing Credits associated with the current Hub.
+     *
+     * Requires the `billing-credits-view` capability.
      */
     get: operations["getCredits"];
   };
   "/v1/billing/credits/{creditsId}": {
     /**
-     * Fetch Billing Credit
+     * Get Billing Credit
      * @description Requires the `billing-credits-view` capability.
      */
     get: operations["getCredit"];
@@ -246,39 +254,45 @@ export interface paths {
   };
   "/v1/environments/{environmentId}": {
     /**
-     * Fetch Environment
+     * Get Environment
      * @description Requires the `environments-view` capability.
      */
-    get: operations["getEnvironmentById"];
+    get: operations["getEnvironment"];
     /**
-     * Remove Environment
-     * @description Requires the `environments-update` capability.
+     * Delete Environment
+     * @description Requires the `environments-manage` capability.
      */
-    delete: operations["removeEnvironment"];
+    delete: operations["deleteEnvironment"];
     /**
      * Update Environment
-     * @description Updates the specificed environment, setting the values of the parameters passed. If any parameters are omitted, they will be left unchanged. Requires the `environments-update` capability.
+     * @description Updates the specificed Environment.
+     *
+     * Requires the `environments-manage` capability.
      */
     patch: operations["updateEnvironment"];
   };
   "/v1/environments/{environmentId}/tasks": {
     /**
      * Create Environment Job
-     * @description Create a job for an environment, such as 'start' or 'stop'. Requires the `environments-state` capability.
+     * @description Create a job for an Environment, such as 'start' or 'stop'.
+     *
+     * Requires the `environments-manage` capability.
      */
     post: operations["createEnvironmentJob"];
   };
   "/v1/environments/{environmentId}/summary": {
     /**
-     * Fetch Environment Summary
-     * @description Fetches a single summary object for a specific environment. Contains useful and relevant data/statistics that would otherwise be several separate API calls.  Requires the `environments-view` capability.
+     * Get Environment Summary
+     * @description Gets the summary of an Environment. Contains useful and relevant data/statistics that would otherwise be several separate API calls.
+     *
+     * Requires the `environments-view` capability.
      */
     get: operations["getEnvironmentSummary"];
   };
   "/v1/environments/{environmentId}/deployments": {
     /**
      * List Environment Deployments
-     * @description Gets a list of all deployments in the specified environment.
+     * @description Gets a list of all deployments in the specified Environment.
      *
      * Requires the `environments-view` capability.
      */
@@ -286,78 +300,75 @@ export interface paths {
   };
   "/v1/environments/{environmentId}/services/lb": {
     /**
-     * Fetch LB Info
+     * Get Load Balancer Service
      * @description Requires the `environments-view` capability.
      */
-    get: operations["getLoadBalancerInfo"];
+    get: operations["getLoadBalancerService"];
   };
   "/v1/environments/{environmentId}/services/lb/tasks": {
     /**
-     * Reconfigure LB
+     * Create Load Balancer Service Job
      * @description Creates a task that will update the load balancer's configuration.
      */
-    post: operations["reconfigureLoadBalancer"];
+    post: operations["createLoadBalancerServiceJob"];
   };
   "/v1/environments/{environmentId}/services/lb/telemetry/report": {
     /**
-     * Fetch load balancer v1 telemetry report
-     * @description ## Permissions
-     * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested environment.
+     * Get Load Balancer Telemetry Report
+     * @description Fetches a telemetry report for Cycle's native load balancer for the specified range.
      *
-     * ## Details
-     * Fetches a telemetry report for Cycle's native load balancer for the specified range.
+     * ## Permissions
+     * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested Environment.
      */
     get: operations["getLoadBalancerTelemetryReport"];
   };
   "/v1/environments/{environmentId}/services/lb/telemetry/latest": {
     /**
-     * Fetch the latest load balancer v1 telemetry.
-     * @description ## Permissions
-     * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested environment.
+     * Get Latest Load Balancer Telemetry Report.
+     * @description Fetches the latest telemetry report for Cycle's native load balancer. Provides detailed information on a per-instance basis.
      *
-     * ## Details
-     * Fetches the latest telemetry report for Cycle's native load balancer. Provides detailed information on a per-instance basis.
+     * ## Permissions
+     * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested Environment.
      */
     get: operations["getLoadBalancerLatestTelemetryReport"];
   };
   "/v1/environments/{environmentId}/services/lb/telemetry/latest-controllers": {
     /**
-     * Gets the latest relevant controllers where traffic data is present.
-     * @description ## Permissions
-     * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested environment.
+     * Get Latest Load Balancer Controller Telemetry
+     * @description Gets the controller information for the specified load balancer. Returns a similar struct to the 'latest' load balancer telemetry call, but does NOT return snapshots, just the controller information.
      *
-     * ## Details
-     * Gets the controller information for the specified load balancer. Returns a similar struct to the 'latest' load balancer telemetry call, but does NOT return snapshots, just the controller information.
+     * ## Permissions
+     * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested Environment.
      */
     get: operations["getLoadBalancerTelemetryLatestControllers"];
   };
   "/v1/environments/{environmentId}/services/discovery/tasks": {
     /**
-     * Reconfigure Discovery
+     * Create Discovery Service Job
      * @description Creates a task that will update the discovery service's configuration.
      */
-    post: operations["reconfigureDiscovery"];
+    post: operations["createDiscoveryServiceJob"];
   };
   "/v1/environments/{environmentId}/services/scheduler/tasks": {
     /**
-     * Reconfigure Scheduler
+     * Create Scheduler Service Job
      * @description Creates a task that will update the scheduler service's configuration.
      */
-    post: operations["reconfigureScheduler"];
+    post: operations["createSchedulerServiceJob"];
   };
   "/v1/environments/{environmentId}/services/vpn": {
     /**
-     * Fetch VPN Info
+     * Get VPN Service
      * @description Requires the `environments-vpn` capability.
      */
-    get: operations["getVPNInfo"];
+    get: operations["getVPNService"];
   };
   "/v1/environments/{environmentId}/services/vpn/logins": {
     /**
-     * Fetch VPN Info
+     * Get VPN Logins
      * @description Requires the `environments-vpn` capability.
      */
-    get: operations["getVpnLogins"];
+    get: operations["getVPNLogins"];
   };
   "/v1/environments/{environmentId}/services/vpn/users": {
     /**
@@ -373,22 +384,24 @@ export interface paths {
   };
   "/v1/environments/{environmentId}/services/vpn/users/{userId}": {
     /**
-     * Remove VPN user
+     * Delete VPN User
      * @description Requires the `environments-vpn-manage` capability.
      */
-    delete: operations["removeVPNUser"];
+    delete: operations["deleteVPNUser"];
   };
   "/v1/environments/{environmentId}/services/vpn/tasks": {
     /**
-     * Create Environment VPN Job
-     * @description Used to reconfigure or reset the environment VPN. Requires the `environments-vpn-manage` capability.
+     * Create VPN Service Job
+     * @description Used to reconfigure or reset the Environment VPN. Requires the `environments-vpn-manage` capability.
      */
-    post: operations["createEnvironmentVpnTask"];
+    post: operations["createVPNServiceJob"];
   };
   "/v1/environments/{environmentId}/telemetry/instances": {
     /**
-     * List Telemetry Data
-     * @description Requires the `environments-view` capability.
+     * Get Environment Instances Telemetry
+     * @description Get telemetry points on the number of instances and their states over a range of time.
+     *
+     * Requires the `environments-view` capability.
      */
     get: operations["getEnvironmentInstancesTelemetry"];
   };
@@ -397,7 +410,7 @@ export interface paths {
      * List Scoped Variables
      * @description Requires the `scoped-variables-view` capability.
      */
-    get: operations["listScopedVariables"];
+    get: operations["getScopedVariables"];
     /**
      * Create Scoped Variable
      * @description Requires the `scoped-variables-manage` capability.
@@ -406,15 +419,15 @@ export interface paths {
   };
   "/v1/environments/{environmentId}/scoped-variables/{scopedVariableId}": {
     /**
-     * Fetch Scoped Variable
+     * Get Scoped Variable
      * @description Requires the `scoped-variables-view` capability.
      */
-    get: operations["fetchScopedVariable"];
+    get: operations["getScopedVariable"];
     /**
-     * Remove Scoped Variable
+     * Delete Scoped Variable
      * @description Requires the `scoped-variables-manage` capability.
      */
-    delete: operations["removeScopedVariableById"];
+    delete: operations["deleteScopedVariable"];
     /**
      * Update Scoped Variable
      * @description Requires the `scoped-variables-manage` capability.
@@ -435,24 +448,28 @@ export interface paths {
   };
   "/v1/containers/{containerId}": {
     /**
-     * Fetch Container
-     * @description Requires the `containers-view` capability.
+     * Get Container
+     * @description Gets a Container.
+     *
+     * Requires the `containers-view` capability.
      */
-    get: operations["getContainerById"];
+    get: operations["getContainer"];
     /**
      * Delete Container
-     * @description Requires the `containers-update` capability.
+     * @description Requires the `containers-manage` capability.
      */
-    delete: operations["removeContainer"];
+    delete: operations["deleteContainer"];
     /**
      * Update Container
-     * @description Updates the specified container, setting the values of the parameters passed.  If any parameters are omitted, they will be left unchanged. Requires the `contianers-update` capability.
+     * @description Updates the specified Container.
+     *
+     * Requires the `containers-manage` capability.
      */
     patch: operations["updateContainer"];
   };
   "/v1/containers/{containerId}/summary": {
     /**
-     * Fetch Container Summary
+     * Get Container Summary
      * @description Requires the `containers-view` capability.
      */
     get: operations["getContainerSummary"];
@@ -460,7 +477,15 @@ export interface paths {
   "/v1/containers/{containerId}/tasks": {
     /**
      * Create Container Job
-     * @description Used to perform different actions on a given container. Requires the `containers-state`, `containers-update`, or `containers-volumes-manage` capability (respectively).
+     * @description Used to perform different actions on a given Container.
+     *
+     * Requires the following capabilities based on the task:
+     * `start`: `containers-manage`
+     * `stop`: `containers-manage`
+     * `reconfigure`: `containers-manage`
+     * `volumes.reconfigure`: `containers-volumes-manage`
+     * `reimage`: `containers-manage`
+     * `scale`: `containers-manage`
      */
     post: operations["createContainerJob"];
   };
@@ -471,126 +496,156 @@ export interface paths {
      */
     get: operations["getInstances"];
     /**
-     * Create Instance(s)
-     * @description Requires the `containers-update` capability.
+     * Create Instances
+     * @description Manually create Instances of a Container.
+     *
+     * Requires the `containers-update` capability.
      */
-    post: operations["createContainerInstance"];
+    post: operations["createInstances"];
     /**
-     * Delete Instance(s)
-     * @description Requires the `containers-update` capability.
+     * Delete Container Instance(s)
+     * @description Manually delete Instances of a Container.
+     *
+     * Requires the `containers-update` capability.
      */
-    delete: operations["removeMultipleContainerInstances"];
+    delete: operations["deleteContainerInstances"];
   };
   "/v1/containers/{containerId}/instances/{instanceId}": {
     /**
-     * Fetch Instance
+     * Get Instance
      * @description Requires the `containers-view` capability.
      */
-    get: operations["getContainerInstance"];
+    get: operations["getInstance"];
     /**
-     * Delete Instance
+     * Delete Container Instance
      * @description Requires the `containers-update` capability.
      */
-    delete: operations["removeContainerInstance"];
+    delete: operations["deleteInstance"];
   };
   "/v1/containers/{containerId}/instances/{instanceId}/ssh": {
     /**
-     * Fetch SSH Credentials
-     * @description Requires the `containers-ssh` capability.
+     * Generate Instance SSH Credentials
+     * @description Generates credentials for connecting to an Instance via SSH. The generated endpoint/secret can be used to log in via SSH
+     * into the Instance without exposing ports on the container or host.
+     *
+     * Requires the `containers-ssh` capability.
      */
-    get: operations["getSSHConnection"];
+    get: operations["generateInstanceSSHCredentials"];
     /**
      * Expire SSH Credentials
-     * @description Requires the `containers-ssh` capability.
+     * @description Instantly expires any SSH credentials generated for this Instance.
+     *
+     * Requires the `containers-ssh` capability.
      */
-    delete: operations["expireInstanceSSHTokens"];
+    delete: operations["expireInstanceSSHCredentials"];
   };
   "/v1/containers/{containerId}/instances/{instanceId}/tasks": {
     /**
-     * Create Instance Task
-     * @description Used to perform different actions on a given container instance, requries `containers-instance-migrate` capability.
+     * Create Instance Job
+     * @description Used to perform different actions on a given Container Instance. Can be used to migrate or undo a migration of a Container Instance.
+     *
+     * Requires the `containers-instance-migrate` capability.
      */
-    post: operations["createContainerInstanceJob"];
+    post: operations["createInstanceJob"];
   };
   "/v1/containers/{containerId}/instances/{instanceId}/volumes": {
     /**
-     * Fetch Instance Volume(s)
+     * List Instance Volumes
      * @description Requires the `containers-view` capability.
      */
-    get: operations["getContainerInstanceVolumes"];
+    get: operations["getInstanceVolumes"];
   };
   "/v1/containers/{containerId}/instances/{instanceId}/telemetry/resources/report": {
     /**
-     * Fetch Instance Telemetry Report
-     * @description Requires the `containers-view` capability.
+     * Get Instance Telemetry Report
+     * @description Retrieves a point-in-time report of an Instance's resource usage (CPU, RAM, Network, Storage, etc).
+     *
+     * Requires the `containers-view` capability.
      */
-    get: operations["getInstanceResourcesTelemetryReport"];
+    get: operations["getInstanceTelemetryReport"];
   };
   "/v1/containers/{containerId}/instances/{instanceId}/telemetry/resources/stream": {
     /**
-     * Instance Telemetry Stream Credentials
-     * @description Requires the `containers-view` capability. Retrieves an access token and URL to open a websocket to for streaming instance telemetry live. This connects directly to the compute layer on the server the instance is hosted on, and streams telemetry in real time.
+     * Instance Telemetry Stream Authorization
+     * @description Retrieves an access token and URL to open a websocket to for streaming instance telemetry live.
+     * This connects directly to the compute layer on the server the instance is hosted on, and streams telemetry in real time.
+     *
+     * Requires the `containers-view` capability.
      */
-    get: operations["getInstanceResourcesTelemetryStream"];
+    get: operations["getInstanceTelemetryStreamAuth"];
   };
   "/v1/containers/{containerId}/servers": {
     /**
      * List Container Servers
-     * @description Requires the `containers-view` capability.
+     * @description Lists all Servers that currently have an Instance of this Container deployed to them.
+     *
+     * Requires the `containers-view` capability.
      */
-    get: operations["ContainersListServers"];
+    get: operations["getContainerServers"];
   };
   "/v1/containers/{containerId}/servers/usable": {
     /**
-     * List Usable Servers
-     * @description Requires the `containers-view` capability.
+     * List Compatible Servers
+     * @description Gets a list of servers that are compatible with the specified Container and its restrictions (tags, etc).
+     *
+     * Requires the `containers-view` capability.
      */
-    get: operations["getUsableServers"];
+    get: operations["getCompatibleServers"];
   };
   "/v1/containers/{containerId}/compatible-images": {
     /**
-     * Fetch Compatible Images
-     * @description Requires the `containers-view` capability.
+     * Get Compatible Images
+     * @description Returns a list of Images that are compatible with the specified Container.
+     * Used to quickly find Images that can be used for reimaging the Container.
+     *
+     * Requires the `containers-view` capability.
      */
     get: operations["getCompatibleImages"];
   };
   "/v1/containers/{containerId}/backups": {
     /**
-     * List Backups
+     * List Container Backups
      * @description Requires the `containers-backups-view` capability.
      */
-    get: operations["getBackupsCollection"];
+    get: operations["getContainerBackups"];
   };
   "/v1/containers/{containerId}/backups/{backupId}": {
     /**
-     * Fetch Backup
-     * @description Requires the `containers-backups-view` capability.
+     * Get a specific Container Backup
+     * @description Gets the specified Container Backup.
+     *
+     * Requires the `containers-backups-view` capability.
      */
-    get: operations["getBackup"];
+    get: operations["getContainerBackup"];
     /**
-     * Delete Backup
+     * Delete Container Backup
      * @description Requires the `containers-backups-manage` capability.
      */
-    delete: operations["removeBackup"];
+    delete: operations["deleteContainerBackup"];
   };
   "/v1/containers/{containerId}/backups/{backupId}/tasks": {
     /**
-     * Create Backup Job
-     * @description Used to restore a backup for a given container instance. Requires the `containers-backups-manage` capability.
+     * Create Container Backup Job
+     * @description Creates a Container Backup Job.
+     * Can be used to restore a Container Backup for a given Container Instance.
+     *
+     * Requires the `containers-backups-manage` capability.
      */
-    post: operations["restoreBackupJob"];
+    post: operations["createContainerBackupJob"];
   };
   "/v1/containers/{containerId}/backups/{backupId}/logs": {
     /**
-     * List Backup Logs
+     * List Container Backup Logs
      * @description Requires the `containers-backups-view` capability.
      */
-    get: operations["getBackupLogs"];
+    get: operations["getContainerBackupLogs"];
   };
   "/v1/containers/{containerId}/telemetry/instances": {
     /**
      * List Telemetry Data
-     * @description Requires the `containers-view` capability.
+     * @description Gets a list of telemetry points describing the number and state of all Instances of this Container at a point in time.
+     *
+     * Requires the `containers-view` capability.
      */
     get: operations["getContainerInstancesTelemetry"];
   };
@@ -599,7 +654,7 @@ export interface paths {
      * List DNS Zones
      * @description Requires the `dns-view` capability.
      */
-    get: operations["getZonesCollection"];
+    get: operations["getDNSZones"];
     /**
      * Create DNS Zone
      * @description Requires the `dns-manage` capability.
@@ -608,15 +663,15 @@ export interface paths {
   };
   "/v1/dns/zones/{zoneId}": {
     /**
-     * Fetch DNS Zone
+     * Get DNS Zone
      * @description Requires the `dns-view` capability.
      */
     get: operations["getDNSZone"];
     /**
-     * Remove DNS Zone
+     * Delete DNS Zone
      * @description Requires the `dns-manage` capability.
      */
-    delete: operations["removeDNSZone"];
+    delete: operations["deleteDNSZone"];
     /**
      * Update DNS Zone
      * @description Requires the `dns-manage` capability.
@@ -626,111 +681,111 @@ export interface paths {
   "/v1/dns/zones/{zoneId}/tasks": {
     /**
      * Create DNS Zone Job
-     * @description Used to perform different actions on a given DNS zone, requires the `dns-manage` capability.
+     * @description Used to perform different actions on a given DNS zone.
+     *
+     * Requires the `dns-manage` capability.
      */
-    post: operations["DNSZoneTask"];
+    post: operations["createDNSZoneJob"];
   };
   "/v1/dns/zones/{zoneId}/records": {
     /**
-     * List Records
+     * List DNS Zone Records
      * @description Requires the `dns-view` capability.
      */
-    get: operations["getRecordsCollection"];
+    get: operations["getDNSZoneRecords"];
     /**
-     * Create Record
+     * Create DNS Zone Record
      * @description Requires the `dns-manage` capability.
      */
-    post: operations["createDNSRecord"];
+    post: operations["createDNSZoneRecord"];
   };
   "/v1/dns/zones/{zoneId}/records/{recordId}": {
     /**
-     * Delete Record
+     * Delete DNS Zone Record
      * @description Requires the `dns-manage` capability.
      */
-    delete: operations["removeDNSRecord"];
+    delete: operations["deleteDNSZoneRecord"];
     /**
-     * Update DNS Record
+     * Update DNS Zone Record
      * @description Requires the `dns-manage` capability.
      */
-    patch: operations["updateDNSRecord"];
+    patch: operations["updateDNSZoneRecord"];
   };
   "/v1/dns/zones/{zoneId}/records/{recordId}/tasks": {
     /**
-     * Create a DNS record Job
-     * @description Used to perform different actionson a given DNS record, requires the `dns-manage` capability.
+     * Create a DNS Zone Record Job
+     * @description Used to perform different actions on a given DNS Zone record.
+     *
+     * Requires the `dns-manage` capability.
      */
-    post: operations["DNSRecordTask"];
+    post: operations["createDNSZoneRecordJob"];
   };
   "/v1/dns/tls/attempts": {
     /**
-     * List TLS Generate Attempts
+     * List TLS Generation Attempts
      * @description Requires the `dns-view` capability.
      */
-    get: operations["DNSTLSAttempts"];
+    get: operations["getTLSGenerationAttempts"];
   };
   "/v1/dns/tls/certificates/lookup": {
     /**
-     * Fetch Domain TLS Certificate
-     * @description Requires the `dns-view` capability.
+     * Lookup TLS Certificate
+     * @description Lookup and retrieve a TLS certificate bundle for a specified domain.
+     *
+     * Requires the `dns-view` capability.
      */
-    get: operations["lookupDnsCertificate"];
+    get: operations["lookupTLSCertificate"];
   };
   "/v1/hubs": {
     /**
      * List Hubs
-     * @description Lists all associated hubs.
+     * @description Lists all associated Hubs.
      */
     get: operations["getHubs"];
     /**
      * Create Hub
-     * @description Create a hub resource.
+     * @description Create a Hub.
      */
     post: operations["createHub"];
   };
   "/v1/hubs/current": {
     /**
-     * Fetch Hub
+     * Get Hub
      * @description Requires the `hubs-view` capability.
      */
     get: operations["getHub"];
     /**
-     * Remove Hub
+     * Delete Hub
      * @description Requires the `hubs-delete` capability. This can only be aquired by being the hub owner.
      */
-    delete: operations["removeHub"];
+    delete: operations["deleteHub"];
     /**
      * Update Hub
      * @description Updates the specified hub, setting the values of the parameters passed.
      */
     patch: operations["updateHub"];
   };
-  "/v1/hubs/current/activity": {
-    /**
-     * List Activity
-     * @description Doesn't require a specific capability.
-     */
-    get: operations["getHubActivity"];
-  };
   "/v1/hubs/capabilities": {
-    /**
-     * List Hub Capabilities
-     * @description Does not require a capability.
-     */
+    /** List Hub Capabilities */
     get: operations["getHubCapabilities"];
   };
   "/v1/hubs/current/usage": {
     /**
-     * Fetch Hub
+     * Get Hub Usage
      * @description Requires the `hubs-view` capability.
      */
     get: operations["getHubUsage"];
   };
+  "/v1/hubs/current/activity": {
+    /** List Hub Activity */
+    get: operations["getHubActivity"];
+  };
   "/v1/hubs/current/invites/{inviteId}": {
     /**
-     * Remove Hub Invite
+     * Delete Hub Invite
      * @description Requires the `hub-invites-manage` capability.
      */
-    delete: operations["removeHubInvite"];
+    delete: operations["deleteHubInvite"];
   };
   "/v1/hubs/current/invites": {
     /**
@@ -746,38 +801,41 @@ export interface paths {
   };
   "/v1/hubs/current/members": {
     /**
-     * List Hub Memberships
+     * List Hub Members
      * @description Requires the `hubs-members-view` capability.
      */
     get: operations["getHubMembers"];
   };
   "/v1/hubs/current/membership": {
     /**
-     * List Hub Memberships
-     * @description Gets the membership information for the current hub for the requesting account.
+     * Get Hub Membership
+     * @description Gets the Hub Membership for the requesting Account.
      */
     get: operations["getHubMembership"];
   };
   "/v1/hubs/current/members/{memberId}": {
     /**
-     * Fetch Hub Member
+     * Get Hub Member
      * @description Requires the `hubs-members-view` capability.
      */
     get: operations["getHubMember"];
     /**
-     * Remove Hub Member
+     * Delete Hub Member
      * @description Requires the `hubs-members-manage` capability.
      */
-    delete: operations["removeHubMember"];
-    /** Update a Hub Member */
+    delete: operations["deleteHubMember"];
+    /**
+     * Update Hub Member
+     * @description Requires the `hubs-members-manage` capability.
+     */
     patch: operations["updateHubMember"];
   };
   "/v1/hubs/current/members/account/{accountId}": {
     /**
-     * Fetch Members Account
+     * Get Hub Member Account
      * @description Requires the `hubs-members-view` capability.
      */
-    get: operations["getHubMembersAccount"];
+    get: operations["getHubMemberAccount"];
   };
   "/v1/hubs/current/api-keys": {
     /**
@@ -793,25 +851,118 @@ export interface paths {
   };
   "/v1/hubs/current/api-keys/{apikeyId}": {
     /**
-     * Fetch API Key
+     * Get API Key
      * @description Requries the `api-keys-manage` capability.
      */
-    get: operations["getApiKey"];
+    get: operations["getAPIKey"];
     /**
-     * remove Api Key
-     * @description Requires the 'api-keys-delete' capability.
+     * Delete API Key
+     * @description Requires the 'api-keys-manage' capability.
      */
-    delete: operations["removeApiKey"];
+    delete: operations["deleteAPIKey"];
     /**
      * Update API Key
      * @description Requires the `api-keys-manage` capability.
      */
-    patch: operations["updateApiKey"];
+    patch: operations["updateAPIKey"];
+  };
+  "/v1/hubs/current/roles": {
+    /**
+     * List Hub Roles
+     * @description Lists the Roles that have been created for this Hub.
+     *
+     * Requires the `hubs-roles-manage` capability.
+     */
+    get: operations["getRoles"];
+    /**
+     * Create Hub Role
+     * @description Creates a custom Role for a Hub.
+     *
+     * Requires the `hubs-roles-manage` capability.
+     */
+    post: operations["createRole"];
+  };
+  "/v1/hubs/current/roles/{roleId}": {
+    /**
+     * Get Hub Role
+     * @description Retrieves the specified Role.
+     *
+     * Requries the `hubs-roles-manage` capability.
+     */
+    get: operations["getRole"];
+    /**
+     * Delete Hub Role
+     * @description Marks a Role as 'deleted'.
+     *
+     * Requires the 'hubs-roles-manage' capability.
+     */
+    delete: operations["deleteRole"];
+    /**
+     * Update Hub Role
+     * @description Updates various properties of a specific Role.
+     *
+     * Requires the `hubs-roles-manage` capability.
+     */
+    patch: operations["updateRole"];
+  };
+  "/v1/hubs/current/integrations/{integrationId}": {
+    /**
+     * Get Integration
+     * @description Retrieves details of a single Integration associated with the current hub.
+     *
+     * Requires the `hubs-integrations-view` capability.
+     */
+    get: operations["getIntegration"];
+    /**
+     * Delete an Integration
+     * @description Deletes the specified Integration from the current hub, marking it as deleted and returning the updated Integration.
+     */
+    delete: operations["deleteIntegration"];
+    /**
+     * Update Integration
+     * @description Updates the specified Integration within the current hub. If the Integration definition specifies that it requires verification, then you must submit a verify task to enable it.
+     */
+    patch: operations["updateIntegration"];
+  };
+  "/v1/hubs/current/integrations": {
+    /**
+     * List Integrations
+     * @description Lists all integrations associated with the current Hub, with optional filtering.
+     *
+     * Requires the `hubs-integrations-view` capability.
+     */
+    get: operations["getIntegrations"];
+    /**
+     * Create Integration
+     * @description Create an Integration resource within a hub. If the Integration definition specifies that it requires verification, then you must submit a verify task to enable it.
+     */
+    post: operations["createIntegration"];
+  };
+  "/v1/hubs/current/integrations/available": {
+    /**
+     * Get Available Integrations
+     * @description Returns a map of available integrations categorized by their type.
+     */
+    get: operations["getAvailableIntegrations"];
+  };
+  "/v1/hubs/current/integrations/{integrationId}/tasks": {
+    /**
+     * Create a new Hub Integration Job.
+     * @description Creates a new Job targeted at the provided Hub Integration.
+     *
+     * ## Required Permissions
+     *   - Requires a valid hub membership to the target hub.
+     *   - Requires the `hubs-integrations-manage` capability.
+     */
+    post: operations["createIntegrationJob"];
   };
   "/v1/search/index": {
     /**
      * Get Search Index
-     * @description Requires the view capability for each returned segment
+     * @description Gets a pre-built search index, containing IDs and basic information for many commonly used resources on the Hub.
+     * Can be used to build a 'quick search' functionality for referencing the most frequently used resources.
+     *
+     * Requires the `view` capability for each returned segment, i.e. to retrieve Containers, you must have `containers-view`.
      */
     get: operations["getSearchIndex"];
   };
@@ -823,30 +974,30 @@ export interface paths {
     get: operations["getImages"];
     /**
      * Create Image
-     * @description Requires the `images-import` capability.
+     * @description Requires the `images-manage` capability.
      */
     post: operations["createImage"];
   };
   "/v1/images/{imageId}": {
     /**
-     * Fetch Image
+     * Get Image
      * @description Requires the `images-view` capability.
      */
     get: operations["getImage"];
     /**
      * Delete Image
-     * @description Requires the `images-updae` capability.
+     * @description Requires the `images-manage` capability.
      */
-    delete: operations["removeImage"];
+    delete: operations["deleteImage"];
     /**
      * Update Image
-     * @description Requires the `images-updae` capability.
+     * @description Requires the `images-manage` capability.
      */
     patch: operations["updateImage"];
   };
   "/v1/images/{imageId}/build-log": {
     /**
-     * Fetch Build Log
+     * Get Image Build Log
      * @description Requires the `images-view` capability.
      */
     get: operations["getImageBuildLog"];
@@ -854,113 +1005,68 @@ export interface paths {
   "/v1/images/tasks": {
     /**
      * Images Prune
-     * @description Used to perform different actions on a given image. Requires the `images-delete` capability.
+     * @description Used to perform different actions on a given image.
+     *
+     * Requires the `images-manage` capability.
      */
-    post: operations["createImageCollectionJob"];
+    post: operations["createImagesJob"];
   };
   "/v1/images/{imageId}/tasks": {
     /**
      * Image Jobs
-     * @description Used to perform different actions on a given image.  Requires the `images-import` capabiltiy.
+     * @description Used to perform different actions on a given Image.
+     *
+     * Requires the `images-import` capability.
      */
     post: operations["createImageJob"];
   };
   "/v1/images/sources": {
     /**
-     * List Sources
-     * @description Requires the `images-view` capability.
+     * List Image Sources
+     * @description Requires the `images-sources-view` capability.
      */
-    get: operations["getSourcesCollection"];
+    get: operations["getImageSources"];
     /**
-     * Create Source
-     * @description requires the `images-import` capability.
+     * Create Image Source
+     * @description Requires the `images-sources-manage` capability.
      */
     post: operations["createImageSource"];
   };
   "/v1/images/sources/{sourceId}": {
     /**
-     * Fetch Source
-     * @description Requires the `images-view` capability.
+     * Get Image Source
+     * @description Requires the `images-sources-view` capability.
      */
-    get: operations["getSource"];
+    get: operations["getImageSource"];
     /**
-     * Remove a given image source
-     * @description Requires the `images-import` capability.
+     * Delete Image Source
+     * @description Requires the `images-sources-manage` capability.
      */
-    delete: operations["removeImageSource"];
+    delete: operations["deleteImageSource"];
     /**
-     * Update Source
-     * @description Requires the `images-import` capability.
+     * Update Image Source
+     * @description Requires the `images-sources-manage` capability.
      */
     patch: operations["updateImageSource"];
   };
   "/v1/infrastructure/summary": {
     /**
-     * Fetch Infrastructure Summary
+     * Get Infrastructure Summary
      * @description Requires the `infrastructure-servers-view` capability.
      */
     get: operations["getInfrastructureSummary"];
   };
-  "/v1/infrastructure/native-providers": {
-    /**
-     * List Native Providers
-     * @description No capability required, public information.
-     */
-    get: operations["getNativeProviders"];
-  };
-  "/v1/infrastructure/providers/{providerIdentifier}/servers": {
-    /**
-     * List Provider Servers
-     * @description Requires the `infrastructure-providers-view` capability.
-     */
+  "/v1/infrastructure/providers/{providerVendor}/servers": {
+    /** List Provider Servers */
     get: operations["getProviderServers"];
   };
-  "/v1/infrastructure/providers/{providerIdentifier}/locations": {
-    /**
-     * List Provider Locations
-     * @description No capability required, public information (datacenter locations).
-     */
+  "/v1/infrastructure/providers/{providerVendor}/locations": {
+    /** List Provider Locations */
     get: operations["getProviderLocations"];
-  };
-  "/v1/infrastructure/providers": {
-    /**
-     * List Providers
-     * @description Requires the `infrastructure-providers-view` capability.
-     */
-    get: operations["getProviders"];
-    /**
-     * Create Provider
-     * @description Requires the `infrastructure-providers-manage` capability.
-     */
-    post: operations["createProvider"];
-  };
-  "/v1/infrastructure/providers/{providerIdentifier}": {
-    /**
-     * Fetch Provider
-     * @description Requires the `infrastructure-providers-view` capability.
-     */
-    get: operations["getProvider"];
-    /**
-     * Remove Provider
-     * @description Requires the `infrastructure-providers-manage` capability.
-     */
-    delete: operations["removeProvider"];
-    /**
-     * Update Provider
-     * @description Requires the `infrastructure-providers-manage` capability.
-     */
-    patch: operations["updateProvider"];
-  };
-  "/v1/infrastructure/providers/{providerIdentifier}/tasks": {
-    /**
-     * Providers Jobs
-     * @description Requires the `infrastructure-providers-manage` capability.
-     */
-    post: operations["createProviderJob"];
   };
   "/v1/infrastructure/auto-scale/groups": {
     /**
-     * Get Auto-Scale Groups list
+     * List Auto-Scale Groups
      * @description Requires the `autoscale-groups-manage` capability.
      */
     get: operations["getAutoScaleGroups"];
@@ -972,15 +1078,15 @@ export interface paths {
   };
   "/v1/infrastructure/auto-scale/groups/{groupId}": {
     /**
-     * Fetch Auto-Scale Group
+     * Get Auto-Scale Group
      * @description Requires the `autoscale-groups-view` capability.
      */
     get: operations["getAutoScaleGroup"];
     /**
-     * Remove Auto-Scale Group
+     * Delete Auto-Scale Group
      * @description Requires the `autoscale-group-manage` capability.
      */
-    delete: operations["removeAutoScaleGroup"];
+    delete: operations["deleteAutoScaleGroup"];
     /**
      * Update Auto-Scale Group
      * @description Requires the `autoscale-groups-manage` capability.
@@ -992,7 +1098,7 @@ export interface paths {
      * List Servers
      * @description Requires the `servers-view` capability.
      */
-    get: operations["getServersCollection"];
+    get: operations["getServers"];
     /**
      * Create Server
      * @description Requires the `servers-provision` capability.
@@ -1001,25 +1107,27 @@ export interface paths {
   };
   "/v1/infrastructure/servers/{serverId}": {
     /**
-     * Fetch Server
+     * Get Server
      * @description Requires the `servers-view` capability.
      */
-    get: operations["getSingleServer"];
+    get: operations["getServer"];
     /**
-     * Remove Server
-     * @description Requires the `servers-update` capability.
+     * Delete Server
+     * @description Requires the `servers-manage` capability.
      */
-    delete: operations["removeServer"];
+    delete: operations["deleteServer"];
     /**
      * Update Server
-     * @description Requires the `servers-update` capability.
+     * @description Requires the `servers-manage` capability.
      */
     patch: operations["updateServer"];
   };
   "/v1/infrastructure/servers/{serverId}/telemetry": {
     /**
-     * List Server Telemetry
-     * @description Requires the `servers-view` capability. This call requires the filter query be used.
+     * Get Server Telemetry
+     * @description This call requires the filter query parameter to be used.
+     *
+     * Requires the `servers-view` capability.
      */
     get: operations["getServerTelemetry"];
   };
@@ -1033,7 +1141,7 @@ export interface paths {
   "/v1/infrastructure/servers/{serverId}/tasks": {
     /**
      * Create Server Job
-     * @description Used to perform different actions on a given server. Requires the `servers-state` capability.
+     * @description Used to perform different actions on a given Server. Requires the `servers-manage` capability.
      */
     post: operations["createServerJob"];
   };
@@ -1046,76 +1154,78 @@ export interface paths {
   };
   "/v1/infrastructure/servers/clusters": {
     /**
-     * List Servers Clusters
+     * List Clusters
      * @description Requires the `servers-view` capability.
      */
-    get: operations["GetServersClusters"];
+    get: operations["GetClusters"];
   };
   "/v1/infrastructure/servers/{serverId}/usage": {
     /**
-     * Fetch Server Usage
+     * Get Server Usage
      * @description Requires the `servers-view` capability.
      */
     get: operations["GetServerUsage"];
   };
   "/v1/infrastructure/servers/{serverId}/console": {
     /**
-     * Get the credentials to connect to a server's console.
-     * @description Requires the `servers-console` capability.
+     * Get Server Console
+     * @description Gets the authorization information required to connect to a Server console websocket.
+     *
+     * Requires the `servers-console` capability.
      */
     get: operations["GetServerConsole"];
   };
   "/v1/infrastructure/ips/pools": {
     /**
-     * List Pools
+     * List IP Pools
      * @description Requires the `infrastructure-ips-manage` capability.
      */
     get: operations["getInfrastructureIPPools"];
   };
   "/v1/infrastructure/ips/pools/{poolId}": {
     /**
-     * Fetch Pool IP
+     * Get IP Pool
      * @description Requires the `infrastructure-ips-manage` capability.
      */
-    get: operations["getInfrastructureIPPool"];
+    get: operations["getIPPool"];
     /**
-     * Remove Pool IP
+     * Delete IP Pool
      * @description Requires the `infrastructure-ips-manage` capability.
      */
-    delete: operations["removeIpPool"];
+    delete: operations["deleteIPPool"];
   };
   "/v1/infrastructure/ips/pools/{poolId}/ips": {
     /**
-     * List Pool IP's
+     * List Pool IPs
      * @description Requires the `infrastructure-ips-manage` capability.
      */
-    get: operations["getPoolsIPs"];
+    get: operations["getPoolIPs"];
   };
   "/v1/infrastructure/deployment-strategies": {
     /**
-     * Fetch Deployment Strategies
-     * @description This endpoint returns available container deployment strategies.
+     * Get Deployment Strategies
+     * @description Gets the available deployment strategies that can be used to orchestrate containers.
      */
     get: operations["getDeploymentStrategies"];
   };
   "/v1/jobs": {
     /**
-     * List Jobs.
-     * @description Requires the `jobs-view` permission.
+     * List Jobs
+     * @description Requires the `apionly-jobs-view` permission.
      */
     get: operations["getJobs"];
   };
   "/v1/jobs/{jobId}": {
     /**
-     * Fetch Job
-     * @description Requires the `jobs-view` permission.
+     * Get Job
+     * @description Requires the `apionly-jobs-view` permission.
      */
     get: operations["getJob"];
   };
   "/v1/jobs/latest": {
     /**
      * List Latest Jobs
-     * @description Requires the `jobs-view` permission.
+     * @description Requires the `apionly-jobs-view` permission.
      */
     get: operations["getLatestJobs"];
   };
@@ -1133,15 +1243,15 @@ export interface paths {
   };
   "/v1/stacks/{stackId}": {
     /**
-     * Fetch Stack
+     * Get Stack
      * @description Requires the `stacks-view` capability.
      */
     get: operations["getStack"];
     /**
-     * Remove Stack
+     * Delete Stack
      * @description Requires the `stacks-manage` capability.
      */
-    delete: operations["removeStack"];
+    delete: operations["deleteStack"];
     /**
      * Update Stack
      * @description Requires the `stacks-manage` capability.
@@ -1157,10 +1267,12 @@ export interface paths {
   };
   "/v1/stacks/builds/{buildId}": {
     /**
-     * Fetch Stack Build
-     * @description Requires the `stacks-view` capability.
+     * Look Up Stack Build
+     * @description Look up a Stack Build using only the Build ID, instead of requiring a Stack ID as well.
+     *
+     * Requires the `stacks-view` capability.
      */
-    get: operations["getStackBuildLookup"];
+    get: operations["lookupStackBuild"];
   };
   "/v1/stacks/{stackId}/builds": {
     /**
@@ -1169,22 +1281,22 @@ export interface paths {
      */
     get: operations["getStackBuilds"];
     /**
-     * Create Stack Build
+     * Create Build
      * @description Requires the `stacks-manage` capability.
      */
     post: operations["createStackBuild"];
   };
   "/v1/stacks/{stackId}/builds/{buildId}": {
     /**
-     * Fetch Stack Build
+     * Get Stack Build
      * @description Requires the `stacks-view` capability.
      */
     get: operations["getStackBuild"];
     /**
-     * Remove Stack Build
+     * Delete Stack Build
      * @description Requires the `stacks-manage` capability.
      */
-    delete: operations["removeStackBuild"];
+    delete: operations["deleteStackBuild"];
   };
   "/v1/stacks/{stackId}/builds/{buildId}/tasks": {
     /**
@@ -1195,36 +1307,36 @@ export interface paths {
   };
   "/v1/sdn/networks": {
     /**
-     * List SDN Network
+     * List Networks
      * @description Requires the `sdn-networks-view` capability.
      */
     get: operations["getNetworks"];
     /**
-     * Create SDN Network
+     * Create Network
      * @description Requires the `sdn-networks-manage` capability.
      */
-    post: operations["createSDNNetwork"];
+    post: operations["createNetwork"];
   };
   "/v1/sdn/networks/{networkId}": {
     /**
-     * Fetch SDN Network
+     * Get Network
      * @description Requires the `sdn-networks-view` capability.
      */
     get: operations["getNetwork"];
     /**
-     * Remove SDN Network
+     * Delete Network
      * @description Requires the `sdn-networks-manage` capability.
      */
-    delete: operations["removeSDNNetwork"];
+    delete: operations["deleteNetwork"];
     /**
-     * Update SDN Network
+     * Update Network
      * @description Requires the `sdn-networks-manage` capability.
      */
-    patch: operations["updateSDNNetwork"];
+    patch: operations["updateNetwork"];
   };
   "/v1/sdn/networks/{networkId}/tasks": {
     /**
-     * Create SDN Job
+     * Create Network Job
      * @description Requires the `sdn-networks-manage` capability.
      */
     post: operations["createNetworkJob"];
@@ -1243,17 +1355,17 @@ export interface paths {
   };
   "/v1/pipelines/{pipelineId}": {
     /**
-     * Fetch Pipeline
-     * @description Requires the `pieplines-view` capability.
+     * Get Pipeline
+     * @description Requires the `pipelines-view` capability.
      */
     get: operations["getPipeline"];
     /**
-     * Remove Pipeline
+     * Delete Pipeline
      * @description Requires the `pipelines-manage` capability.
      */
-    delete: operations["removePipeline"];
+    delete: operations["deletePipeline"];
     /**
-     * Create Pipeline
+     * Update Pipeline
      * @description Requires the `pipelines-manage` capability.
      */
     patch: operations["updatePipeline"];
@@ -1261,7 +1373,9 @@ export interface paths {
   "/v1/pipelines/{pipelineId}/runs": {
     /**
      * List Pipeline Runs
-     * @description Requires the `pieplines-view` capability.
+     * @description List information about times this Pipeline has run.
+     *
+     * Requires the `pipelines-view` capability.
      */
     get: operations["getPipelineRuns"];
   };
@@ -1286,7 +1400,7 @@ export interface paths {
   };
   "/v1/pipelines/{pipelineId}/keys/{triggerKeyId}": {
     /**
-     * Fetch Trigger Key
+     * Get Trigger Key
      * @description Requires the `pipelines-manage` capability.
      */
     get: operations["getPipelineTriggerKey"];
@@ -1294,7 +1408,7 @@ export interface paths {
      * Delete Trigger Key
      * @description Requires the `pipelines-manage` capability.
      */
-    delete: operations["removePipelineTriggerKey"];
+    delete: operations["deletePipelineTriggerKey"];
     /**
      * Update Trigger Key
      * @description Requires the `pipelines-manage` capability.
@@ -1304,16 +1418,26 @@ export interface paths {
   "/v1/hubs/current/notifications": {
     /**
      * Hub Notification Pipeline Auth
-     * @description Requires the `hubs-notifications-listen` capability.
+     * @description Initializes authorization for the Hub notification pipeline. The Hub notification pipeline is a one-way streaming websocket that
+     * sends real-time 'notifications' as things are happening on the Hub. These notifications tell some basic information about an event,
+     * and it is up to the user to fetch additional details, if deemed necessary.
+     *
+     * Requesting this endpoint without a `?token=<token>` URL parameter will result in receiving a short lived token in the response body. That
+     * token can then be applied to the URL parameter to the same endpoint to upgrade the connection to a WebSocket.
+     *
+     * Requires the `apionly-notifications-listen` capability.
      */
-    get: operations["pipelineAuth"];
+    get: operations["getHubNotificationSocketAuth"];
   };
   "/v1/containers/{containerId}/instances/{instanceId}/console": {
     /**
-     * Instance Console Auth
-     * @description Requires the `contaiers-console` capability.
+     * Instance Console Stream Authorization
+     * @description Returns the authorization information necessary to connect to a Container Instance's console.
+     * To connect via WebSocket, use the returned address, and append the returned token as a URL parameter: `<address>?token=<token>`.
+     *
+     * Requires the `containers-console` capability.
      */
-    get: operations["instanceConsoleAuth"];
+    get: operations["getInstanceConsoleStreamAuth"];
   };
   "/v1/security/report": {
     /**
@@ -1324,8 +1448,10 @@ export interface paths {
   };
   "/v1/utils/resource/lookup": {
     /**
-     * Look up a resource identifier
-     * @description Given a (base64) resource identifier string, returns the ID of the targeted resource
+     * Look up a resource identifier.
+     * @description Given a (base64'd) resource identifier string (i.e. `cluster:production/env:abc`), returns the ID of the matching resource.
+     * If more than one resource matches the identifier, or no resource matches the identifier, this endpoint will return an error.
+     * Given identifiers are NOT unique, you may need to be more specific to target the exact identifier.
      */
     get: operations["lookupIdentifier"];
   };
@@ -1335,6 +1461,11 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    /**
+     * @description A capability that a user or API key that represents what an API key or a user can do.
+     * @enum {string}
+     */
+    Capability: "api-keys-manage" | "apionly-jobs-view" | "apionly-notifications-listen" | "autoscale-groups-manage" | "autoscale-groups-view" | "billing-credits-view" | "billing-invoices-pay" | "billing-invoices-view" | "billing-methods-manage" | "billing-services-manage" | "billing-services-view" | "containers-backups-manage" | "containers-backups-view" | "containers-console" | "containers-deploy" | "containers-instances-migrate" | "containers-lock" | "containers-ssh" | "containers-manage" | "containers-view" | "containers-volumes-manage" | "containers-volumes-view" | "dns-certs-view" | "dns-manage" | "dns-view" | "environments-deployments-manage" | "environments-manage" | "environments-scopedvariables-manage" | "environments-scopedvariables-view" | "environments-services-manage" | "environments-view" | "environments-vpn" | "environments-vpn-manage" | "hubs-delete" | "hubs-integrations-manage" | "hubs-integrations-view" | "hubs-invites-manage" | "hubs-invites-send" | "hubs-members-manage" | "hubs-members-view" | "hubs-roles-manage" | "hubs-roles-view" | "hubs-usage-view" | "hubs-update" | "hubs-auditlog-view" | "images-manage" | "images-sources-manage" | "images-sources-view" | "images-view" | "ips-manage" | "servers-console" | "servers-decommission" | "servers-login" | "servers-provision" | "servers-manage" | "servers-view" | "monitor-manage" | "monitor-view" | "pipelines-manage" | "pipelines-trigger" | "pipelines-view" | "sdn-networks-manage" | "sdn-networks-view" | "security-manage" | "security-view" | "stacks-builds-deploy" | "stacks-builds-manage" | "stacks-manage" | "stacks-view";
     /**
      * Error
      * @description The Cycle API uses standard HTTP response codes to indicate the success or failure of an API request. Codes in the `2xx` range indicate success. Codes in the `4xx` range indicate a request that failed due to input, and codes in the `5xx` range indicate an error on Cycle's part (rare).
@@ -1350,13 +1481,18 @@ export interface components {
        * @description A Cycle standard error code.
        * @enum {string}
        */
-      code?: "400.invalid_syntax" | "401.auth_invalid" | "401.auth_expired" | "401.no_cookie" | "401.unauthorized_application" | "403.mismatch" | "403.wrong_hub" | "403.not_ready" | "403.expired" | "403.restricted_portal" | "403.permissions" | "403.wrong_scope" | "403.invalid_ip" | "403.invalid_state" | "403.not_approved" | "403.not_allowed" | "403.platform_disabled" | "403.2fa_required" | "403.2fa_failed" | "403.new_application_capabilities" | "403.tier_restricted" | "404.hub" | "404.hub.invitation" | "404.sdn_network" | "404.environment" | "404.environment.scoped-variable" | "404.hub.api_key" | "404.hub.provider" | "404.uri" | "404.provider" | "404.stack" | "404.survey" | "404.survey_response" | "404.notification" | "404.stack_build" | "404.image" | "404.image.source" | "404.image.build_log" | "404.job" | "404.billing.order" | "404.billing.service" | "404.billing.credit" | "404.billing.invoice" | "404.billing.tier" | "404.billing.support" | "404.billing.payment_method" | "404.billing.promo_code" | "404.node" | "404.infrastructure.location" | "404.infrastructure.ips.pool" | "404.infrastructure.provider" | "404.infrastructure.server" | "404.infrastructure.model" | "404.account" | "404.container" | "404.container.backup" | "404.vpn_account" | "404.instance" | "404.pipeline" | "404.pipeline.run" | "404.pipeline.key" | "404.dns.zone" | "404.dns.record" | "404.cluster" | "404.platform_build" | "404.cycleos_build" | "404.email_verification" | "404.hub.membership" | "404.announcement" | "404.ha_service_session" | "404.sales_lead" | "409.duplicate_found" | "415.invalid_content_type" | "422.missing_argument" | "422.invalid_argument" | "422.invalid_input" | "422.max_exceeded" | "422.not_compatible" | "422.already_exists" | "429.rate_limiting" | "500.database" | "500.database_insert" | "500.database_update" | "500.database_remove" | "500.jobd" | "500.unknown" | "500.dev" | "500.email" | "500.payment_gateway" | "503.not_ready" | "503.not_enabled" | "503.dependency_not_enabled";
+      code?: "400.invalid_syntax" | "401.auth_invalid" | "401.auth_expired" | "401.no_cookie" | "401.unauthorized_application" | "403.mismatch" | "403.wrong_hub" | "403.not_ready" | "403.expired" | "403.restricted_portal" | "403.permissions" | "403.wrong_scope" | "403.invalid_ip" | "403.invalid_state" | "403.not_approved" | "403.not_allowed" | "403.platform_disabled" | "403.2fa_required" | "403.2fa_failed" | "403.new_application_capabilities" | "403.tier_restricted" | "404.hub" | "404.hub.invitation" | "404.sdn_network" | "404.environment" | "404.environment.scoped-variable" | "404.hub.api_key" | "404.hub.provider" | "404.hub.integration" | "404.uri" | "404.provider" | "404.stack" | "404.survey" | "404.survey_response" | "404.notification" | "404.stack_build" | "404.image" | "404.image.source" | "404.image.build_log" | "404.job" | "404.billing.order" | "404.billing.service" | "404.billing.credit" | "404.billing.invoice" | "404.billing.tier" | "404.billing.support" | "404.billing.payment_method" | "404.billing.promo_code" | "404.node" | "404.infrastructure.location" | "404.infrastructure.ips.pool" | "404.infrastructure.provider" | "404.infrastructure.server" | "404.infrastructure.model" | "404.account" | "404.container" | "404.container.backup" | "404.vpn_account" | "404.instance" | "404.pipeline" | "404.pipeline.run" | "404.pipeline.key" | "404.dns.zone" | "404.dns.record" | "404.cluster" | "404.platform_build" | "404.cycleos_build" | "404.email_verification" | "404.hub.membership" | "404.announcement" | "404.ha_service_session" | "404.sales_lead" | "409.duplicate_found" | "415.invalid_content_type" | "422.missing_argument" | "422.invalid_argument" | "422.invalid_input" | "422.max_exceeded" | "422.not_compatible" | "422.already_exists" | "429.rate_limiting" | "500.database" | "500.database_insert" | "500.database_update" | "500.database_remove" | "500.jobd" | "500.unknown" | "500.dev" | "500.email" | "500.payment_gateway" | "503.not_ready" | "503.not_enabled" | "503.dependency_not_enabled";
       /** @description The main text describing the error. */
       title?: string;
       /** @description A more detailed description of the error. */
       detail?: string;
       /** @description A [JSON pointer](https://tools.ietf.org/html/rfc6901/) describing the source of an error. */
       source?: string;
+      /** @description Additional entries on the error object to provide extra details. */
+      extra?: {
+        /** @description If the error occured because of a lack of permission (403), this will list the specific capability that the Role/API Key is missing. */
+        capability?: components["schemas"]["Capability"];
+      };
     };
     /**
      * ErrorEnvelope
@@ -1364,9 +1500,11 @@ export interface components {
      */
     ErrorEnvelope: {
       error: components["schemas"]["Error"];
+      data: null;
     };
     /**
      * ID
+     * Format: objectid
      * @description A 24 character hex string used to identify a unique resource.
      * @example 651586fca6078e98982dbd90
      */
@@ -1405,33 +1543,33 @@ export interface components {
      */
     Account: {
       id: components["schemas"]["ID"];
-      /** @description The first and last name associated with the account. */
+      /** @description The first and last name associated with the Account. */
       name: {
-        /** @description The first name of the account owner. */
+        /** @description The first name of the Account owner. */
         first: string;
-        /** @description The last name of the account owner. */
+        /** @description The last name of the Account owner. */
         last: string;
       };
-      /** @description Information about the email address associated with the account. */
+      /** @description Information about the email address associated with the Account. */
       email: {
         /** @description The email address. */
         address: string;
-        /** @description If true, the email has been verified and the account is active. */
+        /** @description If true, the email has been verified and the Account is active. */
         verified: boolean;
-        /** @description The date the email was added to the account */
+        /** @description The date the email was added to the Account */
         added: components["schemas"]["DateTime"];
       };
       /** @description Two factor auth verification information. */
       two_factor_auth?: {
-        /** @description A boolean representing if the account has verified with TwoFA. */
+        /** @description A boolean representing if the Account has verified with two-factor authentication. */
         verified: boolean;
       } | null;
-      /** @description Indicates whether or not Cycle employees have authorization to log in to this account in a support capacity. */
+      /** @description Indicates whether or not Cycle employees have authorization to log in to this Account in a support capacity. */
       allow_support_login?: boolean;
       state: components["schemas"]["AccountState"];
       /**
        * AccountEvents
-       * @description A collection of timestamps for each event in the account's lifetime.
+       * @description A collection of timestamps for each event in the Account's lifetime.
        */
       events: {
         /** @description The timestamp of when the image was created. */
@@ -1440,13 +1578,62 @@ export interface components {
         updated: components["schemas"]["DateTime"];
         /** @description The timestamp of when the image was deleted. */
         deleted: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the account was last accessed. */
+        /** @description The timestamp of when the Account was last accessed. */
         last_login: components["schemas"]["DateTime"];
+      };
+    };
+    /**
+     * TaskStep
+     * @description A step for a given job task.
+     */
+    TaskStep: {
+      /** @description A short description of the step. */
+      caption: string;
+      /** @description A more verbose description. */
+      description: string;
+      /** @description A timestamp for when the step started. */
+      started: components["schemas"]["DateTime"];
+      /** @description A timestamp for when the step completed. */
+      completed: components["schemas"]["DateTime"];
+    };
+    /**
+     * JobDescriptor
+     * @description A Job Descriptor is returned on success by API calls that create jobs. It contains the action that was requested, as well as the ID of the job created as a result.
+     */
+    JobDescriptor: {
+      /** @description The action that was taken. */
+      action: string;
+      /** @description Contains some basic information about the job associated with this task. */
+      job?: {
+        /** @description The ID of the job */
+        id: string;
+        /** @description Describes if the job has been accepted */
+        accepted: boolean;
+        /** @description Describes the queue this job is a part of. */
+        queue: string;
+        schedule: components["schemas"]["DateTime"];
+        parallel: {
+          sub_queue?: string | null;
+          tasks: boolean;
+        };
+        tasks: (({
+            /** @description A short description of the task. */
+            caption: string;
+            /** @description The API function called. */
+            header: string;
+            /** @description An array of job task steps. */
+            steps: components["schemas"]["TaskStep"][] | null;
+            /** @description Input information used for the job tasks. */
+            input: {
+              [key: string]: unknown;
+            };
+          })[]) | null;
       };
     };
     /**
      * HubID
      * @description The unique ID of the Hub this resource was created in.
+     * @example 651586fca6078e98982dbd90
      */
     HubID: string;
     /** MembershipState */
@@ -1490,16 +1677,14 @@ export interface components {
       };
     };
     /**
-     * @description A capability that a user or API key that represents what an API key or a user can do.
-     * @enum {string}
-     */
-    Capability: "hubs-update" | "hubs-delete" | "hubs-integrations-manage" | "hubs-usage-view" | "hubs-invites-send" | "hubs-invites-manage" | "hubs-members-manage" | "hubs-members-view" | "hubs-notifications-listen" | "billing-methods-manage" | "billing-invoices-view" | "billing-invoices-pay" | "billing-orders-manage" | "billing-services-view" | "billing-credits-view" | "sdn-networks-manage" | "sdn-networks-view" | "sdn-global-lbs-manage" | "sdn-global-lbs-view" | "pipelines-manage" | "pipelines-view" | "pipelines-trigger" | "environments-create" | "environments-delete" | "environments-view" | "environments-update" | "environments-state" | "environments-deployments-manage" | "environments-services-manage" | "environments-scopedvariables-manage" | "environments-scopedvariables-view" | "environments-vpn" | "environments-vpn-manage" | "containers-deploy" | "containers-view" | "containers-console" | "containers-ssh" | "containers-update" | "containers-lock" | "containers-delete" | "containers-state" | "containers-volumes-manage" | "containers-volumes-view" | "containers-backups-manage" | "containers-backups-view" | "containers-instances-migrate" | "stacks-manage" | "stacks-view" | "stacks-builds-manage" | "stacks-builds-deploy" | "images-view" | "images-import" | "images-update" | "images-delete" | "images-sources-view" | "images-sources-manage" | "jobs-view" | "api-keys-manage" | "ips-manage" | "servers-provision" | "servers-view" | "servers-console" | "servers-login" | "servers-update" | "servers-state" | "servers-decommission" | "autoscale-groups-manage" | "autoscale-groups-view" | "infrastructure-providers-manage" | "infrastructure-providers-view" | "security-view" | "security-manage" | "monitor-view" | "monitor-manage" | "dns-view" | "dns-manage" | "dns-certs-view";
-    /**
      * HubMembershipMeta
      * @description A list of meta fields that can be applied to a membership.
      */
     HubMembershipMeta: {
-      capabilities?: components["schemas"]["Capability"][];
+      capabilities?: {
+        all: boolean;
+        specific?: components["schemas"]["Capability"][] | null;
+      };
     };
     /**
      * HubMembership
@@ -1524,17 +1709,7 @@ export interface components {
         /** @description The timestamp of when the membership was accepted. */
         joined: components["schemas"]["DateTime"];
       };
-      /**
-       * @description A number that maps to the currently set role of the member.
-       *
-       * ## Roles
-       * 0 = DEFAULT
-       * 1 = OWNER
-       * 2 = ADMIN
-       * 4 = DEVELOPER
-       * 8 = ANALYST
-       */
-      role: number;
+      role_id?: components["schemas"]["ID"];
       /**
        * HubMembershipPermissions
        * @description Information about this member's permissions for a given hub.
@@ -1584,7 +1759,7 @@ export interface components {
      * @description Describes the date and time at which certain events occurred in the lifetime of this resource.
      */
     Events: {
-      [key: string]: components["schemas"]["DateTime"] | undefined;
+      [key: string]: components["schemas"]["DateTime"];
     };
     /**
      * PublicAccount
@@ -1639,6 +1814,32 @@ export interface components {
       /** @enum {string} */
       type: "account" | "environment" | "platform" | "platform-pipeline" | "employee" | "api-key" | "visitor";
     };
+    /**
+     * HubEvents
+     * @description A collection of timestamps for each event in the hub's lifetime.
+     */
+    HubEvents: {
+      /** @description The timestamp of when the hub was created. */
+      created: components["schemas"]["DateTime"];
+      /** @description The timestamp of when the hub was updated. */
+      updated: components["schemas"]["DateTime"];
+      /** @description The timestamp of when the hub was deleted. */
+      deleted: components["schemas"]["DateTime"];
+      /** @description The timestamp of when the hub had the first converted. */
+      converted?: components["schemas"]["DateTime"];
+      /** @description The timestamp of when the hub had the first provider added. */
+      first_order?: components["schemas"]["DateTime"];
+      /** @description The timestamp of when the hub had the first provider added. */
+      first_provider?: components["schemas"]["DateTime"];
+      /** @description The timestamp of when the hub had the first_server deployed. */
+      first_server?: components["schemas"]["DateTime"];
+      /** @description The timestamp of when the hub had the first environment deployed. */
+      first_environment?: components["schemas"]["DateTime"];
+      /** @description The timestamp of when the hub had the first image deployed. */
+      first_image?: components["schemas"]["DateTime"];
+      /** @description The timestamp of when the hub had the first container deployed. */
+      first_container?: components["schemas"]["DateTime"];
+    };
     /** HubState */
     HubState: ({
       /**
@@ -1647,26 +1848,6 @@ export interface components {
        */
       current: "new" | "configuring" | "live" | "inactive" | "deleting" | "deleted";
     }) & components["schemas"]["State"];
-    /**
-     * HubIntegrations
-     * @description Integration information for a given hub.
-     */
-    HubIntegrations: {
-      /** @description A hub integration with Lets Encrypt service. */
-      letsencrypt: {
-        /** @description An email address to assocaite with Lets Encrypt certificates generated for DNS records on this hub. */
-        email: string;
-      } | null;
-      /** @description Information about the Backblaze account and bucket assocaited with the given hub. */
-      backblaze_b2: {
-        /** @description The bucket name. */
-        bucket: string;
-        /** @description The `key_id` from Backblaze for a given key ( the one used for this integration ). */
-        key_id: string;
-        /** @description The key associated with the bucket. */
-        key: string;
-      } | null;
-    };
     /**
      * HubWebhooks
      * @description Hub related webhooks. When supplied, the given webhook will be called with a payload any time one of these events occurs.
@@ -1690,7 +1871,7 @@ export interface components {
        * @description The term renewal period.
        * @enum {string|null}
        */
-      renew: "once" | "monthly" | "yearly" | null;
+      renew: "once" | "monthly" | "yearly";
     };
     /**
      * HubBillingProfile
@@ -1732,35 +1913,57 @@ export interface components {
       /** @description A name for the hub. */
       name: string;
       creator: components["schemas"]["CreatorScope"];
+      events: components["schemas"]["HubEvents"];
+      state: components["schemas"]["HubState"];
+      webhooks: components["schemas"]["HubWebhooks"];
+      billing: components["schemas"]["HubBillingProfile"] | null;
+      meta?: components["schemas"]["HubMeta"];
+    };
+    /**
+     * Role
+     * @description A Role is a custom combination of platform-level capabilities, allowing for fully customizable role-based access controls across the platform.
+     */
+    Role: {
+      id: string;
+      name?: string | null;
+      /** @description The Role marked as root has full moderation control over all Roles. */
+      root: boolean;
+      /** @description A reference to the original identifier of the default Role this Role was built from.  A value of null means it is a fully custom Role. */
+      default?: components["schemas"]["Identifier"] | null;
+      /** @description An integer between 0 and 10 that indicates the Role hierarchy. An account can only edit a Role that is less than their rank. The 'owner' Role is rank 10. */
+      rank: number;
+      identifier: components["schemas"]["Identifier"];
+      creator: components["schemas"]["CreatorScope"];
+      /** @description The list of platform level capabilities assigned to this Role. */
+      capabilities: {
+        /** @description If true, the Role has all capabilities. */
+        all: boolean;
+        specific: components["schemas"]["Capability"][];
+      };
+      /** @description Custom user-defined properties for storing extra information on the Role. Not utilized by Cycle. */
+      extra?: {
+        [key: string]: string;
+      };
+      hub_id: components["schemas"]["HubID"];
+      state: {
+        /**
+         * @description The current state of the Role.
+         * @enum {string}
+         */
+        current: "live";
+      } & components["schemas"]["State"];
       /**
-       * HubEvents
-       * @description A collection of timestamps for each event in the hub's lifetime.
+       * RoleEvents
+       * @description Timestamps for each event in the Role's lifetime.
        */
       events: {
-        /** @description The timestamp of when the hub was created. */
+        /** @description The timestamp of when the Role source was created. */
         created: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the hub was updated. */
+        /** @description The timestamp of when the Role source was updated. */
         updated: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the hub was deleted. */
+        /** @description The timestamp of when the Role source was deleted. */
         deleted: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the hub had the first converted */
-        converted?: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the hub had the first provider added. */
-        first_provider?: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the hub had the first_server deployed. */
-        first_server?: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the hub had the first environment deployed. */
-        first_environment?: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the hub had the first image deployed. */
-        first_image?: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the hub had the first container deployed. */
-        first_container?: components["schemas"]["DateTime"];
       };
-      state: components["schemas"]["HubState"];
-      integrations: components["schemas"]["HubIntegrations"];
-      webhooks: components["schemas"]["HubWebhooks"];
-      billing: (Record<string, unknown> | null) & components["schemas"]["HubBillingProfile"];
-      meta?: components["schemas"]["HubMeta"];
     };
     /**
      * HubMembershipsIncludes
@@ -1771,32 +1974,40 @@ export interface components {
       senders?: {
         /** @description A record with an ID mapped to a public account. */
         accounts?: {
-          [key: string]: components["schemas"]["PublicAccount"] | undefined;
+          [key: string]: components["schemas"]["PublicAccount"];
         };
       };
       /** @description A record with an ID mapped to a public account. */
       accounts?: {
-        [key: string]: components["schemas"]["PublicAccount"] | undefined;
+        [key: string]: components["schemas"]["PublicAccount"];
       };
       /** @description A record with an ID mapped to a hub resource. */
       hubs?: {
-        [key: string]: components["schemas"]["Hub"] | undefined;
+        [key: string]: components["schemas"]["Hub"];
+      };
+      /** @description A map of Roles relevant to this Hub Membership, keyed by the Role ID. */
+      roles?: {
+        [key: string]: components["schemas"]["Role"];
+      };
+      /** @description A map of Roles relevant to this Hub Membership, keyed by the Role ID. */
+      "roles:identifiers"?: {
+        [key: string]: components["schemas"]["ID"];
       };
     };
     /**
-     * AccountInfo
-     * @description Information about a given account.
+     * AccountLoginInfo
+     * @description Details of an Account login.
      */
     AccountInfo: {
       id: components["schemas"]["ID"];
-      /** @description The IP of the computer used during login. */
+      /** @description The IP of the request used during login. */
       ip: string;
     };
     /**
-     * BaseLogin
-     * @description A login event resource.
+     * AccountLogin
+     * @description A record of an Account login.
      */
-    Login: {
+    AccountLogin: {
       id: components["schemas"]["ID"];
       account: components["schemas"]["AccountInfo"];
       /** @description A timestamp of the time the login occurred. */
@@ -1813,39 +2024,38 @@ export interface components {
      * AccountEmployeeLogin
      * @description A login event where the authentication mechanism was an employee login.
      */
-    EmployeeLogin: components["schemas"]["Account"] & components["schemas"]["Login"];
+    AccountEmployeeLogin: components["schemas"]["AccountLogin"] & {
+      /** @enum {string} */
+      type?: "employee";
+      /** @description If this was an employee login, contains information about who accessed the Account. */
+      employee?: {
+        id: components["schemas"]["ID"];
+        ip: string;
+      };
+    };
     /**
      * AccountPasswordLogin
-     * @description A login event where the account password was the authentication type.
+     * @description A login event where password was the authentication type.
      */
-    PasswordLogin: {
-      id: components["schemas"]["ID"];
-      account: components["schemas"]["AccountInfo"];
-      /** @description A timestamp of the time the login occurred. */
-      time: components["schemas"]["DateTime"];
-      /**
-       * @description The type of login mechanism used.
-       * @enum {string}
-       */
-      type: "password";
-      /** @description A boolean where true reflects that the login was successful. */
-      success: boolean;
+    AccountPasswordLogin: components["schemas"]["AccountLogin"] & {
+      /** @enum {string} */
+      type?: "password";
     };
-    /** TwoFaDisableResponse */
-    TwoFaDisableResponse: {
+    /** TwoFactorAuthSetup */
+    TwoFactorAuthSetup: {
       qr: string;
       secret: string;
     };
-    /** TwoFaSetupResponse */
-    TwoFaSetupResponse: {
+    /** TwoFactorAuthRecovery */
+    TwoFactorAuthRecovery: {
       recovery_codes: string[];
       totp_passcode: string;
     };
     /**
      * AnnoucementUpdate
-     * @description An update to an existing announcement.
+     * @description An update to an Announcement.
      */
-    Update: {
+    AnnouncementUpdate: {
       id: components["schemas"]["ID"];
       /** @description The text describing the update to the announcement. */
       message: string;
@@ -1854,13 +2064,8 @@ export interface components {
       time: components["schemas"]["DateTime"];
     };
     /**
-     * NativeProviderIdentifier
-     * @description An identifier for a native Cycle provider.
-     */
-    NativeProviderIdentifier: string;
-    /**
      * Announcement
-     * @description An announcement from the Cycle team that has something to do with the current or future state of the platform.
+     * @description An announcement from the Cycle team.
      */
     Announcement: {
       id: components["schemas"]["ID"];
@@ -1868,8 +2073,9 @@ export interface components {
       title: string;
       /** @description A description of the announcement */
       description: string;
-      updates: components["schemas"]["Update"][];
-      affected_providers?: components["schemas"]["NativeProviderIdentifier"][];
+      updates: components["schemas"]["AnnouncementUpdate"][];
+      affected_integrations?: string[];
+      creator: components["schemas"]["CreatorScope"];
       state: ({
         /**
          * @description The current state of the method.
@@ -1997,12 +2203,12 @@ export interface components {
       /** @description The promo "code". */
       code: string;
       /** @description The amount of credit the promo code offers. */
-      credit: ({
+      credit: {
         [key: string]: {
           amount?: components["schemas"]["BillingAmount"];
           expires?: components["schemas"]["DateTime"];
-        } | undefined;
-      }) | null;
+        };
+      } | null;
       /** PromoCodeState */
       state: ({
         /**
@@ -2017,13 +2223,10 @@ export interface components {
      * @description A resource thats associated with a promo code.
      */
     PromoCodeInclude: {
-      [key: string]: components["schemas"]["PromoCode"] | undefined;
+      [key: string]: components["schemas"]["PromoCode"];
     };
-    /**
-     * BillingOrderIncludes
-     * @description All includeable resources linkable to the given billing order.
-     */
-    OrderIncludes: {
+    /** BillingOrderIncludes */
+    BillingOrderIncludes: {
       promo_codes?: components["schemas"]["PromoCodeInclude"];
     };
     /**
@@ -2063,54 +2266,6 @@ export interface components {
          */
         current: "new" | "processed" | "deleting" | "deleted";
       }) & components["schemas"]["State"];
-    };
-    /**
-     * TaskStep
-     * @description A step for a given job task.
-     */
-    TaskStep: {
-      /** @description A short description of the step. */
-      caption: string;
-      /** @description A more verbose description. */
-      description: string;
-      /** @description A timestamp for when the step started. */
-      started: components["schemas"]["DateTime"];
-      /** @description A timestamp for when the step completed. */
-      completed: components["schemas"]["DateTime"];
-    };
-    /**
-     * TaskDescriptor
-     * @description A task descriptor object is returned on success by API calls that create jobs. It contains the action that was requested, as well as the ID of the job created as a result.
-     */
-    TaskDescriptor: {
-      /** @description The action that was taken. */
-      action: string;
-      /** @description Contains some basic information about the job associated with this task. */
-      job?: {
-        /** @description The ID of the job */
-        id: string;
-        /** @description Describes if the job has been accepted */
-        accepted: boolean;
-        /** @description Describes the queue this job is a part of. */
-        queue: string;
-        schedule: components["schemas"]["DateTime"];
-        parallel: {
-          sub_queue?: string | null;
-          tasks: boolean;
-        };
-        tasks: (({
-            /** @description A short description of the task. */
-            caption: string;
-            /** @description The API function called. */
-            header: string;
-            /** @description An array of job task steps. */
-            steps: components["schemas"]["TaskStep"][] | null;
-            /** @description Input information used for the job tasks. */
-            input: {
-              [key: string]: unknown;
-            };
-          })[]) | null;
-      };
     };
     /**
      * SupportPlanFeatures
@@ -2437,16 +2592,18 @@ export interface components {
       hub_id: components["schemas"]["HubID"];
       /** @description A boolean where true represents the invoice is approved for collection. */
       approved: boolean;
-      services: components["schemas"]["BillingSummary"][];
-      payments: components["schemas"]["Payment"][];
-      credits: components["schemas"]["InvoiceCredit"][];
-      late_fees: components["schemas"]["LateFee"];
+      services?: components["schemas"]["BillingSummary"][] | null;
+      payments?: components["schemas"]["Payment"][] | null;
+      credits?: components["schemas"]["InvoiceCredit"][] | null;
+      late_fees?: components["schemas"]["LateFee"][] | null;
       /** @description The amount in charges generated through the licesnse agreement + overages for the billing period covered by the invoice. */
       charges: number;
       /** @description A timestamp of when the invoice is due to be paid. */
-      due: components["schemas"]["DateTime"];
+      due?: components["schemas"]["DateTime"];
       /** @description A timestamp of when the invoice is overdue. */
-      overdue: components["schemas"]["DateTime"];
+      overdue?: components["schemas"]["DateTime"];
+      /** @description The number of failed payment attempts for the invoice. */
+      failed_payment_attempts: number;
       /**
        * BillingOrderEvents
        * @description A collection of timestamps for each event in the billing order's lifetime.
@@ -2473,18 +2630,14 @@ export interface components {
       meta?: components["schemas"]["InvoiceMeta"];
     };
     /**
-     * BillingDiscount
-     * @description Billing discount information.
+     * AssociatedDiscount
+     * @description Information about a billing discount.
      */
-    Discount: {
+    AssociatedDiscount: {
       id: components["schemas"]["ID"];
       amount: components["schemas"]["BillingAmount"];
-      /** @description When this discount will expire. */
-      expires: {
-        /** @enum {string} */
-        interval: "months" | "years";
-        number: number;
-      };
+      /** @description A timestamp of when the discount expires. */
+      expires: components["schemas"]["DateTime"];
     };
     /** BillingServiceState */
     BillingServiceState: {
@@ -2506,7 +2659,7 @@ export interface components {
       title: string;
       order: components["schemas"]["Order"];
       item: components["schemas"]["ServiceItem"];
-      discount: components["schemas"]["Discount"];
+      discount: components["schemas"]["AssociatedDiscount"];
       price: components["schemas"]["BillingAmount"];
       term: components["schemas"]["Term"];
       /**
@@ -2663,7 +2816,7 @@ export interface components {
       default: components["schemas"]["HaProxyConfigSet"];
       /** @description An object that defines how HAProxy will act on a specific port. The key is a custom port, and the value is the same settings object found under `default` above. */
       ports: {
-        [key: string]: components["schemas"]["HaProxyConfigSet"] | undefined;
+        [key: string]: components["schemas"]["HaProxyConfigSet"];
       };
     };
     /** HaProxyLbType */
@@ -2675,6 +2828,14 @@ export interface components {
       /** @enum {string} */
       type: "haproxy";
       details: components["schemas"]["HaProxyConfig"] | null;
+      /**
+       * @description Binds the load balancer to the host server IP address.
+       *
+       * **Pros**: This allows for significantly lower cost (utilizing fewer IPv4 addresses), and enables building out a true edge network with lower latency.
+       * **Cons**: Only 1 environment is allowed on the host. This is because the load balancer is the only ingress point for an environment, and if it is sharing
+       * the same IP as the host, that host can only operate under that environment.
+       */
+      bind_host?: boolean | null;
     };
     /**
      * Duration
@@ -2710,10 +2871,20 @@ export interface components {
         };
         /** @description Configuration options for how telemetry is handled. */
         telemetry: {
+          /** @description Determines if the load balancer will track url metrics. Defaults to false. */
+          disable_url_tracking: boolean;
+          /** @description Determines if the load balancer will track router metrics. Defaults to false. */
+          disable_router_metrics: boolean;
+          /** @description Determines how many URLs the load balancer will track at one time. Defaults to 150. */
+          max_trackable_urls?: number | null;
           /** @description Determines how long the load balancer will track a URL from its last hit. Helps reduce noise by not tracking URLs that are occasionally hit. Defaults to 8h. */
-          tracking_window?: string | null;
+          tracking_window?: components["schemas"]["Duration"] | null;
           /** @description Whether or not to track invalid requests. An invalid request is a request that came in that no router existed for. Usually this means bot requests. Defaults to false. */
           track_invalid_requests?: boolean | null;
+          /** @description Group paths is used to group URLs.  The key is the URL and the value is the regex used to match URLs. */
+          group_paths?: {
+            [key: string]: string;
+          } | null;
           /** @description An array of paths to exclude from tracking. */
           ignore_paths?: string[] | null;
         };
@@ -2753,10 +2924,30 @@ export interface components {
         }) | null;
         forward?: ({
           scheme?: string | null;
+          /** @description Allows the load balancer to modify content before it reaches the user. */
+          content_mod?: ({
+            /** @description An array that describes a list of replacement match/value pairs. */
+            replace?: {
+                /** @description String that will be replaced. */
+                match: string;
+                /** @description Replacement value. */
+                value: string;
+              }[] | null;
+          }) | null;
         }) | null;
         proxy?: ({
           /** @description The proxy domain for this router. */
           domain?: string | null;
+          /** @description Allows the load balancer to modify content before it reaches the user. */
+          content_mod?: ({
+            /** @description An array that describes a list of replacement match/value pairs. */
+            replace?: {
+                /** @description String that will be replaced. */
+                match: string;
+                /** @description Replacement value. */
+                value: string;
+              }[] | null;
+          }) | null;
         }) | null;
         caching?: ({
           files?: (({
@@ -2797,6 +2988,25 @@ export interface components {
         sticky_sessions: boolean;
         /** @description If a destination is unavailable, retry up to [x] times, instead of immediately failing with a 503/504 error. */
         destination_retries: number;
+        /** @description TLS termination configuration. If null, the platform will use the default configuration. Port 443 by default has TLS termination enabled. */
+        tls?: ({
+          /** @description [Advanced] Change the domain the controller listens on. */
+          server_name?: string | null;
+          /** @description If enabled, accept TLS traffic with an invalid certificate. This is usually done for development/testing, and is not recommended for production use. */
+          allow_insecure?: boolean | null;
+          /** @description A PEM encoded string of certificates. */
+          client_cert_auth?: string | null;
+          /**
+           * @description Defines how to validate the connecting TLS certificate.
+           * `none`: Do not require a TLS certificate to be sent
+           * `request`: Asks the client to send a TLS certificate, but does not require nor validate it.
+           * `require`: Requires a certificate be sent for the request to be valid, but does not validate the certificate.
+           * `require-verify`: Requires both that the client send a certificate, and that the certificate is valid. This is required when using https.
+           *
+           * @enum {string|null}
+           */
+          client_auth?: "none" | "request" | "require" | "require-verify";
+        }) | null;
         /** @description Defines how the length of various sorts of timeouts when communicating with the destination. */
         timeouts: {
           /** @description The duration the load balancer will wait before timing out while attempting to connect to the destination. */
@@ -2806,71 +3016,61 @@ export interface components {
         extension?: components["schemas"]["TcpRouterConfig"] | components["schemas"]["HttpRouterConfig"];
       };
     };
+    /** V1LbController */
+    V1LbController: {
+      default: boolean;
+      /** @description A human-readable identifier for this controller. It will default to the port, i.e. `port-443`, but can be renamed to anything, such as the service this controller represents. */
+      identifier: string;
+      /**
+       * V1LbControllerTransport
+       * @description Defines how traffic comes in to the load balancer, and how the load balancer handles it.
+       */
+      transport: {
+        /** @description When true, this controller is disabled and will not be used. */
+        disable: boolean;
+        /**
+         * @description The kind of traffic (http/tcp) that will be sent to the load balancer.
+         * @enum {string}
+         */
+        mode: "tcp" | "http";
+        /** @description Defines how the transport for this controller operates. */
+        config: {
+          /**
+           * @description Enable/disable performance mode. If enabled, some telemetry will be disabled to dedicate full processing to handling requests.
+           * You will not see per-request breakdowns or URL logging if performance mode is enabled.
+           */
+          performance: boolean;
+          /** @description Defines how traffic gets into the load balancer. */
+          ingress: {
+            /** @description The port inbound trafic is accepted on. */
+            port: number;
+            tls?: {
+              /** @description Enables or disables TLS. */
+              enable: boolean;
+            } | null;
+          };
+          /** @description Defines settings for various types of timeouts. */
+          timeouts: {
+            /** @description The total amount of time a connection can be idle before being killed. */
+            idle: components["schemas"]["Duration"];
+          };
+          /**
+           * @description Verbosity describes the level of logging detail for the controller
+           * @enum {string}
+           */
+          verbosity: "low" | "normal" | "high" | "debug";
+          /** @description Extended configurations for the specified transport mode (http/tcp) */
+          extension?: components["schemas"]["TcpTransportConfig"] | components["schemas"]["HttpTransportConfig"];
+        };
+        /** @description Defines where traffic is sent. Many can be defined per controller. */
+        routers: components["schemas"]["V1LbConfigRouter"][];
+      };
+    };
     /** V1LbConfig */
     V1LbConfig: {
       /** @description A configuration for a specific port. */
-      controllers: ({
-          default: boolean;
-          /** @description A human-readable identifier for this controller. It will default to the port, i.e. `port-443`, but can be renamed to anything, such as the service this controller represents. */
-          identifier: string;
-          /**
-           * V1LbControllerTransport
-           * @description Defines how traffic comes in to the load balancer, and how the load balancer handles it.
-           */
-          transport: {
-            /**
-             * @description The kind of traffic (http/tcp) that will be sent to the load balancer.
-             * @enum {string}
-             */
-            mode: "tcp" | "http";
-            /** @description Defines how the transport for this controller operates. */
-            config: {
-              /**
-               * @description Enable/disable performance mode. If enabled, some telemetry will be disabled to dedicate full processing to handling requests.
-               * You will not see per-request breakdowns or URL logging if performance mode is enabled.
-               */
-              performance: boolean;
-              /** @description Defines how traffic gets into the load balancer. */
-              ingress: {
-                /** @description The port inbound trafic is accepted on. */
-                port: number;
-                /** @description TLS termination configuration. If null, the platform will use the default configuration. Port 443 by default has TLS termination enabled. */
-                tls?: ({
-                  /** @description Allow TLS connections and enable TLS termination. */
-                  enable: boolean;
-                  /** @description [Advanced] Change the domain the controller listens on. */
-                  server_name: string | null;
-                  /** @description If enabled, accept TLS traffic with an invalid certificate. This is usually done for development/testing, and is not recommended for production use. */
-                  allow_insecure: boolean | null;
-                  /**
-                   * @description Defines how to validate the connecting TLS certificate.
-                   * `none`: Do not require a TLS certificate to be sent
-                   * `request`: Asks the client to send a TLS certificate, but does not require nor validate it.
-                   * `require`: Requires a certificate be sent for the request to be valid, but does not validate the certificate.
-                   * `require-verify`: Requires both that the client send a certificate, and that the certificate is valid. This is required when using https.
-                   *
-                   * @enum {string|null}
-                   */
-                  client_auth: "none" | "request" | "require" | "require-verify" | null;
-                }) | null;
-              };
-              /** @description Defines settings for various types of timeouts. */
-              timeouts: {
-                /** @description The total amount of time a connection can be idle before being killed. */
-                idle: components["schemas"]["Duration"];
-              };
-              /**
-               * @description Verbosity describes the level of logging detail for the controller
-               * @enum {string}
-               */
-              verbosity: "low" | "normal" | "high" | "debug";
-              /** @description Extended configurations for the specified transport mode (http/tcp) */
-              extension?: components["schemas"]["TcpTransportConfig"] | components["schemas"]["HttpTransportConfig"];
-            };
-            /** @description Defines where traffic is sent. Many can be defined per controller. */
-            routers: components["schemas"]["V1LbConfigRouter"][];
-          };
-        })[];
+      controllers: components["schemas"]["V1LbController"][];
+      controller_template?: components["schemas"]["V1LbController"] | null;
     };
     /** V1LbType */
     V1LbType: {
@@ -2880,7 +3080,15 @@ export interface components {
       ipv6: boolean;
       /** @enum {string} */
       type: "v1";
-      details: components["schemas"]["V1LbConfig"] | null;
+      details: components["schemas"]["V1LbConfig"];
+      /**
+       * @description Binds the load balancer to the host server IP address.
+       *
+       * **Pros**: This allows for significantly lower cost (utilizing fewer IPv4 addresses), and enables building out a true edge network with lower latency.
+       * **Cons**: Only 1 environment is allowed on the host. This is because the load balancer is the only ingress point for an environment, and if it is sharing
+       * the same IP as the host, that host can only operate under that environment.
+       */
+      bind_host?: boolean | null;
     };
     /** DefaultLbType */
     DefaultLbType: {
@@ -2890,7 +3098,7 @@ export interface components {
       ipv6: boolean;
       /** @enum {string} */
       type: "default";
-      details: (Record<string, unknown> | null) & (components["schemas"]["HaProxyConfig"] | components["schemas"]["V1LbConfig"]);
+      details: components["schemas"]["HaProxyConfig"] | components["schemas"]["V1LbConfig"] | null;
     };
     /**
      * LoadBalancerConfig
@@ -2901,7 +3109,7 @@ export interface components {
      * LoadBalancerEnvironmentService
      * @description Information about the environments loadbalancer service(s).
      */
-    LoadBalancerEnvironmentService: ({
+    LoadBalancerEnvironmentService: {
       /** @description Whether or not the loadbalancer service is enabled. */
       enable: boolean;
       /** @description The ID of the loadbalancer service container */
@@ -2911,22 +3119,22 @@ export interface components {
       /** @description A boolean representing if this service container is set to autoupdate or not */
       auto_update?: boolean;
       config: components["schemas"]["LoadBalancerConfig"];
-    }) | null;
+    };
     /**
      * DiscoveryConfig
      * @description The config object for the discovery service.
      */
-    DiscoveryConfig: ({
+    DiscoveryConfig: {
       /** @description A mapping of hostnames to IP addresses for custom internal resolutions. Acts as a custom /etc/resolv.conf file that works environment wide. */
       hosts?: ({
-        [key: string]: ({
+        [key: string]: {
           /** @description The IPv4 address the discovery server should return to any container instance requesting this hostname. */
           ipv4?: string[] | null;
           /** @description The IPv6 address the discovery server should return to any container instance requesting this hostname. */
           ipv6?: string[] | null;
-        }) | undefined;
+        };
       }) | null;
-    }) | null;
+    };
     /**
      * DiscoveryEnvironmentService
      * @description Information about the environments discovery service(s).
@@ -2941,13 +3149,13 @@ export interface components {
       /** @description A boolean where `true` represents the desire to automatically update the environment discovery service. */
       auto_update?: boolean;
       /** @description The config object for the discovery service. */
-      config: components["schemas"]["DiscoveryConfig"];
-    } | null;
+      config: components["schemas"]["DiscoveryConfig"] | null;
+    };
     /**
      * VpnEnvironmentService
      * @description Information about the environments vpn service(s).
      */
-    VpnEnvironmentService: ({
+    VpnEnvironmentService: {
       /** @description Whether or not the VPN service is enabled. */
       enable: boolean;
       /** @description The ID of the VPN service container */
@@ -2968,7 +3176,28 @@ export interface components {
           vpn_accounts?: boolean;
         };
       }) | null;
-    }) | null;
+    };
+    /**
+     * SchedulerAccessKey
+     * @description Custom authorization keys for the scheduler service.
+     */
+    SchedulerAccessKey: {
+      /** @description The name given to this access key */
+      name: string;
+      /** @description The access key secret. This should be submitted with requests to a publicly accessible scheduler service. */
+      secret: string;
+      /** @description Whitelisted IPs that are allowed to make requests to the scheduler service. */
+      ips?: string[];
+    };
+    /**
+     * SchedulerConfig
+     * @description Configuration options for the scheduler Environment service.
+     */
+    SchedulerConfig: {
+      /** @description If true, the scheduler service API will be exposed publicly via the load balancer. This is useful for allowing external services spin up function containers using custom logic. */
+      public: boolean;
+      access_keys?: components["schemas"]["SchedulerAccessKey"][];
+    };
     /**
      * SchedulerEnvironmentService
      * @description Information about the environments scheduler service. The scheduler is used by containers with a function deployment strategy to route requests to the correct instances.
@@ -2977,23 +3206,22 @@ export interface components {
       /** @description Whether or not the scheduler service is enabled. */
       enable: boolean;
       /** @description The ID of the scheduler service container. */
-      container_id: string;
+      container_id: string | null;
       /** @description A boolean representing if the scheduler service container is set to high availability. mode or not. As of Jan 2024, this will always be false because HA is not availiable for the scheduler service. */
       high_availability?: boolean;
       /** @description A boolean where `true` represents the desire to automatically update the environment scheduler service. */
       auto_update?: boolean;
-      /** @description The config object for the scheduler service. */
-      config: Record<string, never>;
-    } | null;
+      config?: components["schemas"]["SchedulerConfig"] | null;
+    };
     /**
      * EnvironmentServices
      * @description Service containers run by this environment and their configurations.
      */
     EnvironmentServices: {
-      loadbalancer: components["schemas"]["LoadBalancerEnvironmentService"];
-      discovery?: components["schemas"]["DiscoveryEnvironmentService"];
-      vpn?: components["schemas"]["VpnEnvironmentService"];
-      scheduler?: components["schemas"]["SchedulerEnvironmentService"];
+      loadbalancer: components["schemas"]["LoadBalancerEnvironmentService"] | null;
+      discovery?: components["schemas"]["DiscoveryEnvironmentService"] | null;
+      vpn?: components["schemas"]["VpnEnvironmentService"] | null;
+      scheduler?: components["schemas"]["SchedulerEnvironmentService"] | null;
     };
     /** IPNet */
     IPNet: {
@@ -3010,13 +3238,14 @@ export interface components {
     };
     /**
      * LegacyNetwork
-     * @description Legacy network information for an environment.
+     * @description Legacy network information for an Environment.
      */
     LegacyNetwork: {
       /** @description The IPv4 subnet Id. */
       subnet: number;
-      ipv4: components["schemas"]["IPNet"];
-    } | null;
+      /** @description IPv4 information available from environments using legacy networking. */
+      ipv4?: components["schemas"]["IPNet"] | null;
+    };
     /** PrivateNetwork */
     PrivateNetwork: {
       /** @description The vxlan tag added to each packet to help identify the network. */
@@ -3024,11 +3253,11 @@ export interface components {
       /** @description The subnet ID. */
       subnet: string;
       ipv6: components["schemas"]["IPNet"];
-      legacy: components["schemas"]["LegacyNetwork"];
+      legacy: components["schemas"]["LegacyNetwork"] | null;
     };
     /**
      * Version
-     * @description A [Semantic Version](https://semver.org/) string. Follows the format vMAJOR.MINOR.PATCH-build. The `v` is required.
+     * @description Version can be any string, but if it begins with a "v", semantic version will be enforced. A [Semantic Version](https://semver.org/) string. Follows the format vMAJOR.MINOR.PATCH-build.
      *
      * @example v1.2.3-dev
      */
@@ -3042,7 +3271,7 @@ export interface components {
      * are switched at once.
      */
     EnvironmentDeploymentTags: {
-      [key: string]: components["schemas"]["Version"] | undefined;
+      [key: string]: components["schemas"]["Version"];
     };
     /**
      * ResourceCountSummary
@@ -3066,12 +3295,12 @@ export interface components {
        * @description A count of this resource, grouped by state.
        */
       state: {
-        [key: string]: number | undefined;
+        [key: string]: number;
       };
       /** @description The total number of this resource */
       total: number;
       /** @description The total number of this resource available, less any deleted ones. */
-      available?: number;
+      available: number;
     };
     /** ContainerState */
     ContainerState: ({
@@ -3079,12 +3308,12 @@ export interface components {
        * @description The current state of the container.
        * @enum {string}
        */
-      current: "new" | "starting" | "running" | "stopping" | "stopped" | "deleting" | "deleted";
+      current: "new" | "starting" | "running" | "function" | "stopping" | "stopped" | "deleting" | "deleted";
       /**
        * @description The desired state of the container.
        * @enum {string}
        */
-      desired?: "new" | "starting" | "running" | "stopping" | "stopped" | "deleting" | "deleted";
+      desired?: "new" | "starting" | "running" | "function" | "stopping" | "stopped" | "deleting" | "deleted";
     }) & components["schemas"]["State"];
     /**
      * ContainerImageSummary
@@ -3096,7 +3325,7 @@ export interface components {
        * @description If this image is a service container this will say either `discovery` | `loadbalancer` | `vpn`.
        * @enum {string|null}
        */
-      service: "discovery" | "loadbalancer" | "vpn" | null;
+      service: "discovery" | "loadbalancer" | "vpn";
     };
     /**
      * ContainerEnvironmentSummary
@@ -3107,21 +3336,9 @@ export interface components {
       /** @description The cluster this environment is associated with. */
       cluster: string;
       /** @description The private network subnet ID for this container and its instances. */
-      container_subnet: string;
-      ipv6: components["schemas"]["IPNet"];
-      legacy: components["schemas"]["LegacyNetwork"];
-    } | null;
-    /**
-     * ContainerSummary
-     * @description Contains useful and relevant data/statistics for a container that would otherwise be several separate API calls.
-     */
-    ContainerSummary: {
-      id: components["schemas"]["ID"];
-      /** @description A user defined name for the container resource. */
-      name: string;
-      state: components["schemas"]["ContainerState"];
-      image: components["schemas"]["ContainerImageSummary"];
-      environment: components["schemas"]["ContainerEnvironmentSummary"];
+      container_subnet?: string | null;
+      ipv6?: components["schemas"]["IPNet"] | null;
+      legacy: components["schemas"]["LegacyNetwork"] | null;
     };
     /**
      * EnvironmentMeta
@@ -3130,7 +3347,14 @@ export interface components {
     EnvironmentMeta: {
       containers_count?: components["schemas"]["StateCountSummary"];
       instances_count?: components["schemas"]["StateCountSummary"];
-      containers?: components["schemas"]["ContainerSummary"][];
+      containers?: {
+          id: components["schemas"]["ID"];
+          /** @description A user defined name for the container resource. */
+          name: string;
+          state: components["schemas"]["ContainerState"];
+          image: components["schemas"]["ContainerImageSummary"];
+          environment: components["schemas"]["ContainerEnvironmentSummary"];
+        }[];
     };
     /**
      * Environment
@@ -3217,35 +3441,35 @@ export interface components {
     CreatorInclude: {
       /** @description Included creators that are public accounts, keyed by ID. */
       accounts?: {
-        [key: string]: components["schemas"]["PublicAccount"] | undefined;
+        [key: string]: components["schemas"]["PublicAccount"];
       };
       /**
        * @description Included creators that are employees of Cycle, keyed by ID.
        * @example null
        */
       employees?: {
-        [key: string]: components["schemas"]["PublicAccount"] | undefined;
+        [key: string]: components["schemas"]["PublicAccount"];
       };
       /**
        * @description Included creators that are not Cycle accounts, keyed by ID.
        * @example null
        */
       visitors?: {
-        [key: string]: components["schemas"]["PublicAccount"] | undefined;
+        [key: string]: components["schemas"]["PublicAccount"];
       };
       /**
        * @description Included creators that are Cycle environments (usually automatically created resources), keyed by ID.
        * @example null
        */
       environments?: {
-        [key: string]: components["schemas"]["Environment"] | undefined;
+        [key: string]: components["schemas"]["Environment"];
       };
       /**
        * @description Included creators that are Cycle API Keys, keyed by ID.
        * @example null
        */
       api_keys?: {
-        [key: string]: components["schemas"]["ApiKeyCreator"] | undefined;
+        [key: string]: components["schemas"]["ApiKeyCreator"];
       };
     };
     /**
@@ -3302,10 +3526,12 @@ export interface components {
     EnvironmentServiceContainerSummary: {
       /** @description Whether or not the service is enabled. */
       enable: boolean;
-      container_id: components["schemas"]["ID"];
+      container_id?: components["schemas"]["ID"] | null;
       state: components["schemas"]["ContainerState"];
       /** @description Whether or not the service is deployed in high availability */
       high_availability: boolean;
+      /** @description Whether or not the service will be automatically updated as new versions are released. Otherwise, the service will need to be restarted manually. */
+      auto_update?: boolean;
     };
     /**
      * EnvironmentSummary
@@ -3319,10 +3545,10 @@ export interface components {
        * @description An object containing information about the service containers associated with this container. Each key is the name of a service, one of `discovery`, `vpn`, or `loadbalancer`.
        */
       services: {
-        loadbalancer: components["schemas"]["EnvironmentServiceContainerSummary"];
-        discovery: components["schemas"]["EnvironmentServiceContainerSummary"];
-        vpn: components["schemas"]["EnvironmentServiceContainerSummary"];
-        scheduler?: components["schemas"]["EnvironmentServiceContainerSummary"];
+        loadbalancer?: components["schemas"]["EnvironmentServiceContainerSummary"] | null;
+        discovery?: components["schemas"]["EnvironmentServiceContainerSummary"] | null;
+        vpn?: components["schemas"]["EnvironmentServiceContainerSummary"] | null;
+        scheduler?: components["schemas"]["EnvironmentServiceContainerSummary"] | null;
       };
       /**
        * EnvironmentSummaryStats
@@ -3374,29 +3600,29 @@ export interface components {
     /** LoadBalancerTelemetryRouterMetrics */
     LoadBalancerTelemetryRouterMetrics: {
       destinations: {
-        [key: string]: ({
-          connections: ({
+        [key: string]: {
+          connections: {
             success: number;
             unavailable: number;
             errors?: {
-              [key: string]: number | undefined;
+              [key: string]: number;
             };
             bytes_transmitted?: number;
             bytes_received?: number;
-          }) | null;
-          requests: ({
+          } | null;
+          requests: {
             total: number;
             responses?: {
-              [key: string]: number | undefined;
+              [key: string]: number;
             };
             errors?: {
-              [key: string]: number | undefined;
+              [key: string]: number;
             };
-          }) | null;
+          } | null;
           latency_ms?: number[];
           instance_id: string;
           container_id: string;
-        }) | undefined;
+        };
       };
     };
     /** LoadBalancerTelemetryUrlRequestHandler */
@@ -3409,8 +3635,8 @@ export interface components {
     /** LoadBalancerTelemetryUrlMetrics */
     LoadBalancerTelemetryUrlMetrics: {
       destinations: {
-        [key: string]: ({
-          requests: ({
+        [key: string]: {
+          requests: {
             /**
              * @description The host name of the URL request.
              * @example abc.cycle.io
@@ -3451,7 +3677,7 @@ export interface components {
              * }
              */
             responses?: {
-              [key: string]: number | undefined;
+              [key: string]: number;
             };
             /**
              * @description An object where the key is the error type and the value is the number of hits with that error.
@@ -3460,18 +3686,20 @@ export interface components {
              * }
              */
             errors?: {
-              [key: string]: number | undefined;
+              [key: string]: number;
             };
-          }) | null;
-        }) | undefined;
+          } | null;
+        };
       };
     };
     /** LoadBalancerTelemetrySnapshot */
     LoadBalancerTelemetrySnapshot: {
       time: components["schemas"]["DateTime"];
+      started: components["schemas"]["DateTime"];
+      version?: string;
       dataset_id: number;
-      router?: components["schemas"]["LoadBalancerTelemetryRouterMetrics"];
-      urls?: components["schemas"]["LoadBalancerTelemetryUrlMetrics"];
+      router?: components["schemas"]["LoadBalancerTelemetryRouterMetrics"] | null;
+      urls?: components["schemas"]["LoadBalancerTelemetryUrlMetrics"] | null;
       metrics: components["schemas"]["LoadBalancerTelemetryControllerMetrics"];
     };
     /**
@@ -3529,7 +3757,7 @@ export interface components {
       /** @enum {string} */
       type: "docker-hub";
       details: {
-        existing?: (Record<string, unknown> | null) & components["schemas"]["ExistingSource"];
+        existing?: components["schemas"]["ExistingSource"] | null;
         /** @description The DockerHub target string. ex - `mysql:5.7` */
         target: string;
         /** @description For authentication, a username. */
@@ -3611,7 +3839,7 @@ export interface components {
         context_dir?: string | null;
         /** @description The path to the Dockerfile to be used for buiding the image. */
         build_file?: string | null;
-        credentials?: unknown[] | null;
+        credentials?: components["schemas"]["DockerfileCredentials"] | null;
       };
     };
     /**
@@ -3685,7 +3913,7 @@ export interface components {
      * RegistryAuth
      * @description Authentication details for a third party image registry/source.
      */
-    RegistryAuth: (components["schemas"]["RegistryAuthUser"] | components["schemas"]["RegistryAuthProvider"] | components["schemas"]["RegistryAuthWebhook"]) | null;
+    RegistryAuth: components["schemas"]["RegistryAuthUser"] | components["schemas"]["RegistryAuthProvider"] | components["schemas"]["RegistryAuthWebhook"];
     /**
      * OciRegistryOrigin
      * @description An image origin that pulls images fro an OCI-compatible registry. Also used for provider-native registries, such as AWS ECR.
@@ -3699,7 +3927,9 @@ export interface components {
         target: string;
         /** @description The url of the remote registry. */
         url: string;
-        auth: components["schemas"]["RegistryAuth"];
+        auth: {
+          type: "OciRegistryOrigin";
+        } & (Omit<components["schemas"]["RegistryAuth"], "type"> | null);
       };
     };
     /**
@@ -3747,15 +3977,24 @@ export interface components {
      * @description The origin of the given image source.
      */
     ImageOrigin: components["schemas"]["DockerHubOrigin"] | components["schemas"]["DockerFileOrigin"] | components["schemas"]["DockerRegistryOrigin"] | components["schemas"]["OciRegistryOrigin"] | components["schemas"]["CycleUploadOrigin"] | components["schemas"]["CycleSourceOrigin"] | components["schemas"]["NoneOrigin"];
+    /**
+     * HybridIdentifier
+     * @description Either a resource ID (objectid - i.e. 651586fca6078e98982dbd90) or a resource Identifier (human-readable)
+     * @example my-image-source
+     */
+    HybridIdentifier: string;
     /** StackSpecContainerImage */
     StackSpecContainerImage: {
       name: string | null;
       origin: components["schemas"]["ImageOrigin"];
-      build?: ({
+      build?: {
         args: {
-          [key: string]: string | undefined;
+          [key: string]: string;
         };
-      }) | null;
+      } | null;
+      builder?: {
+        integration_id: components["schemas"]["HybridIdentifier"];
+      } | null;
     };
     /** StackContainerConfigRuntime */
     StackContainerConfigRuntime: {
@@ -3765,17 +4004,17 @@ export interface components {
         args?: string;
       };
       environment_vars?: {
-        [key: string]: string | undefined;
+        [key: string]: string;
       };
       namespaces?: ("ipc" | "pid" | "uts" | "network" | "mount" | "user" | "cgroup")[];
       sysctl?: {
-        [key: string]: string | undefined;
+        [key: string]: string;
       };
       rlimits?: {
         [key: string]: {
           hard: number;
           soft: number;
-        } | undefined;
+        };
       };
       seccomp?: {
         disable: boolean;
@@ -3875,7 +4114,7 @@ export interface components {
     };
     /** StackSpecScopedVariable */
     StackSpecScopedVariable: {
-      identifier: string;
+      identifier: components["schemas"]["Identifier"];
       scope: {
         /** @description Information about the assignment of the scoped variable to different containers in the environment. */
         containers: {
@@ -3888,11 +4127,14 @@ export interface components {
         };
       };
       access: {
-        env_variable: boolean;
+        env_variable: {
+          /** @description The name of the environment variable set on the target container. */
+          key: string;
+        } | null;
         /** @description If set, this scoped variable will be available over the internal API. Contains settings for accessing this variable over the internal API. */
         internal_api?: ({
           /** @description Duration is a time string that the internal API will serve that variable after runtime starts. */
-          duration?: string | null;
+          duration?: components["schemas"]["Duration"] | null;
         }) | null;
         /** @description File is an object that describes a path to mount the file to inside the container. */
         file?: ({
@@ -3919,7 +4161,7 @@ export interface components {
     StackContainerConfigDeploy: {
       instances: number;
       /** @enum {string|null} */
-      strategy?: "resource-density" | "manual" | "high-availability" | "first-available" | "node" | "edge" | "function" | null;
+      strategy?: "resource-density" | "manual" | "high-availability" | "first-available" | "node" | "edge" | "function";
       stateful?: ({
         options: ({
           use_base_hostname?: boolean | null;
@@ -3937,17 +4179,17 @@ export interface components {
       }) | null;
       shutdown?: ({
         /** @description How long the platform will wait for a container to stop gracefully. */
-        graceful_timeout?: string | null;
+        graceful_timeout?: components["schemas"]["Duration"] | null;
         signals?: string[];
       }) | null;
       startup?: ({
         /** @description How long the platform will wait before sending the start signal to the given container. */
-        delay?: string | null;
+        delay?: components["schemas"]["Duration"] | null;
       }) | null;
       /** @description Configurations for container updates. */
       update?: ({
         /** @description When set, Cycle will pick a random time from `0 - this duration`, and stagger the instances so they all start at different times (up to the time specified here). */
-        stagger?: string | null;
+        stagger?: components["schemas"]["Duration"] | null;
       }) | null;
       restart?: ({
         /** @enum {string} */
@@ -3975,13 +4217,13 @@ export interface components {
         /** @description A boolean where true represents the desire for the container to restart if any instance is unhealthy. */
         restart: boolean;
         /** @description How long to wait after a container start event before starting health checks. */
-        delay?: string | null;
+        delay?: components["schemas"]["Duration"] | null;
       }) | null;
       telemetry?: ({
         /** @description How long telemetry data should be retained. */
-        retention?: string | null;
+        retention?: components["schemas"]["Duration"] | null;
         /** @description The duration between samples. */
-        interval?: string | null;
+        interval?: components["schemas"]["Duration"] | null;
         /** @description A URL where Cycle will send telemetry data to. */
         web_hook?: string | null;
         disable: boolean;
@@ -4106,33 +4348,33 @@ export interface components {
         backup: {
           command: string;
           /** @description How long the backup will attempt to run before timing out. */
-          timeout: string | null;
+          timeout: components["schemas"]["Duration"] | null;
           cron_string: string | null;
         };
         restore: ({
           command: string;
           /** @description The time in seconds for the restore to attempt to complete before timing out. */
-          timeout: string | null;
+          timeout: components["schemas"]["Duration"] | null;
         }) | null;
         /**
          * @description How long the platform will keep backups. Default is 1 year.
          * @default 365d
          */
-        retention: string | null;
+        retention: components["schemas"]["Duration"] | null;
       }) | null;
-      shared_file_systems?: ({
+      shared_file_systems?: {
         [key: string]: {
           writable: boolean;
           mount_point: string;
-        } | undefined;
-      }) | null;
+        };
+      } | null;
     };
     /**
      * StackContainer
      * @description Records defining the containers within the stack.
      */
     StackContainer: {
-      [key: string]: ({
+      [key: string]: {
         name: string;
         image: components["schemas"]["StackSpecContainerImage"];
         /** @description Additional meta info about the container. */
@@ -4150,7 +4392,7 @@ export interface components {
           integrations?: components["schemas"]["StackContainerConfigIntegrations"] | null;
         };
         /** @enum {string|null} */
-        role?: "conductor" | null;
+        role?: "conductor";
         pod?: string | null;
         volumes?: (({
             local?: {
@@ -4172,7 +4414,7 @@ export interface components {
           })[]) | null;
         deprecate?: boolean;
         lock?: boolean;
-      }) | undefined;
+      };
     };
     /**
      * StackSpecLoadBalancerConfig
@@ -4197,13 +4439,15 @@ export interface components {
       services?: ({
         discovery?: ({
           hosts?: ({
-            [key: string]: ({
+            [key: string]: {
               ipv4?: string[] | null;
               ipv6?: string[] | null;
-            }) | undefined;
+            };
           }) | null;
         }) | null;
-        loadbalancer?: components["schemas"]["StackSpecLoadBalancerConfig"];
+        loadbalancer?: {
+          type: "StackSpec";
+        } & (Omit<components["schemas"]["StackSpecLoadBalancerConfig"], "type"> | null);
         vpn?: {
           auth: {
             webhook?: string;
@@ -4248,13 +4492,13 @@ export interface components {
          * @description The type of information the user is passing.
          * @enum {string}
          */
-        type: "hash" | "tag";
+        type: "hash" | "tag" | "branch";
         /** @description The actual value to be passed. */
         value: string;
       };
       /** @description Custom variables applied to the stack during build. Any place in the stack where a `{{variable}}` is used is replaced with the value of the variable supplied in this map. */
       variables?: {
-        [key: string]: string | undefined;
+        [key: string]: string;
       };
     };
     /** StackBuildState */
@@ -4311,7 +4555,7 @@ export interface components {
      * @description A resource thats associated with a stack build.
      */
     StackBuildIncludes: {
-      [key: string]: components["schemas"]["StackBuild"] | undefined;
+      [key: string]: components["schemas"]["StackBuild"];
     };
     /**
      * StackRepoSource
@@ -4382,7 +4626,7 @@ export interface components {
       state: components["schemas"]["StackState"];
       /** @description A map of default variable values used when building this stack. A variable can be added anywhere in a stack using the format `{{var}}` where `var` would be a key in this map. */
       variables?: {
-        [key: string]: string | undefined;
+        [key: string]: string;
       };
       /**
        * StackEvents
@@ -4405,7 +4649,7 @@ export interface components {
      * @description A resource associated with a stack.
      */
     StackIncludes: {
-      [key: string]: components["schemas"]["Stack"] | undefined;
+      [key: string]: components["schemas"]["Stack"];
     };
     /**
      * ImageSourceType
@@ -4469,18 +4713,23 @@ export interface components {
       name: string;
       about?: components["schemas"]["ImageSourceAbout"];
       origin: components["schemas"]["ImageOrigin"];
+      /** @description Configuration options regarding the builder used to create/import Images using this Image Source. */
+      builder?: ({
+        /** @description The ID or Identifier of the Integration used to do the build. */
+        integration_id?: components["schemas"]["HybridIdentifier"] | null;
+      }) | null;
       creator: components["schemas"]["CreatorScope"];
       state: components["schemas"]["ImageSourceState"];
       /**
        * ImageSourceEvents
-       * @description A collection of timestamps for each event in the iamge source's lifetime.
+       * @description A collection of timestamps for each event in the image source's lifetime.
        */
       events: {
-        /** @description The timestamp of when the iamge source was created. */
+        /** @description The timestamp of when the image source was created. */
         created: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the iamge source was updated. */
+        /** @description The timestamp of when the image source was updated. */
         updated: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the iamge source was deleted. */
+        /** @description The timestamp of when the image source was deleted. */
         deleted: components["schemas"]["DateTime"];
       };
       meta?: components["schemas"]["ImageSourceMeta"];
@@ -4490,7 +4739,7 @@ export interface components {
      * @description A resource associated with an image source.
      */
     ImageSourceIncludes: {
-      [key: string]: components["schemas"]["ImageSource"] | undefined;
+      [key: string]: components["schemas"]["ImageSource"];
     };
     /**
      * LoadBalancerLatestControllersIncludes
@@ -4509,7 +4758,7 @@ export interface components {
     VPNInfoReturn: {
       /** @description A url associated with the VPN service. */
       url: string;
-      service: components["schemas"]["VpnEnvironmentService"];
+      service: components["schemas"]["VpnEnvironmentService"] | null;
     };
     /**
      * VPNLogin
@@ -4606,7 +4855,7 @@ export interface components {
       time: components["schemas"]["DateTime"];
       /** @description Records for instance state and number of instances in that state. */
       instances: {
-        [key: string]: number | undefined;
+        [key: string]: number;
       };
     };
     /**
@@ -4630,11 +4879,14 @@ export interface components {
      */
     ScopedVariableAccess: {
       /** @description When set to true, this scoped variable is set as an environment variable inside the container. */
-      env_variable: boolean;
+      env_variable?: {
+        /** @description The name of the environment variable set on the target container. */
+        key: string;
+      } | null;
       /** @description If set, this scoped variable will be available over the internal API. Contains settings for accessing this variable over the internal API. */
       internal_api?: ({
         /** @description Duration is a time string that the internal API will serve that variable after runtime starts. */
-        duration?: string | null;
+        duration?: components["schemas"]["Duration"] | null;
       }) | null;
       /** @description File is an object that describes a path to mount the file to inside the container. */
       file?: ({
@@ -4709,8 +4961,7 @@ export interface components {
       hub_id: components["schemas"]["HubID"];
       /** @description An identifier used to reference the environment this resource is scoped to. */
       environment_id: string;
-      /** @description An identifier, similar to a key in an environment variable.  Its used when envoking the scoped variable. */
-      identifier: string;
+      identifier: components["schemas"]["Identifier"];
       scope: components["schemas"]["ScopedVariableScope"];
       access: components["schemas"]["ScopedVariableAccess"];
       /** @description The source or value of the scoped variable. */
@@ -4730,20 +4981,23 @@ export interface components {
       };
     };
     /**
+     * ServiceContainerIdentifier
+     * @description Identifier of a service Container within an Environment.
+     * @enum {string}
+     */
+    ServiceContainerIdentifier: "discovery" | "vpn" | "loadbalancer" | "scheduler";
+    /**
      * ContainerImageSummary
      * @description A summary of the image this container was created from.
      */
     ImageSummary: {
-      id: string | null;
+      id: components["schemas"]["ID"] | null;
       /** @description An image that is packaged with Cycle directly, such as the global load balancer. */
       extension: {
         identifier: components["schemas"]["Identifier"];
       } | null;
-      /**
-       * @description If a service container, the identifier specifying which service it is.
-       * @enum {string|null}
-       */
-      service: "loadbalancer" | "discovery" | "vpn" | null;
+      /** @description If a service container, the identifier specifying which service it is. */
+      service: components["schemas"]["ServiceContainerIdentifier"] | null;
     };
     /**
      * ContainerStackSummary
@@ -4751,10 +5005,6 @@ export interface components {
      */
     StackSummary: {
       id?: components["schemas"]["ID"];
-      image?: {
-        /** @description The ID of the image used for this container. */
-        id?: string;
-      };
       /** @description The ID of the stack build this container is associated with. */
       build_id?: string;
       /** @description The container identifier, usually the key to the container section of a stack file. */
@@ -4811,7 +5061,7 @@ export interface components {
       /** @description Configuration for what to do during container shutdown. */
       shutdown?: {
         /** @description How long the platform will wait for a container to stop gracefully. */
-        graceful_timeout?: (string | null) & components["schemas"]["Duration"];
+        graceful_timeout?: components["schemas"]["Duration"] | null;
         /** @description Process signal sent to the container process. */
         signals?: (("SIGTERM" | "SIGINT" | "SIGUSR1" | "SIGUSR2" | "SIGHUP" | "SIGQUIT")[]) | null;
       };
@@ -4844,7 +5094,7 @@ export interface components {
         /** @description The number of times the platform will retry the command before marking the container unhealthy. */
         retries: number;
         /** @description How long to wait before performing an initial health check when the instance starts. The `state.health.healthy` field of the instance will be `null`` until the first check is performed. */
-        delay: string | null;
+        delay: components["schemas"]["Duration"] | null;
         /** @description How long to wait between restarts. */
         interval: components["schemas"]["Duration"];
         /** @description How long before a health check attempt times out. */
@@ -4994,7 +5244,7 @@ export interface components {
       namespaces?: ("ipc" | "pid" | "uts" | "network" | "mount" | "user" | "cgroup")[];
       /** @description A record of environment variables for the given container. */
       environment_vars?: {
-        [key: string]: string | undefined;
+        [key: string]: string;
       };
       /** @description Selecting this option will give this container full permissions on the server. This is not recommended and increases the likelihood of your server being compromised. */
       privileged: boolean;
@@ -5004,7 +5254,7 @@ export interface components {
       workdir?: string;
       /** @description A record of sysctl fields and values for a given container. */
       sysctl?: {
-        [key: string]: string | undefined;
+        [key: string]: string;
       };
       /** @description A record of rlimits and their values. */
       rlimits?: {
@@ -5013,7 +5263,7 @@ export interface components {
           hard?: number;
           /** @description The soft limit for the rlimit. */
           soft?: number;
-        } | undefined;
+        };
       };
       seccomp?: {
         disable?: boolean;
@@ -5097,39 +5347,35 @@ export interface components {
       };
       /** @description Automated backups configuration for the given container. */
       backups?: {
-        /**
-         * @description The storage provider to use for backups.
-         * @enum {string}
-         */
-        destination: "backblaze-b2";
+        integration_id?: components["schemas"]["HybridIdentifier"];
         /** @description Configuration settings for each backup. */
         backup: {
           /** @description The command to run for the backup. */
           command: string;
           /** @description How long the backup will attempt to run before timing out. */
-          timeout?: string | null;
+          timeout?: components["schemas"]["Duration"] | null;
           /** @description A cron string that configures how often the backup will run. */
           cron_string?: string;
         };
         /** @description Configuration settings for restoring from a backup. */
-        restore: ({
+        restore: {
           /** @description The command to run for restoring from a backup. */
           command: string;
           /** @description The time in seconds for the restore to attempt to complete before timing out. */
-          timeout?: string | null;
-        }) | null;
+          timeout?: string;
+        } | null;
         /**
          * @description How long the platform will keep backups. Default is 1 year.
          * @default 365d
          */
-        retention: string | null;
+        retention: components["schemas"]["Duration"] | null;
       };
-      shared_file_systems?: ({
+      shared_file_systems?: {
         [key: string]: {
           writable: boolean;
           mount_point: string;
-        } | undefined;
-      }) | null;
+        };
+      } | null;
     };
     /**
      * ContainerConfig
@@ -5273,7 +5519,7 @@ export interface components {
         };
       } & (OneOf<[{
         /** @description The ID of the container this record is related to. */
-        container_id?: string | null;
+        container_id?: string;
       }, {
         /** @description Information about the deployment this record points to. */
         deployment?: ({
@@ -5284,21 +5530,21 @@ export interface components {
             /** @description The identifier of the container in the environment this record should point to. */
             container: components["schemas"]["Identifier"];
             /** @description The deployment tag that this record should point to. The tags are set on the root of an environment and map to a deployment version. */
-            tag?: string | null;
+            tag?: components["schemas"]["Identifier"] | null;
           };
         }) | null;
       }]>);
     };
     /**
-     * DNSRecordCertificate
+     * TLSCertificateSummary
      * @description A TLS record certificate
      */
-    Certificate: {
+    TlsCertificateSummary: {
       id: components["schemas"]["ID"];
       generated: components["schemas"]["DateTime"];
       /** @description A value where true represents that the certificate is using a shared wildcard cert. */
       wildcard_child: boolean;
-    } | null;
+    };
     /** DNSRecordState */
     RecordState: ({
       /**
@@ -5323,9 +5569,9 @@ export interface components {
       resolved_domain: string;
       type: components["schemas"]["RecordTypes"];
       /** @description TLS features for the record. */
-      features: {
-        certificate: components["schemas"]["Certificate"];
-      } | null;
+      features: ({
+        certificate: components["schemas"]["TlsCertificateSummary"] | null;
+      }) | null;
       state: components["schemas"]["RecordState"];
       events: components["schemas"]["Events"];
     };
@@ -5338,8 +5584,8 @@ export interface components {
       current: "assigning" | "assigned" | "releasing" | "available";
     }) & components["schemas"]["State"];
     /**
-     * Ip
-     * @description An IP resource.
+     * IP
+     * @description Details about an IP.
      */
     Ip: {
       id: components["schemas"]["ID"];
@@ -5371,13 +5617,11 @@ export interface components {
      */
     ContainersMeta: {
       instances_count?: components["schemas"]["StateCountSummary"];
-      /** @description The FQDN for this container, if there is one. */
-      domain?: string;
       domains?: {
           /** @description The fully qualified domain name. */
           fqdn: string;
-          record: components["schemas"]["Record"];
-        }[];
+          record?: components["schemas"]["Record"];
+        }[] | null;
       /** @description An array of IP resources. */
       ips?: components["schemas"]["Ip"][];
     };
@@ -5395,27 +5639,27 @@ export interface components {
       environment: components["schemas"]["ContainerEnvironmentSummary"];
       hub_id: components["schemas"]["HubID"];
       image: components["schemas"]["ImageSummary"];
-      stack?: components["schemas"]["StackSummary"];
+      stack?: components["schemas"]["StackSummary"] | null;
       config: components["schemas"]["Config"];
       deployment?: components["schemas"]["Deployment"] | null;
       /** @description The number of instances for a given container. */
       instances: number;
       volumes?: components["schemas"]["VolumeSummary"][];
       /** @description Custom meta data for a given container */
-      annotations: {
+      annotations?: {
         [key: string]: unknown;
       } | null;
       /**
        * @description The role of a given container if it has one.
        * @enum {string|null}
        */
-      role?: "orchestrator" | null;
+      role?: "orchestrator";
       /** @description A boolean where true signifies the container is stateful. */
       stateful: boolean;
       /** @description A boolean where true signifies the container is marked as deprecated. */
-      deprecate?: boolean;
+      deprecate: boolean;
       /** @description When set to true, prevents this container from being deleted. */
-      lock?: boolean;
+      lock: boolean;
       state: components["schemas"]["ContainerState"];
       /**
        * ContainerEvents
@@ -5521,12 +5765,17 @@ export interface components {
         nvidia_gpu?: boolean;
       };
       /** @description Any additional build details for this image */
-      build: ({
-        /** @description Arguments to pass to the factory during a build of this image. */
+      build?: {
+        /** @description Arguments to pass to the builder during a build of this image. */
         args?: {
-          [key: string]: string | undefined;
+          [key: string]: string;
         };
-      }) | null;
+      } | null;
+      /** @description Configuration options regarding the builder used to create/import this Image. */
+      builder?: {
+        /** @description The ID of the Integration used to do the build. */
+        integration_id: components["schemas"]["ID"];
+      } | null;
       /** @description Configuration settings for the image. */
       config: {
         /** @description The linux user this image runs its processes as. */
@@ -5540,11 +5789,11 @@ export interface components {
           }[];
         /** @description Image defined environment variables for the image. */
         env: {
-          [key: string]: string | undefined;
+          [key: string]: string;
         };
         /** @description Image labels. */
         labels: {
-          [key: string]: string | undefined;
+          [key: string]: string;
         };
         /** @description The CMD array used to start the container. */
         command: string[];
@@ -5567,8 +5816,8 @@ export interface components {
       };
       source?: components["schemas"]["DirectImageSourceType"] | components["schemas"]["StackImageSourceType"] | components["schemas"]["BucketImageSourceType"];
       creator?: components["schemas"]["CreatorScope"];
-      /** @description Identifies which factory the image was built on and when. */
-      factory: {
+      /** @description Information about the Factory service that built/imported the Image into Cycle. */
+      factory?: {
         /** @description The node holding the factory service that was responsible for building the image. */
         node_id: string;
         /** @description A date timestamp for when the node cached the image. */
@@ -5596,14 +5845,21 @@ export interface components {
      * @description A resource associated with an image.
      */
     ImagesIncludes: {
-      [key: string]: components["schemas"]["Image"] | undefined;
+      [key: string]: components["schemas"]["Image"];
+    };
+    /**
+     * IdentifierIncludes
+     * @description A map of identifiers to an array of resource IDs that are associated with it. All IDs point to the same type of resource.
+     */
+    IdentifierIncludes: {
+      [key: string]: components["schemas"]["ID"][];
     };
     /**
      * EnvironmentInclude
      * @description An identity that is associated with an environment.
      */
     EnvironmentIncludes: {
-      [key: string]: components["schemas"]["Environment"] | undefined;
+      [key: string]: components["schemas"]["Environment"];
     };
     /**
      * ContainerIncludes
@@ -5614,7 +5870,9 @@ export interface components {
       images?: components["schemas"]["ImagesIncludes"];
       stack_builds?: components["schemas"]["StackBuildIncludes"];
       stacks?: components["schemas"]["StackIncludes"];
+      "stacks:identifiers"?: components["schemas"]["IdentifierIncludes"];
       environments?: components["schemas"]["EnvironmentIncludes"];
+      "environments:identifiers"?: components["schemas"]["IdentifierIncludes"];
     };
     /** ContainerStartActionTask */
     ContainerStartAction: {
@@ -5682,26 +5940,35 @@ export interface components {
       };
     };
     /**
-     * ProviderSummary
-     * @description A summary of the provider a given resource is deployed to.
+     * EnvironmentNetworkSummary
+     * @description Details about the environment network this instance is a member of.
      */
-    ProviderSummary: {
-      /** @description An identifier for the provider. Custom IAL providers will be listed as `a-<ID>`. */
-      identifier: string;
-      /** @description A location identifier associated with the provider. */
+    EnvironmentNetworkSummary: {
+      id: components["schemas"]["ID"];
+      network_subnet: string;
+      subnet: string;
+      ipv6: components["schemas"]["IPNet"] | null;
+      legacy: ({
+        host: number;
+        subnet: number;
+        ipv4: components["schemas"]["IPNet"] | null;
+      }) | null;
+      mac_addr: string;
+      vxlan_tag: number;
+    };
+    /** InstanceProvider */
+    InstanceProvider: {
+      /** @description The vendor of the hub provider integration related to the server this instance runs on. */
+      vendor: string;
+      /** @description An ID of the provider Hub integration that this instance's host node is related to. */
+      integration_id: components["schemas"]["ID"];
+      /** @description The identifier of the location related to the server this instance runs on. */
       location: string;
     };
     /**
-     * MigrationInstance
-     * @description Information about an instances migration.
+     * InstanceState
+     * @description Information about the state of an instance.
      */
-    MigrationInstance: {
-      /** @description The ID of the instance. */
-      instance_id: string;
-      /** @description The ID of the server in the context its represented. */
-      server_id: string;
-    };
-    /** InstanceState */
     InstanceState: ({
       /**
        * @description The current state of the instance.
@@ -5723,76 +5990,80 @@ export interface components {
     }) & components["schemas"]["State"];
     /**
      * InstanceAutoScale
-     * @description Auto-scale details for instances created by auto-scale events
+     * @description Auto-scale details for instances created by auto-scale events.
      */
     InstanceAutoScale: {
       sibling_id: components["schemas"]["ID"];
       min_ttl: components["schemas"]["DateTime"];
     };
     /**
+     * MigrationInstance
+     * @description Information about a migrated instance.
+     */
+    MigrationInstance: {
+      /** @description The ID of the instance. */
+      instance_id: string;
+      /** @description The ID of the server. */
+      server_id: string;
+    };
+    /**
+     * InstanceMigration
+     * @description Information regarding the migration of an instance, such as the server that the instance came from or the server that the instance was moved to.
+     */
+    InstanceMigration: {
+      to?: components["schemas"]["MigrationInstance"] | null;
+      from?: components["schemas"]["MigrationInstance"] | null;
+      /** @description A timestamp of when the migration was started. */
+      started?: components["schemas"]["DateTime"];
+      /** @description A timestamp of when the migration was completed. */
+      completed?: components["schemas"]["DateTime"];
+      /** @description A key used by the platform to verify the migration. */
+      key: string;
+      /** @description A boolean where true represents the volumes for the instance should be copied to the new server as well. */
+      copy_volumes: boolean;
+    };
+    /**
      * Instance
-     * @description A container instance resource.
+     * @description An instance of a Container.
      */
     Instance: {
       id: components["schemas"]["ID"];
+      creator: components["schemas"]["CreatorScope"];
       hub_id: components["schemas"]["HubID"];
       /** @description A container identifier for the container that is associated with this instance. */
       container_id: string;
       /** @description A location identifier that's associated with the server this instance is deployed to. */
       location_id: string;
-      deployment?: components["schemas"]["Deployment"] | null;
-      /** @description Details about the environment network this instance is a member of. */
-      environment: {
-        id: components["schemas"]["ID"];
-        network_subnet: string;
-        subnet: string;
-        ipv6: components["schemas"]["IPNet"];
-        legacy: {
-          host: number;
-          subnet: number;
-          ipv4: components["schemas"]["IPNet"];
-        } | null;
-        mac_addr: string;
-        vxlan_tag: number;
-      };
-      /** @description Additional information about the instance relating to its setting as being stateful. */
-      stateful: {
+      environment: components["schemas"]["EnvironmentNetworkSummary"];
+      /** @description If the instance is stateful, additional details relating to its stateful properties. */
+      stateful?: {
         id: components["schemas"]["ID"];
         /** @description The base hostname for the given instance. */
         base_hostname: string;
       } | null;
-      provider: components["schemas"]["ProviderSummary"];
+      /** @description If the instance is a function, additional details relating to its function properties */
+      function?: {
+        /** @description The seed used for this function. */
+        seed: number;
+      };
+      provider: components["schemas"]["InstanceProvider"];
       /** @description An identifier for the server this instance is deployed to. */
-      server_id: string;
+      server_id: components["schemas"]["ID"];
       /**
-       * @description The state as it relates to the following. * `active` - instance can be started or stopped. * `purge` - instance should be deleted. * `hibernate` - instance is active but not allowed to run.
+       * @description The state as it relates to the following. * `active` - instance can be started or stopped. * `purge` - instance should be deleted. * `hibernate` - instance is active but not allowed to run. * `configuring` - this instance is not allowed to start yet
        * @enum {string}
        */
-      ready_state: "active" | "purge" | "hibernate";
+      ready_state: "active" | "purge" | "hibernate" | "configuring";
+      /** @description The timestamp of when the instance was purged. */
+      purge_time?: components["schemas"]["DateTime"] | null;
       /** @description The hostname of the instance. */
       hostname: string;
-      /** @description If this instance is scheduled to be migrated or has been migrated in the past, there will be information populating this field with the server that the instance came from or the server that the instance was moved to and the instance ID. */
-      migration: {
-        to?: components["schemas"]["MigrationInstance"];
-        from?: components["schemas"]["MigrationInstance"];
-        /** @description A timestamp of when the migration was started. */
-        started?: components["schemas"]["DateTime"];
-        /** @description A timestamp of when the migration was completed. */
-        completed?: components["schemas"]["DateTime"];
-        /** @description A key used by the platform to verify the migration. */
-        key: string;
-        /** @description A boolean where true represents the volumes for the instance should be copied to the new server as well. */
-        copy_volumes: boolean;
-      } | null;
-      /** @description If the instance was purged, the timestamp of when that happened. */
-      purge_time: string | null;
-      /**
-       * @description If the instance is an instance of a service container that will be denoted here.
-       * @enum {string|null}
-       */
-      service: "discovery" | "vpn" | "loadbalancer" | null;
+      /** @description The type of service this instance is within the environment, if any. */
+      service?: components["schemas"]["ServiceContainerIdentifier"];
       state: components["schemas"]["InstanceState"];
-      autoscale: components["schemas"]["InstanceAutoScale"] | null;
+      autoscale?: components["schemas"]["InstanceAutoScale"] | null;
+      migration?: components["schemas"]["InstanceMigration"] | null;
+      deployment?: components["schemas"]["Deployment"] | null;
       /**
        * InstanceEvents
        * @description A collection of timestamps for each event in the instnaces lifetime.
@@ -5804,13 +6075,11 @@ export interface components {
         updated: components["schemas"]["DateTime"];
         /** @description The timestamp of when the instance was deleted. */
         deleted: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the instance was started. */
-        first_started: components["schemas"]["DateTime"];
       };
     };
     /** ServerSharedFileSystems */
     ServerSharedFileSystems: {
-      mounts?: ({
+      mounts?: {
         [key: string]: {
           /** @description String describing the server mount type. */
           type: string;
@@ -5821,8 +6090,8 @@ export interface components {
           options: string;
           /** @description String describing the server mount source. */
           source: string;
-        } | undefined;
-      }) | null;
+        };
+      } | null;
       /** @description An object describing directory identifiers with value {}. */
       directories?: {
         [key: string]: unknown;
@@ -5833,8 +6102,8 @@ export interface components {
      * @description A resource regarding the provider a given server is deployed from.
      */
     ServerProvider: {
-      /** @description An identifier for the provider this server is deployed from. */
-      identifier: string;
+      /** @description The vendor for the provider this server is deployed from. */
+      vendor: string;
       /** @description The model of the server that is deployed. */
       model: string;
       /** @description A location where the server is deployed. */
@@ -5904,7 +6173,7 @@ export interface components {
     ServerStatsNetwork: {
       /** @description Network interfaces for a given server. */
       interfaces?: {
-        [key: string]: ({
+        [key: string]: {
           /** @description The interface name. */
           interface?: string;
           /** @description Flags for the given interface. */
@@ -5915,7 +6184,7 @@ export interface components {
           mac_addr?: string;
           /** @description An array of IP addresses associated with the interface. */
           addrs?: string[] | null;
-        }) | undefined;
+        };
       };
       /** @description The public IPv4 address used to connect to this server. */
       external_ipv4: string;
@@ -6004,7 +6273,7 @@ export interface components {
     ServerStatsStorage: {
       /** @description An array of volume group objects. */
       volume_groups: {
-        [key: string]: ({
+        [key: string]: {
           /** @description A name for the volume group. */
           name: string;
           /** @description A number representing the aggregate group volume size in megabytes. */
@@ -6022,9 +6291,9 @@ export interface components {
               meta_percent: number;
               /** @description The name of the volume pool this volume is associated with. */
               pool: string;
-            } | undefined;
+            };
           };
-        }) | undefined;
+        };
       };
       /** @description Records that show information about mounted filesystems where the key is the path to the mount. */
       mounts: {
@@ -6041,7 +6310,7 @@ export interface components {
           free: number;
           /** @description The amount of storage being used in KB. */
           used: number;
-        } | undefined;
+        };
       };
     };
     /**
@@ -6063,7 +6332,7 @@ export interface components {
     ServerStatsVersions: {
       /** @description A list of records about Cycle services. */
       services: {
-        [key: string]: string | undefined;
+        [key: string]: string;
       };
     };
     /**
@@ -6163,13 +6432,13 @@ export interface components {
      * @description A resource thats associated with a server.
      */
     ServersIncludes: {
-      [key: string]: components["schemas"]["Server"] | undefined;
+      [key: string]: components["schemas"]["Server"];
     };
     /**
-     * LocationGeographic
+     * ProviderLocationGeography
      * @description Geographic information about a provider location.
      */
-    Geographic: {
+    ProviderLocationGeography: {
       /** @description The latitude of the given provider datacenter. */
       latitude: number;
       /** @description The longitude of the given provider datacenter. */
@@ -6187,9 +6456,11 @@ export interface components {
      * LocationProvider
      * @description Information about the locaiton of the provider.
      */
-    LocationProvider: {
+    ProviderLocationDetails: {
       /** @description An identifier for the given provider */
       identifier: string;
+      /** @description The ID of the provider integration associated with this location. */
+      integration_id?: components["schemas"]["ID"];
       /** @description A location name returned from the provider. */
       location: string;
       /** @description A location code returned from the provider. */
@@ -6197,15 +6468,15 @@ export interface components {
       availability_zones?: string[];
     };
     /**
-     * InfrastructureProviderLocation
+     * ProviderLocation
      * @description Location information for a given provider.
      */
-    InfrastructureProviderLocation: {
+    ProviderLocation: {
       id: string;
       /** @description A name for the location. */
       name: string;
-      geographic: (Record<string, unknown> | null) & components["schemas"]["Geographic"];
-      provider: components["schemas"]["LocationProvider"];
+      geographic?: components["schemas"]["ProviderLocationGeography"] | null;
+      provider: components["schemas"]["ProviderLocationDetails"];
       /** @description A boolean where true means the locaiton is supported by the platform. */
       compatible: boolean;
       /** @description Additional information about available and supported features of the provider location. */
@@ -6227,114 +6498,132 @@ export interface components {
      * @description A resource thats associated with a provider location.
      */
     LocationsIncludes: {
-      [key: string]: components["schemas"]["InfrastructureProviderLocation"] | undefined;
+      [key: string]: components["schemas"]["ProviderLocation"];
     };
-    /**
-     * IALAuth
-     * @description Infrastructure abstraction layer authentication information.
-     */
-    IALAuth: {
-      /** @description A namespace for the IAL entry. */
-      namespace?: string;
-      /** @description Information about the region being used. */
-      region?: string;
-      /** @description The API key used to make a request against the given provider. */
-      api_key?: string;
-      /** @description A secret. */
-      secret?: string;
-      /** @description A config string. */
-      config?: string;
-      /** @description Information about the Cycle properties making the request. */
-      cycle?: {
-        /** @description The name of the hub. */
-        hub_name: string;
-        hub_id: components["schemas"]["HubID"];
-      };
+    /** IntegrationAuth */
+    IntegrationAuth: {
+      /** @description The region associated with the Integration. */
+      region?: string | null;
+      /** @description The namespace associated with the Integration. */
+      namespace?: string | null;
+      /** @description API key for accessing the Integration. */
+      api_key?: string | null;
+      /** @description Key ID for accessing the Integration. */
+      key_id?: string | null;
+      /** @description Secret for accessing the Integration. */
+      secret?: string | null;
+      /** @description Subscription ID for the Integration. */
+      subscription_id?: string | null;
+      /** @description Client ID for the Integration. */
+      client_id?: string | null;
+      /** @description Base64 encoded configuration for the Integration. */
+      base64_config?: string | null;
     };
-    /**
-     * NativeIntegration
-     * @description Information about a natively supported infrastructure provider.
-     */
-    NativeIntegration: {
-      identifier: components["schemas"]["NativeProviderIdentifier"];
-      auth: components["schemas"]["IALAuth"];
-    };
-    /**
-     * AbstractionIntegration
-     * @description Information about an infrastructure provider abstraction.
-     */
-    AbstractionIntegration: {
-      /** @description A name for a given infrastructure abstraction. */
-      name: string;
-      /** @description The base url, where the abstraction endpoints are located. */
-      base_url: string;
-      auth?: components["schemas"]["IALAuth"];
-    };
-    /**
-     * InfrastructureProviderIntegration
-     * @description Information about a provider and how it integrates with the platform.
-     */
-    Integration: {
-      native?: components["schemas"]["NativeIntegration"];
-      abstraction?: components["schemas"]["AbstractionIntegration"];
-    };
-    /** ProviderState */
-    ProviderState: ({
+    /** IntegrationState */
+    IntegrationState: ({
       /**
-       * @description The current state of the provider.
+       * @description The current state of the integration.
        * @enum {string}
        */
       current: "new" | "verifying" | "live" | "deleting" | "deleted";
     }) & components["schemas"]["State"];
     /**
-     * ProviderMeta
-     * @description A list of meta fields that can be applied to a provider.
+     * IntegrationDefinition
+     * @description Describes an integration for a Cycle Hub that can be enabled by the Hub owner.
      */
-    ProviderMeta: {
-      locations?: components["schemas"]["InfrastructureProviderLocation"][];
-      identifier?: string;
+    IntegrationDefinition: {
+      vendor: string;
+      name: string;
+      supports_verification: boolean;
+      supports_multiple: boolean;
+      /** @description A list of additional features supported by this Integration. */
+      features?: string[] | null;
+      /** @description A list of functionality that this integration extends. i.e. ["backups"] */
+      extends?: string[] | null;
+      /** @description Additional configuration options that are available when using this Integration. These describe additional functionality that Cycle may utilize. */
+      extended_configuration?: ({
+        options?: {
+            title?: string;
+            key?: string;
+            type?: string;
+          }[] | null;
+      }) | null;
+      fields?: {
+        extra?: ({
+          [key: string]: {
+            regex?: string | null;
+            required: boolean;
+            description: string;
+          };
+        }) | null;
+        auth?: ({
+          [key: string]: {
+            regex?: string | null;
+            required: boolean;
+            description: string;
+          };
+        }) | null;
+      };
+      /** Format: uri */
+      url: string;
+      public: boolean;
+      usable: boolean;
+      /** @description If true, the Integration can be edited. Otherwise, to make a change it will need to be deleted and recreated. */
+      editable: boolean;
     };
     /**
-     * Provider
-     * @description A provider resource.
+     * IntegrationMeta
+     * @description Additional fields that can be requested for an Integration on fetch.
      */
-    Provider: {
+    IntegrationMeta: {
+      /** @description The full Integration definition associated with this Integration. */
+      definition?: components["schemas"]["IntegrationDefinition"];
+    };
+    /** Integration */
+    Integration: {
       id: components["schemas"]["ID"];
-      hub_id: components["schemas"]["HubID"];
-      integration: components["schemas"]["Integration"];
-      /** @description A string describing the name of a provider */
-      name?: string;
+      /** @description Name of the Integration. */
+      name?: string | null;
+      /** @description Which vendor this Integration is associated with. */
+      vendor: string;
+      identifier: components["schemas"]["Identifier"];
+      /** @description Authentication information for the Integration, can be null. */
+      auth?: components["schemas"]["IntegrationAuth"] | null;
+      /** @description Additional key-value pairs associated with the Integration. */
+      extra?: {
+        [key: string]: string;
+      } | null;
+      creator: components["schemas"]["CreatorScope"];
+      /** @description Identifier of the hub associated with the Integration. */
+      hub_id: components["schemas"]["ID"];
+      state: components["schemas"]["IntegrationState"];
       /**
-       * ProviderEvents
-       * @description A collection of timestamps for each event in the provider's lifetime.
+       * IntegrationEvents
+       * @description A collection of timestamps for each event in the Integration's lifetime.
        */
       events: {
-        /** @description The timestamp of when the provider was created. */
+        /** @description The timestamp of when the Integration was created. */
         created: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the provider was updated. */
+        /** @description The timestamp of when the Integration was updated. */
         updated: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the provider was deleted. */
+        /** @description The timestamp of when the Integration was deleted. */
         deleted: components["schemas"]["DateTime"];
-        /** @description The timestamp of when the provider was last used to provision a server. */
-        last_provision: components["schemas"]["DateTime"];
       };
-      creator: components["schemas"]["CreatorScope"];
-      state: components["schemas"]["ProviderState"];
-      meta?: components["schemas"]["ProviderMeta"];
+      meta?: components["schemas"]["IntegrationMeta"] | null;
     };
     /**
-     * ProvidersIncludes
-     * @description A resource thats associated with a provider.
+     * IntegrationsIncludes
+     * @description A resource thats associated with an integration.
      */
-    ProvidersIncludes: {
-      [key: string]: components["schemas"]["Provider"] | undefined;
+    IntegrationsIncludes: {
+      [key: string]: components["schemas"]["Integration"];
     };
     /**
      * ContainersIncludes
      * @description A resource thats associated with a contianer.
      */
     ContainersIncludes: {
-      [key: string]: components["schemas"]["Container"] | undefined;
+      [key: string]: components["schemas"]["Container"];
     };
     /**
      * InstanceIncludes
@@ -6344,13 +6633,16 @@ export interface components {
       creators?: components["schemas"]["CreatorInclude"];
       servers?: components["schemas"]["ServersIncludes"];
       locations?: components["schemas"]["LocationsIncludes"];
-      providers?: components["schemas"]["ProvidersIncludes"];
+      integrations?: components["schemas"]["IntegrationsIncludes"];
+      "integrations:identifiers"?: components["schemas"]["IdentifierIncludes"];
       containers?: components["schemas"]["ContainersIncludes"];
+      "containers:identifiers"?: components["schemas"]["IdentifierIncludes"];
       environments?: components["schemas"]["EnvironmentIncludes"];
+      "environments:identifiers"?: components["schemas"]["IdentifierIncludes"];
     };
     /**
      * SSHToken
-     * @description An SSH token resource.
+     * @description An Instance SSH token.
      */
     SSHToken: {
       id: components["schemas"]["ID"];
@@ -6574,13 +6866,12 @@ export interface components {
     ResourceSnapshot: {
       /** @description A timestamp of the time this snapshot was captured at. */
       time: components["schemas"]["DateTime"];
-      hub_id?: components["schemas"]["HubID"];
-      /** @description An ID for an associated container. */
-      container_id?: string;
-      /** @description An ID for an associated instance. */
-      instance_id?: string;
-      /** @description An ID for an associated environment. */
-      environment_id?: string;
+      hub_id?: components["schemas"]["HubID"] | null;
+      container_id?: components["schemas"]["ID"] | null;
+      instance_id?: components["schemas"]["ID"] | null;
+      environment_id?: components["schemas"]["ID"] | null;
+      server_id?: components["schemas"]["ID"] | null;
+      cluster?: components["schemas"]["Identifier"] | null;
       cpu: components["schemas"]["CPUSnapshot"];
       memory: components["schemas"]["MemorySnapshot"];
       processes: components["schemas"]["ProcessesSnapshot"];
@@ -6589,7 +6880,7 @@ export interface components {
     };
     /**
      * InstanceTelemetryReport
-     * @description An instance telemetry report.
+     * @description An Instance telemetry report.
      */
     InstanceTelemetryReport: {
       request: components["schemas"]["TelemetryReportRequest"];
@@ -6597,44 +6888,12 @@ export interface components {
       snapshots: components["schemas"]["ResourceSnapshot"][];
     };
     /**
-     * ServerInstances
-     * @description Information about the instances on a server.
+     * ServerInstancesSummary
+     * @description A Server ID and number of Instances of a specific Container it hosts.
      */
-    ServersList: {
-      id: components["schemas"]["ID"];
-      /**
-       * @description A summary of resources by state
-       * @example {
-       *   "state": {
-       *     "new": 0,
-       *     "starting": 0,
-       *     "reimaging": 1,
-       *     "migrating": 1,
-       *     "running": 5,
-       *     "stopping": 0,
-       *     "failed": 0,
-       *     "deleting": 0,
-       *     "deleted": 0
-       *   },
-       *   "total": 7,
-       *   "available": 5
-       * }
-       */
-      instances: {
-        /**
-         * CountsByState
-         * @description A count of this resource, grouped by state.
-         */
-        state: {
-          [key: string]: number | undefined;
-        };
-        /** @description The total number of this resource */
-        total: number;
-        /** @description The total number of this resource available, less any deleted ones. */
-        available: number;
-      };
-      /** @description The server hostname. */
-      hostname: string;
+    ServerInstancesSummary: {
+      server_id: components["schemas"]["ID"];
+      instances: number;
     };
     /**
      * CPUServerSpec
@@ -6653,7 +6912,7 @@ export interface components {
       shared?: boolean;
       /** @description Extra information about the CPU if there is any. */
       extra?: {
-        [key: string]: string | undefined;
+        [key: string]: string;
       };
     };
     /**
@@ -6673,7 +6932,7 @@ export interface components {
       shared?: boolean;
       /** @description Extra information about the GPU if there is any. */
       extra?: {
-        [key: string]: string | undefined;
+        [key: string]: string;
       };
     };
     /**
@@ -6687,7 +6946,7 @@ export interface components {
       type: string;
       /** @description Extra inforamtion about the memory resources. */
       extra: {
-        [key: string]: string | undefined;
+        [key: string]: string;
       };
     };
     /**
@@ -6703,7 +6962,7 @@ export interface components {
       type: string;
       /** @description Extra information about the storage resources for a given server. */
       extra: {
-        [key: string]: string | undefined;
+        [key: string]: string;
       };
     };
     /**
@@ -6728,7 +6987,7 @@ export interface components {
      * @description The spec for server features.
      */
     FeaturesSpec: {
-      /** @description The type of raid supported, if any. */
+      /** @description The type of RAID supported, if any. */
       raid: string | null;
       /** @description Features specific to AWS. */
       aws?: {
@@ -6757,25 +7016,24 @@ export interface components {
     ProviderServerSpec: {
       /** @description A provider identifier */
       identifier: string;
+      integration_id?: components["schemas"]["ID"] | null;
       /** @description A category for the server. */
       category: string;
       /** @description A class for the server. */
       class?: string;
       /** @description The model of the server. */
       model: string;
-      /** @description A plan identifier, if there is one. */
-      plan_identifier?: string;
       /** @description A list of location ID's this server is available. */
       locations: string[];
       availability_zones?: {
-        [key: string]: string[] | undefined;
+        [key: string]: string[];
       };
     };
     /**
-     * ProviderServer
+     * ProviderServerModel
      * @description A server from a provider.
      */
-    ProviderServer: {
+    ProviderServerModel: {
       id: components["schemas"]["ID"];
       /** @description A name for the server. */
       name: string;
@@ -6792,57 +7050,54 @@ export interface components {
       location_ids: string[];
     };
     /**
-     * ProviderServers.Server
+     * ServerModelIncludes
      * @description A resources that assocaited with a provider server.
      */
-    ProviderServersServerIncludes: {
-      [key: string]: components["schemas"]["ProviderServer"] | undefined;
+    ServerModelIncludes: {
+      [key: string]: components["schemas"]["ProviderServerModel"];
     };
     /**
      * ServerIncludes
      * @description A resource associated with a server.
      */
     ServerIncludes: {
-      locations: components["schemas"]["LocationsIncludes"];
-      models: components["schemas"]["ProviderServersServerIncludes"];
-      providers: components["schemas"]["ProvidersIncludes"];
+      locations?: components["schemas"]["LocationsIncludes"];
+      models?: components["schemas"]["ServerModelIncludes"];
+      integrations?: components["schemas"]["IntegrationsIncludes"];
     };
     /**
-     * BackupTarget
-     * @description A target for the given backup.
+     * ContainerBackupTarget
+     * @description A target for the given Container Backup.
      */
-    Target: {
-      /**
-       * @description The target service to be used for a backup.
-       * @enum {string}
-       */
-      destination: "backblaze-b2";
-      /** @description The target for where to store the backup on the backup destination service. */
+    ContainerBackupTarget: {
+      integration_id: components["schemas"]["HybridIdentifier"];
+      /** @description The target for where to store the Container Backup on the destination service. */
       path: string;
+      file_id: string;
       /** @description The total size of the backup. */
       size: number;
     };
-    /** BackupState */
-    BackupState: ({
+    /** ContainerBackupState */
+    ContainerBackupState: ({
       /**
-       * @description The current state of the backup.
+       * @description The current state of the Container Backup.
        * @enum {string}
        */
       current: "saving" | "live" | "deleting" | "deleted";
     }) & components["schemas"]["State"];
     /**
-     * Backup
-     * @description A container backup resource.
+     * ContainerBackup
+     * @description A Container Backup.
      */
-    Backup: {
+    ContainerBackup: {
       id: components["schemas"]["ID"];
       hub_id: components["schemas"]["HubID"];
       /** @description The ID of the given container. */
       container_id: string;
       /** @description The ID of the instance the backup belongs to. */
       instance_id: string;
-      target: components["schemas"]["Target"];
-      state: components["schemas"]["BackupState"];
+      target: components["schemas"]["ContainerBackupTarget"];
+      state: components["schemas"]["ContainerBackupState"];
       /**
        * BackupEvents
        * @description A collection of timestamps for each event in the backup's lifetime.
@@ -6857,10 +7112,17 @@ export interface components {
       };
     };
     /**
-     * BackupLogs
+     * ContainerBackupIncludes
+     * @description All includable resources linkable to the given Zone.
+     */
+    ContainerBackupIncludes: {
+      integrations?: components["schemas"]["IntegrationsIncludes"];
+    };
+    /**
+     * ContainerBackupLogs
      * @description Backup logs for a given container.
      */
-    Logs: {
+    ContainerBackupLogs: {
       id: components["schemas"]["ID"];
       /** @description An identifier for the container. */
       container_id: string;
@@ -6950,6 +7212,7 @@ export interface components {
     RecordIncludes: {
       creators?: components["schemas"]["CreatorInclude"];
       containers?: components["schemas"]["ContainersIncludes"];
+      "containers:identifiers"?: components["schemas"]["IdentifierIncludes"];
     };
     /**
      * DNSTLSAttempt
@@ -6994,6 +7257,17 @@ export interface components {
       bundle: string;
       /** @description The private key for the certificate */
       private_key: string;
+    };
+    /**
+     * HubUsageDatum
+     * @description A hub usage data point
+     */
+    HubUsageDatum: {
+      time: string;
+      servers: number;
+      members: number;
+      environments: number;
+      containers: number;
     };
     /**
      * ActivityContext
@@ -7157,7 +7431,7 @@ export interface components {
        * @description The activity event.
        * @enum {string}
        */
-      event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.services.vpn.user.create" | "environment.services.vpn.login" | "environment.services.vpn.reset" | "environment.services.vpn.task.reset" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.task.deployments.reconfigure" | "environment.deployments.reconfigure" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.reconfigure" | "container.reconfigure" | "container.task.volumes.reconfigure" | "container.volumes.reconfigure" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instances.autoscale.up" | "container.instances.autoscale.down" | "container.instance.healthcheck.restarted" | "container.instance.healthcheck.failed" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migrate_revert" | "container.instance.task.migrate" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "stack.update" | "stack.task.delete" | "stack.create" | "stack.task.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.features.reconfigure" | "infrastructure.server.sharedfs.reconfigure" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.features.reconfigure" | "infrastructure.server.task.sharedfs.reconfigure" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "infrastructure.autoscale.group.create" | "infrastructure.autoscale.group.update" | "infrastructure.autoscale.group.task.delete" | "infrastructure.autoscale.group.delete" | "infrastructure.ips.pool.task.delete" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.run.completed" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create";
+      event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.services.vpn.user.create" | "environment.services.vpn.login" | "environment.services.vpn.reset" | "environment.services.vpn.task.reset" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.task.deployments.reconfigure" | "environment.deployments.reconfigure" | "environment.deployments.prune" | "environment.deployment.start" | "environment.deployment.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.role.update" | "hub.role.delete" | "hub.role.create" | "hub.role.task.delete" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "hub.integration.create" | "hub.integration.update" | "hub.integration.delete" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.reconfigure" | "container.reconfigure" | "container.task.volumes.reconfigure" | "container.volumes.reconfigure" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instances.autoscale.up" | "container.instances.autoscale.down" | "container.instance.healthcheck.restarted" | "container.instance.healthcheck.failed" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migrate_revert" | "container.instance.task.migrate" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "stack.update" | "stack.task.delete" | "stack.create" | "stack.task.prune" | "stack.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.features.reconfigure" | "infrastructure.server.sharedfs.reconfigure" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.features.reconfigure" | "infrastructure.server.task.sharedfs.reconfigure" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "infrastructure.autoscale.group.create" | "infrastructure.autoscale.group.update" | "infrastructure.autoscale.group.task.delete" | "infrastructure.autoscale.group.delete" | "infrastructure.ips.pool.task.delete" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.run.completed" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create";
       /** @description A timestamp for when the activity took place. */
       time: components["schemas"]["DateTime"];
     };
@@ -7166,11 +7440,10 @@ export interface components {
      * @description A IP Pool provider.
      */
     PoolProvider: {
-      /**
-       * @description An identifier for a native provider.
-       * @enum {string}
-       */
-      identifier: "equinix-metal" | "vultr" | "aws";
+      /** @description A vendor for a provider. */
+      vendor: string;
+      /** @description ID of the provider integration used to provision the IP. */
+      integration_id: components["schemas"]["ID"];
       /** @description Information about the location of the provider this pool is associated with. */
       location: string;
       /** @description A reservation identifier associated with the pool reservation. */
@@ -7190,7 +7463,7 @@ export interface components {
     }) & components["schemas"]["State"];
     /**
      * InfrastructureIPPool
-     * @description An IP Pool resource
+     * @description An IP Pool
      */
     Pool: {
       id: components["schemas"]["ID"];
@@ -7323,13 +7596,13 @@ export interface components {
       creator: components["schemas"]["CreatorScope"];
       hub_id: components["schemas"]["HubID"];
       state: components["schemas"]["NetworkState"];
-      private_network: components["schemas"]["NetworkPrivacySettings"];
+      private_network?: components["schemas"]["NetworkPrivacySettings"] | null;
       /** @description An array of environments and timestamps. */
-      environments: {
+      environments?: {
           id: components["schemas"]["ID"];
           /** @description A timestamp of when the environment was added. */
           added: components["schemas"]["DateTime"];
-        }[];
+        }[] | null;
       /**
        * NetworkEvents
        * @description A collection of timestamps for each event in the network's lifetime.
@@ -7397,6 +7670,20 @@ export interface components {
       details: {
         name?: string | null;
         source: components["schemas"]["FluidIdentifier"];
+        /** @description Optional build-time options for when this image is built on pipeline run. */
+        build?: {
+          /** @description Build args passed into the container image build process during pipeline run. */
+          args?: {
+            [key: string]: string;
+          } | null;
+        };
+        /** @description An override object to be used for a single image create request. */
+        override?: ({
+          /** @description For image sources with `docker-hub` or `docker-registry` origin types. A target to be used for overridding the default target - should include an image and a tag. */
+          target?: string | null;
+          /** @description For image sources with `docker-file` origin types. A URL pointing to a .tar.gz file of a repo with a Dockerfile in it - can be used instead of linking Cycle directly to a repository. */
+          targz_url?: string | null;
+        }) | null;
       };
     };
     /**
@@ -7455,6 +7742,20 @@ export interface components {
       details: {
         name?: string | null;
         source: components["schemas"]["FluidIdentifier"];
+        /** @description Optional build-time options for when this image is built on pipeline run. */
+        build?: {
+          /** @description Build args passed into the container image build process during pipeline run. */
+          args?: {
+            [key: string]: string;
+          } | null;
+        };
+        /** @description An override object to be used for a single image create request. */
+        override?: ({
+          /** @description For image sources with `docker-hub` or `docker-registry` origin types. A target to be used for overridding the default target - should include an image and a tag. */
+          target?: string | null;
+          /** @description For image sources with `docker-file` origin types. A URL pointing to a .tar.gz file of a repo with a Dockerfile in it - can be used instead of linking Cycle directly to a repository. */
+          targz_url?: string | null;
+        }) | null;
       };
     };
     /**
@@ -7474,6 +7775,7 @@ export interface components {
       action: "container.create";
       details: {
         name: string;
+        identifier?: string | null;
         environment: components["schemas"]["FluidIdentifier"];
         image: components["schemas"]["FluidIdentifier"];
         stateful: boolean;
@@ -7665,6 +7967,48 @@ export interface components {
       };
     };
     /**
+     * EnvironmentDeploymentStartStep
+     * @description Start all containers with a specific deployment version/tag within an environment.
+     */
+    EnvironmentDeploymentStartStep: {
+      /** @description An identifier for the step. */
+      identifier?: string;
+      options?: {
+        skip?: boolean;
+      };
+      /**
+       * @description The action that the step takes.
+       * @enum {string}
+       */
+      action: "environment.deployment.start";
+      details: {
+        environment: components["schemas"]["FluidIdentifier"];
+        tag?: string | null;
+        version?: string | null;
+      };
+    };
+    /**
+     * EnvironmentDeploymentStopStep
+     * @description Stop all containers with a specific deployment version/tag within an environment.
+     */
+    EnvironmentDeploymentStopStep: {
+      /** @description An identifier for the step. */
+      identifier?: string;
+      options?: {
+        skip?: boolean;
+      };
+      /**
+       * @description The action that the step takes.
+       * @enum {string}
+       */
+      action: "environment.deployment.stop";
+      details: {
+        environment: components["schemas"]["FluidIdentifier"];
+        tag?: string | null;
+        version?: string | null;
+      };
+    };
+    /**
      * EnvironmentDeploymentsTagStep
      * @description Settings for updating a deployment tag to another deployment version.
      */
@@ -7707,15 +8051,29 @@ export interface components {
       };
     };
     /**
-     * StackBuildAbout
-     * @description Information about the stack build.
+     * EnvironmentDeploymentHealthyWatchStep
+     * @description Waits for a deployment to be considered 'healthy' before allowing the pipeline to continue.
+     * A deployement is considered 'healthy' when all instances of all containers that have had a state change in the last 15 minutes
+     * that have health checks defined, become healthy.
      */
-    StackBuildAbout: {
-      /** @description A user defined version of the build. */
-      version: string;
-      /** @description A user defined description for the build. */
-      description: string;
-      git_commit?: components["schemas"]["StackGitCommit"];
+    EnvironmentDeploymentHealthyWatchStep: {
+      /** @description An identifier for the step. */
+      identifier?: string;
+      options?: {
+        skip?: boolean;
+      };
+      /**
+       * @description The action that the step takes.
+       * @enum {string}
+       */
+      action: "environment.deployment.healthy.watch";
+      details: {
+        environment: components["schemas"]["FluidIdentifier"];
+        tag?: string | null;
+        version?: string | null;
+        /** @description The maximum amount of time to wait for the deployment to become healthy before failing this step. */
+        max_wait?: components["schemas"]["Duration"] | null;
+      };
     };
     /**
      * StackBuildCreateStep
@@ -7734,8 +8092,30 @@ export interface components {
       action: "stack.build.create";
       details: {
         stack: components["schemas"]["FluidIdentifier"];
-        instructions?: components["schemas"]["StackBuildInstructions"] | null;
-        about?: components["schemas"]["StackBuildAbout"] | null;
+        /** @description Additional instructions used when generating this stack build. */
+        instructions?: ({
+          /** @description Git information specifics. */
+          git?: {
+            /**
+             * @description The type of information the user is passing.
+             * @enum {string}
+             */
+            type: "branch" | "hash" | "tag";
+            /** @description The actual value to be passed. */
+            value: string;
+          };
+          /** @description Custom variables applied to the stack during build. Any place in the stack where a `{{variable}}` is used is replaced with the value of the variable supplied in this map. */
+          variables?: {
+            [key: string]: string;
+          };
+        }) | null;
+        /** @description Information about the stack build. */
+        about?: {
+          /** @description A user defined version of the build. */
+          version: string;
+          /** @description A user defined description for the build. */
+          description: string;
+        } | null;
       };
     };
     /**
@@ -7774,7 +8154,7 @@ export interface components {
     StackBuildDeploymentUpdates: {
       /** @description A map of the container names to update within the environment. */
       containers: {
-        [key: string]: components["schemas"]["StackDeployContainersObject"] | undefined;
+        [key: string]: components["schemas"]["StackDeployContainersObject"];
       };
       /** @description An object that describes configuration options for scoped variables on stack build. */
       scoped_variables: {
@@ -7807,6 +8187,28 @@ export interface components {
       };
     };
     /**
+     * StackPruneStep
+     * @description Settings for pruning a stack in a pipeline.
+     */
+    StackPruneStep: {
+      /** @description An identifier for the step. */
+      identifier?: string;
+      options?: {
+        skip?: boolean;
+      };
+      /**
+       * @description The action that the step takes.
+       * @enum {string}
+       */
+      action: "stack.prune";
+      details: {
+        stack: components["schemas"]["FluidIdentifier"];
+        criteria?: ({
+          expire?: components["schemas"]["Duration"] | null;
+        }) | null;
+      };
+    };
+    /**
      * SleepStep
      * @description Settings for the sleep step for a pipeline.
      */
@@ -7833,7 +8235,7 @@ export interface components {
     WebhookStepOptions: {
       max_attempts?: number | null;
       /** @description How long to wait between retries on wait. */
-      interval?: string | null;
+      interval?: components["schemas"]["Duration"] | null;
       fail_on?: ({
         /** @description If true, will fail on any codes NOT defined in the http_codes array. */
         not: boolean;
@@ -7868,9 +8270,9 @@ export interface components {
         /** @description The url to submit a POST request to. */
         url: string;
         /** @description An optional map of headers to send with the request. */
-        headers?: ({
-          [key: string]: string | undefined;
-        }) | null;
+        headers?: {
+          [key: string]: string;
+        } | null;
         options?: components["schemas"]["WebhookStepOptions"] | null;
         /** @description An optional POST body to send with the request. Cannot be used with `from``. */
         body?: string | null;
@@ -7900,9 +8302,9 @@ export interface components {
         /** @description The url to submit a POST request to. */
         url: string;
         /** @description An optional map of headers to send with the request. */
-        headers?: ({
-          [key: string]: string | undefined;
-        }) | null;
+        headers?: {
+          [key: string]: string;
+        } | null;
         options?: components["schemas"]["WebhookStepOptions"] | null;
       };
     };
@@ -7910,7 +8312,7 @@ export interface components {
      * PipelineStep
      * @description A step for a pipeline stage.
      */
-    PipelineSteps: components["schemas"]["ImageSourceCreateStep"] | components["schemas"]["ImageCreateStep"] | components["schemas"]["ImageImportStep"] | components["schemas"]["ImagesPruneStep"] | components["schemas"]["ImageCreateImportStep"] | components["schemas"]["ContainerCreateStep"] | components["schemas"]["ContainerStartStep"] | components["schemas"]["ContainerStopStep"] | components["schemas"]["ContainerDeleteStep"] | components["schemas"]["ContainerReimageStep"] | components["schemas"]["ContainerRestartStep"] | components["schemas"]["EnvironmentCreateStep"] | components["schemas"]["EnvironmentStartStep"] | components["schemas"]["EnvironmentStopStep"] | components["schemas"]["EnvironmentDeleteStep"] | components["schemas"]["EnvironmentDeploymentsTagStep"] | components["schemas"]["EnvironmentDeploymentsPruneStep"] | components["schemas"]["StackBuildCreateStep"] | components["schemas"]["StackBuildGenerateStep"] | components["schemas"]["StackBuildDeployStep"] | components["schemas"]["WebhookPostStep"] | components["schemas"]["WebhookGetStep"] | components["schemas"]["SleepStep"];
+    PipelineSteps: components["schemas"]["ImageSourceCreateStep"] | components["schemas"]["ImageCreateStep"] | components["schemas"]["ImageImportStep"] | components["schemas"]["ImagesPruneStep"] | components["schemas"]["ImageCreateImportStep"] | components["schemas"]["ContainerCreateStep"] | components["schemas"]["ContainerStartStep"] | components["schemas"]["ContainerStopStep"] | components["schemas"]["ContainerDeleteStep"] | components["schemas"]["ContainerReimageStep"] | components["schemas"]["ContainerRestartStep"] | components["schemas"]["EnvironmentCreateStep"] | components["schemas"]["EnvironmentStartStep"] | components["schemas"]["EnvironmentStopStep"] | components["schemas"]["EnvironmentDeleteStep"] | components["schemas"]["EnvironmentDeploymentStartStep"] | components["schemas"]["EnvironmentDeploymentStopStep"] | components["schemas"]["EnvironmentDeploymentsTagStep"] | components["schemas"]["EnvironmentDeploymentsPruneStep"] | components["schemas"]["EnvironmentDeploymentHealthyWatchStep"] | components["schemas"]["StackBuildCreateStep"] | components["schemas"]["StackBuildGenerateStep"] | components["schemas"]["StackBuildDeployStep"] | components["schemas"]["StackPruneStep"] | components["schemas"]["WebhookPostStep"] | components["schemas"]["WebhookGetStep"] | components["schemas"]["SleepStep"];
     /**
      * PipelineStage
      * @description A stage for a given pipeline.
@@ -8024,7 +8426,10 @@ export interface components {
     /** AutoScaleGroupInfrastructure */
     AutoScaleGroupInfrastructure: {
       models: {
+          /** @description The integration identifier for infrastructure provider used. */
           provider: string;
+          /** @description The ID of the integration associated with this auto-scale group infrastructure. */
+          integration_id?: components["schemas"]["ID"];
           model_id: string;
           priority: number;
           locations: {
@@ -8090,7 +8495,7 @@ export interface components {
      * PipelineRun
      * @description A pipeline run resource.
      */
-    Run: {
+    PipelineRun: {
       id: components["schemas"]["ID"];
       creator: components["schemas"]["CreatorScope"];
       hub_id: components["schemas"]["HubID"];
@@ -8103,7 +8508,7 @@ export interface components {
           steps: ({
               identifier: string;
               /** @enum {string} */
-              action: "environment.create" | "environment.start" | "environment.stop" | "environment.delete" | "environment.deployments.prune" | "environment.deployments.tag" | "image.source.create" | "image.create" | "image.import" | "images.prune" | "image.create-import" | "container.create" | "container.reimage" | "container.start" | "container.stop" | "container.restart" | "container.delete" | "stack.build.create" | "stack.build.deploy" | "stack.build.generate" | "sleep" | "webhook.post" | "webhook.get";
+              action: "environment.create" | "environment.start" | "environment.stop" | "environment.delete" | "environment.deployments.prune" | "environment.deployments.tag" | "environment.deployment.start" | "environment.deployment.stop" | "environment.deployment.healthy.watch" | "image.source.create" | "image.create" | "image.import" | "images.prune" | "image.create-import" | "container.create" | "container.reimage" | "container.start" | "container.stop" | "container.restart" | "container.delete" | "stack.build.create" | "stack.build.deploy" | "stack.build.generate" | "stack.prune" | "sleep" | "webhook.post" | "webhook.get";
               events: components["schemas"]["PipelineRunEvents"];
               success: boolean;
               /** @description An error, if any, that has occurred for this step. */
@@ -8118,7 +8523,7 @@ export interface components {
       events: components["schemas"]["PipelineRunEvents"];
       /** @description A map of variable values used during pipeline run. */
       variables?: {
-        [key: string]: string | undefined;
+        [key: string]: string;
       };
     };
     /**
@@ -8126,7 +8531,7 @@ export interface components {
      * @description A resource thats assocaited with activity.
      */
     ComponentsIncludes: {
-      [key: string]: (components["schemas"]["Container"] | components["schemas"]["Instance"] | components["schemas"]["Environment"] | components["schemas"]["Image"] | components["schemas"]["ImageSource"] | components["schemas"]["Server"] | components["schemas"]["Pool"] | components["schemas"]["Provider"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["Zone"] | components["schemas"]["Record"] | components["schemas"]["ApiKey"] | components["schemas"]["Network"] | components["schemas"]["HubMembership"] | components["schemas"]["Pipeline"] | components["schemas"]["TriggerKey"] | components["schemas"]["ScopedVariable"] | components["schemas"]["Hub"] | components["schemas"]["Invoice"] | components["schemas"]["Method"] | components["schemas"]["AutoScaleGroup"] | components["schemas"]["Run"]) | undefined;
+      [key: string]: components["schemas"]["Container"] | components["schemas"]["Instance"] | components["schemas"]["Environment"] | components["schemas"]["Image"] | components["schemas"]["ImageSource"] | components["schemas"]["Server"] | components["schemas"]["Pool"] | components["schemas"]["Integration"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["Zone"] | components["schemas"]["Record"] | components["schemas"]["ApiKey"] | components["schemas"]["Network"] | components["schemas"]["HubMembership"] | components["schemas"]["Pipeline"] | components["schemas"]["TriggerKey"] | components["schemas"]["ScopedVariable"] | components["schemas"]["Hub"] | components["schemas"]["Invoice"] | components["schemas"]["Method"] | components["schemas"]["AutoScaleGroup"] | components["schemas"]["PipelineRun"] | components["schemas"]["Role"];
     };
     /**
      * ActivityIncludes
@@ -8135,17 +8540,6 @@ export interface components {
     ActivityIncludes: {
       users?: components["schemas"]["CreatorInclude"];
       components?: components["schemas"]["ComponentsIncludes"];
-    };
-    /**
-     * HubUsageDatum
-     * @description A hub usage data point
-     */
-    HubUsageDatum: {
-      time: string;
-      servers: number;
-      members: number;
-      environments: number;
-      containers: number;
     };
     /**
      * IndexComponent
@@ -8190,22 +8584,22 @@ export interface components {
       /** @description Id describing the Hub */
       hub_id: string;
       containers: {
-        [key: string]: components["schemas"]["Component"] | undefined;
+        [key: string]: components["schemas"]["Component"];
       };
       environments: {
-        [key: string]: components["schemas"]["Component"] | undefined;
+        [key: string]: components["schemas"]["Component"];
       };
       image_sources: {
-        [key: string]: components["schemas"]["Component"] | undefined;
+        [key: string]: components["schemas"]["Component"];
       };
       dns_zones: {
-        [key: string]: components["schemas"]["Component"] | undefined;
+        [key: string]: components["schemas"]["Component"];
       };
       stacks: {
-        [key: string]: components["schemas"]["Component"] | undefined;
+        [key: string]: components["schemas"]["Component"];
       };
       servers: {
-        [key: string]: components["schemas"]["Component"] | undefined;
+        [key: string]: components["schemas"]["Component"];
       };
     };
     /**
@@ -8216,7 +8610,11 @@ export interface components {
       creators?: components["schemas"]["CreatorInclude"];
       stack_builds?: components["schemas"]["StackBuildIncludes"];
       stacks?: components["schemas"]["StackIncludes"];
+      "stacks:identifiers"?: components["schemas"]["IdentifierIncludes"];
       sources?: components["schemas"]["ImageSourceIncludes"];
+      "sources:identifiers"?: components["schemas"]["IdentifierIncludes"];
+      integrations?: components["schemas"]["IntegrationsIncludes"];
+      "integrations:identifiers"?: components["schemas"]["IdentifierIncludes"];
     };
     /**
      * ImageBuildLog
@@ -8248,9 +8646,14 @@ export interface components {
      */
     SourceIncludes: {
       creators?: components["schemas"]["CreatorInclude"];
+      integrations?: components["schemas"]["IntegrationsIncludes"];
+      "integrations:identifiers"?: components["schemas"]["IdentifierIncludes"];
     };
-    /** @description Information about server CPU, RAM and Disk resources. */
-    ServerResources: {
+    /**
+     * InfrastructureResourceSummary
+     * @description A summary of resource utilization/availability.
+     */
+    InfrastructureResourceSummary: {
       /** @description Information about RAM Resources. */
       ram: {
         /** @description The total amount of RAM in MBsr. */
@@ -8260,7 +8663,7 @@ export interface components {
         /** @description The total amount of used RAM in MBs. */
         used_mb: number;
         /** @description The total amount of provisioned RAM in MBs. */
-        provisioned_mb: number;
+        provisioned_mb?: number;
       };
       /** @description Information about CPU resources. */
       cpu: {
@@ -8276,13 +8679,6 @@ export interface components {
         /** @description The ratio of shares allocated to total shares. */
         share_ratio?: number;
       };
-      /** @description Information about disk size and usage. */
-      disk: {
-        /** @description The total amount of disk space in MBs. */
-        total_mb: number;
-        /** @description The amount of disk space used in MBs. */
-        used_mb: number;
-      };
     };
     /**
      * ClusterVersionServerCount
@@ -8290,16 +8686,16 @@ export interface components {
      */
     ClusterVersionServerCount: {
       agent: {
-        [key: string]: number | undefined;
+        [key: string]: number;
       };
       "agent-spawner": {
-        [key: string]: number | undefined;
+        [key: string]: number;
       };
       compute: {
-        [key: string]: number | undefined;
+        [key: string]: number;
       };
       "compute-spawner": {
-        [key: string]: number | undefined;
+        [key: string]: number;
       };
     };
     /**
@@ -8324,11 +8720,11 @@ export interface components {
       };
       /** @description Records pointing to information about clusters that make up this hubs infrastructure. */
       clusters: {
-        [key: string]: ({
+        [key: string]: {
           /** @description The name of the cluster */
           name: string;
           /** @description Information about the aggregate resources of the cluster. */
-          resources: components["schemas"]["ServerResources"];
+          resources: components["schemas"]["InfrastructureResourceSummary"];
           /** @description Whether Cycle has determined this cluster to be healthy or not. */
           healthy: boolean;
           versions: components["schemas"]["ClusterVersionServerCount"];
@@ -8336,61 +8732,38 @@ export interface components {
           servers: {
             count: number;
             providers: {
-              [key: string]: ({
+              [key: string]: {
                 count: number;
-                locations: {
-                  [key: string]: number | undefined;
-                };
-                models: {
-                  [key: string]: number | undefined;
-                };
-              }) | undefined;
+                locations?: {
+                  [key: string]: number;
+                } | null;
+                models?: {
+                  [key: string]: number;
+                } | null;
+                resources?: components["schemas"]["InfrastructureResourceSummary"];
+              };
             };
+            /** @description IDs of all servers in this cluster. */
+            server_ids?: components["schemas"]["ID"][];
           };
-        }) | undefined;
+        };
       };
       /** @description A timestamp of when the infrastructure was last updated. */
       updated: components["schemas"]["DateTime"];
-    };
-    /**
-     * NativeProvider
-     * @description All relevant information about a natively supported Cycle provider
-     */
-    NativeProvider: {
-      /** @description String describing the display name of a native provider */
-      name: string;
-      /** @description String describing the identifier of a native provider */
-      identifier: string;
-      /** @description String describing the website of a native provider for more info */
-      website?: string;
-      /** @description Object with required fields and regex for each field */
-      required_fields: {
-        [key: string]: {
-          /** @description display name of the field */
-          caption: string;
-          /** @description validation regex for the field */
-          regex: string;
-        } | undefined;
-      };
-      /** @description Record of notices related to native provider */
-      notices: {
-        [key: string]: string | undefined;
-      };
-      features: string[];
     };
     /**
      * ServerModelsIncludes
      * @description A resource associated with a server models.
      */
     ServerModelsIncludes: {
-      [key: string]: components["schemas"]["ProviderServer"] | undefined;
+      [key: string]: components["schemas"]["ProviderServerModel"];
     };
     /**
      * AutoScaleGroupIncludes
      * @description All includable resource linkable to the given auto-scale group.
      */
     AutoScaleGroupIncludes: {
-      providers?: components["schemas"]["ProvidersIncludes"];
+      integrations?: components["schemas"]["IntegrationsIncludes"];
       models?: components["schemas"]["ServerModelsIncludes"];
       locations?: components["schemas"]["LocationsIncludes"];
     };
@@ -8475,7 +8848,7 @@ export interface components {
        */
       action: "sharedfs.reconfigure";
       contents: {
-        mounts?: ({
+        mounts?: {
           [key: string]: {
             /** @description String describing the server mount type. */
             type: string;
@@ -8486,8 +8859,8 @@ export interface components {
             options: string;
             /** @description String describing the server mount source. */
             source: string;
-          } | undefined;
-        }) | null;
+          };
+        } | null;
         /** @description An object describing directory identifiers with value {}. */
         directories?: {
           [key: string]: unknown;
@@ -8542,6 +8915,19 @@ export interface components {
        */
       action: "compute.spawner.restart";
     };
+    /** EvacuateServer */
+    EvacuateServer: {
+      /**
+       * @description The action to take.
+       * @enum {string}
+       */
+      action: "infrastructure.server.evacuate";
+      contents: {
+        destination: {
+          server_id?: components["schemas"]["ID"] | null;
+        };
+      };
+    };
     /**
      * ServerTags
      * @description Tags for a given server.
@@ -8567,10 +8953,10 @@ export interface components {
      * @description Resources associated with an IP Pool.
      */
     PoolIncludes: {
-      creators: components["schemas"]["CreatorInclude"];
-      servers: components["schemas"]["ServersIncludes"];
-      providers: components["schemas"]["ProvidersIncludes"];
-      locations: components["schemas"]["LocationsIncludes"];
+      creators?: components["schemas"]["CreatorInclude"];
+      servers?: components["schemas"]["ServersIncludes"];
+      integrations?: components["schemas"]["IntegrationsIncludes"];
+      locations?: components["schemas"]["LocationsIncludes"];
     };
     /**
      * DeploymentStrategy
@@ -8623,9 +9009,9 @@ export interface components {
         [key: string]: unknown;
       };
       /** @description Output informaiton used for the job tasks. */
-      output: ({
-        [key: string]: string | undefined;
-      }) | null;
+      output: {
+        [key: string]: string;
+      } | null;
       /** @description An error object describing issues with the job. */
       error: {
         /** @description An error message */
@@ -8693,6 +9079,17 @@ export interface components {
     StackInclude: {
       creators?: components["schemas"]["CreatorInclude"];
     };
+    /**
+     * StackBuildAbout
+     * @description Information about the stack build.
+     */
+    StackBuildAbout: {
+      /** @description A user defined version of the build. */
+      version: string;
+      /** @description A user defined description for the build. */
+      description: string;
+      git_commit?: components["schemas"]["StackGitCommit"];
+    };
     /** GenerateStackBuild */
     GenerateStackBuildAction: {
       /**
@@ -8734,26 +9131,9 @@ export interface components {
       name?: string;
       /** @description A record of resources that can be associated with the pipeline. */
       components?: {
-        [key: string]: (components["schemas"]["Container"] | components["schemas"]["Environment"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["Image"] | components["schemas"]["ImageSource"]) | undefined;
+        [key: string]: components["schemas"]["Container"] | components["schemas"]["Environment"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["Image"] | components["schemas"]["ImageSource"];
       };
-    };
-    /**
-     * HubNotificationPipelineAuthResponse
-     * @description A token resource.
-     */
-    HubNotificationToken: {
-      /** @description A token used for connecting to the hub notification pipeline websocket API. */
-      token: string;
-    };
-    /**
-     * InstanceConsoleAuth
-     * @description Resources needed to connect to the instance console websocket.
-     */
-    InstanceConsoleAuth: {
-      /** @description A token used for connecting to the instance console through the websocket API. */
-      token: string;
-      /** @description The protocol and url for connecting to the console. */
-      address: string;
+      "components:identifiers"?: components["schemas"]["IdentifierIncludes"];
     };
     /**
      * SecurityIncident
@@ -8848,6 +9228,7 @@ export interface components {
     };
   };
   parameters: {
+    MembershipIncludeParam?: ("senders" | "hubs" | "accounts" | "roles")[];
     /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
     SortParam?: string[];
     FilterParam?: Record<string, never>;
@@ -8858,9 +9239,10 @@ export interface components {
       /** @description The number of resources returned per page. */
       size?: number;
     };
+    OrderIncludeParam?: "promo_codes"[];
     /** @description The option field is a key-value object, where the key is the option, and the value is a boolean. For example, `?option[force]=true` */
     OptionParam?: {
-      [key: string]: string | undefined;
+      [key: string]: string;
     };
   };
   requestBodies: never;
@@ -8868,17 +9250,19 @@ export interface components {
   pathItems: never;
 }
 
+export type $defs = Record<string, never>;
+
 export type external = Record<string, never>;
 
 export interface operations {
 
   /**
-   * Fetch Account
-   * @description Gets the account associated with the authenticated user token.
+   * Get Account
+   * @description Gets the Account associated with the authenticated bearer token.
    */
   getAccount: {
     responses: {
-      /** @description Returns an account. */
+      /** @description Returns the Account. */
       200: {
         content: {
           "application/json": {
@@ -8891,15 +9275,15 @@ export interface operations {
   };
   /**
    * Delete Account
-   * @description Deletes the current account
+   * @description Puts the Account into a `deleted` state. This will fail if the Account is the current `OWNER` of an active Hub.
    */
-  removeAccount: {
+  deleteAccount: {
     responses: {
-      /** @description Returns a task descriptor. */
-      200: {
+      /** @description Returns a job descriptor with information about the status of the Account deletion. */
+      202: {
         content: {
           "application/json": {
-            data?: components["schemas"]["Account"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -8908,24 +9292,24 @@ export interface operations {
   };
   /**
    * Update Account
-   * @description Updates the current account
+   * @description Updates the Account.
    */
   updateAccount: {
-    /** @description Parameters for updating an account. */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description The name for the account. */
+          /** @description The new name on the Account. */
           name?: {
             first?: string;
             last?: string;
           };
+          /** @description If true, Cycle employees will have the ability, upon consent, to access the account for support purposes. This access will be logged. */
           allow_support_login?: boolean;
         };
       };
     };
     responses: {
-      /** @description Returns the updated account resource. */
+      /** @description Returns the updated Account. */
       200: {
         content: {
           "application/json": {
@@ -8938,22 +9322,21 @@ export interface operations {
   };
   /**
    * List Account Invites
-   * @description Lists invites associated with a given account.
+   * @description Lists the pending Hub Memberships (also known as Invites) associated with the Account.
    */
   getAccountInvites: {
     parameters: {
       query?: {
         /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
         meta?: "capabilities"[];
-        /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("senders" | "hubs" | "accounts")[];
+        include?: components["parameters"]["MembershipIncludeParam"];
         sort?: components["parameters"]["SortParam"];
         filter?: components["parameters"]["FilterParam"];
         page?: components["parameters"]["PageParam"];
       };
     };
     responses: {
-      /** @description Returns a list of account invites. */
+      /** @description Returns a list of pending Hub Memberships. */
       200: {
         content: {
           "application/json": {
@@ -8966,33 +9349,36 @@ export interface operations {
     };
   };
   /**
-   * Update Account Invite
-   * @description Update a given invite.
+   * Accept or reject an Invite to join a Hub
+   * @description Accept/reject a pending Invite to join a Hub.
    */
   updateAccountInvite: {
     parameters: {
+      query?: {
+        include?: components["parameters"]["MembershipIncludeParam"];
+      };
       path: {
-        /** @description The ID of the given invite. */
+        /** @description The ID of the given Invite. */
         inviteId: string;
       };
     };
-    /** @description Req body for updating account invite */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description Set accept to true to accept */
+          /** @description If true, the Invite will be accepted and the associated Account will join the Hub. */
           accept?: boolean;
-          /** @description Set decline to true to decline */
+          /** @description If true, the Invite will be declined and the associated Account will NOT join the Hub. */
           decline?: boolean;
         };
       };
     };
     responses: {
-      /** @description Returns an membership resource. */
+      /** @description Returns a Hub Membership. */
       200: {
         content: {
           "application/json": {
             data: components["schemas"]["HubMembership"];
+            includes?: components["schemas"]["HubMembershipIncludes"];
           };
         };
       };
@@ -9000,16 +9386,25 @@ export interface operations {
     };
   };
   /**
-   * List Account Memberships
-   * @description Lists the memberships for a given account.
+   * Get Account Memberships
+   * @description Lists the Hub Memberships for a given account.
    */
   getAccountMemberships: {
+    parameters: {
+      query?: {
+        include?: components["parameters"]["MembershipIncludeParam"];
+        sort?: components["parameters"]["SortParam"];
+        filter?: components["parameters"]["FilterParam"];
+        page?: components["parameters"]["PageParam"];
+      };
+    };
     responses: {
-      /** @description List of membership resources. */
+      /** @description Returns a list of Hub Memberships associated with the Account. */
       200: {
         content: {
           "application/json": {
             data: components["schemas"]["HubMembership"][];
+            includes?: components["schemas"]["HubMembershipIncludes"];
           };
         };
       };
@@ -9017,7 +9412,7 @@ export interface operations {
     };
   };
   /**
-   * List Account Logins
+   * Get Account Logins
    * @description Lists logins associated with a given account.
    */
   getAccountLogins: {
@@ -9029,11 +9424,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a collection of logins. */
+      /** @description Returns a list of login records associated with this Account. */
       200: {
         content: {
           "application/json": {
-            data: (components["schemas"]["EmployeeLogin"] | components["schemas"]["PasswordLogin"])[];
+            data: (components["schemas"]["AccountEmployeeLogin"] | components["schemas"]["AccountPasswordLogin"])[];
           };
         };
       };
@@ -9041,23 +9436,22 @@ export interface operations {
     };
   };
   /**
-   * Update Account Invite
-   * @description Update a given invite.
+   * Change Password
+   * @description Change the password on the Account. Requires the current password of the Account to be submitted.
    */
-  updatePassword: {
-    /** @description Req body for updating account invite */
+  changePassword: {
     requestBody?: {
       content: {
         "application/json": {
           /** @description Current Password */
-          current?: string;
+          current: string;
           /** @description New Password */
-          new?: string;
+          new: string;
         };
       };
     };
     responses: {
-      /** @description Returns an Account resource. */
+      /** @description Returns an Account. */
       200: {
         content: {
           "application/json": {
@@ -9069,11 +9463,10 @@ export interface operations {
     };
   };
   /**
-   * Update Account Invite
-   * @description Update a given invite.
+   * Reset Password
+   * @description Initiate a password reset for the Account. A confirmation email will be sent to the email associated with the Account, and the token in the email must be passed in a second call to this endpoint.
    */
   resetPassword: {
-    /** @description Req body for updating account invite */
     requestBody?: {
       content: {
         "application/json": OneOf<[{
@@ -9087,7 +9480,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns success true */
+      /** @description Returns a simple object containing a success boolean. */
       200: {
         content: {
           "application/json": {
@@ -9101,16 +9494,16 @@ export interface operations {
     };
   };
   /**
-   * Get TwoFa setup info
-   * @description Get barcode and secret for TwoFa authentication
+   * Get Two-Factor Auth Setup
+   * @description Gets the barcode and secret required for setting up two-factor authentication for the Account.
    */
-  getTwoFaInfo: {
+  getTwoFactorAuthSetup: {
     responses: {
-      /** @description Returns a TwoFaSetupResponse resource. */
+      /** @description Returns necessary information for configuring two-factor auth for the Account. */
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["TwoFaDisableResponse"];
+            data?: components["schemas"]["TwoFactorAuthSetup"];
           };
         };
       };
@@ -9118,25 +9511,24 @@ export interface operations {
     };
   };
   /**
-   * Setup TwoFa
-   * @description Setup TwoFa for an account
+   * Enable Two-Factor Auth
+   * @description Enables two-factor auth for the Account. Retrieve the token from an authenticator app using the secret from `getTwoFactorAuthSetup`.
    */
-  setupTwoFa: {
-    /** @description Parameters setting up TwoFa */
+  enableTwoFactorAuth: {
     requestBody?: {
       content: {
         "application/json": {
-          /** @description The token to authenticate TwoFa setup. */
+          /** @description The token used to authenticate the two-factor setup. */
           token: string;
         };
       };
     };
     responses: {
-      /** @description Returns a TwoFaSetupResponse resource. */
+      /** @description Returns the recovery codes needed in case two-factor auth is no longer possible. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["TwoFaSetupResponse"];
+            data: components["schemas"]["TwoFactorAuthRecovery"];
           };
         };
       };
@@ -9144,25 +9536,24 @@ export interface operations {
     };
   };
   /**
-   * Disable TwoFa
-   * @description Disable TwoFa for an account
+   * Disable Two-Factor Auth
+   * @description Disables two-factor auth for the account.
    */
-  disableTwoFa: {
-    /** @description Parameters setting up TwoFa */
+  disableTwoFactorAuth: {
     requestBody?: {
       content: {
         "application/json": {
-          /** @description The token to authenticate TwoFa Disable. */
+          /** @description A valid existing two-factor auth token, for verification. */
           token: string;
         };
       };
     };
     responses: {
-      /** @description Returns a TwoFaDisableResponse resource. */
+      /** @description Returns the Account. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["TwoFaDisableResponse"];
+            data: components["schemas"]["Account"];
           };
         };
       };
@@ -9170,15 +9561,14 @@ export interface operations {
     };
   };
   /**
-   * Disable TwoFa
-   * @description Disable TwoFa for an account
+   * Recover Two-Factor Auth
+   * @description Returns a new two-factor auth setup to reset the Account's two-factor auth.
    */
-  recoverTwoFa: {
-    /** @description Parameters setting up TwoFa */
+  recoverTwoFactorAuth: {
     requestBody?: {
       content: {
         "application/json": {
-          /** @description The user’s email */
+          /** @description The user's email */
           email: string;
           password: string;
           recovery_codes: string[];
@@ -9187,11 +9577,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a TwoFaDisableResponse resource. */
+      /** @description Returns details for setting up two-factor auth. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["TwoFaDisableResponse"];
+            data: components["schemas"]["TwoFactorAuthSetup"];
           };
         };
       };
@@ -9199,15 +9589,30 @@ export interface operations {
     };
   };
   /**
-   * List Announcements
-   * @description Lists any important updates posted by the Cycle team
+   * Get Announcements
+   * @description Lists any important updates posted by the Cycle team.
    */
-  getAnnouncementsList: {
+  getAnnouncements: {
     parameters: {
       query?: {
         sort?: components["parameters"]["SortParam"];
-        filter?: components["parameters"]["FilterParam"];
         page?: components["parameters"]["PageParam"];
+        /**
+         * @description ## Filter Field
+         * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
+         */
+        filter?: {
+          /**
+           * @description Get only Announcements that have been resolved, or only those that have not.
+           * @enum {string}
+           */
+          resolved?: "true" | "false";
+          /**
+           * @description The start date from when to fetch the Announcements
+           * @enum {string}
+           */
+          range?: "hour" | "day" | "week" | "month" | "year";
+        };
       };
     };
     responses: {
@@ -9224,7 +9629,7 @@ export interface operations {
   };
   /**
    * List Billing Orders
-   * @description Requires the `billing-orders-manage` capability.
+   * @description Requires the `billing-services-manage` capability.
    */
   getOrders: {
     parameters: {
@@ -9232,19 +9637,17 @@ export interface operations {
         sort?: components["parameters"]["SortParam"];
         filter?: components["parameters"]["FilterParam"];
         page?: components["parameters"]["PageParam"];
-        /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
         meta?: "due"[];
-        /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: "promo_codes"[];
+        include?: components["parameters"]["OrderIncludeParam"];
       };
     };
     responses: {
-      /** @description Returns a collection of billing order resources. */
+      /** @description Returns a list of Billing Orders. */
       200: {
         content: {
           "application/json": {
             data: components["schemas"]["Order"][];
-            includes?: components["schemas"]["OrderIncludes"];
+            includes?: components["schemas"]["BillingOrderIncludes"];
           };
         };
       };
@@ -9252,17 +9655,23 @@ export interface operations {
     };
   };
   /**
-   * Create order
-   * @description Requires TODO capability.
+   * Create Billing Order
+   * @description Requires the `billing-orders-manage` capability.
    */
   createOrder: {
+    parameters: {
+      query?: {
+        meta?: "due"[];
+        include?: components["parameters"]["OrderIncludeParam"];
+      };
+    };
     /** @description Parameters for creating a new order */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description Id associated with the tier plan */
+          /** @description ID associated with the tier plan */
           tier_plan_id?: string;
-          /** @description Id associated with the support plan */
+          /** @description ID associated with the support plan */
           support_plan_id?: string;
           /**
            * @description String that defines term length
@@ -9275,11 +9684,12 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns an order resource. */
+      /** @description Returns a Billing Order. */
       201: {
         content: {
           "application/json": {
             data: components["schemas"]["BillingOrder"];
+            includes?: components["schemas"]["BillingOrderIncludes"];
           };
         };
       };
@@ -9287,22 +9697,27 @@ export interface operations {
     };
   };
   /**
-   * Fetch Billing Order
-   * @description Requires the `billing-orders-manage` capability.
+   * Get Billing Order
+   * @description Requires the `billing-services-manage` capability.
    */
   getBillingOrder: {
     parameters: {
+      query?: {
+        meta?: "due"[];
+        include?: components["parameters"]["OrderIncludeParam"];
+      };
       path: {
         /** @description The ID of the billing order. */
         orderId: string;
       };
     };
     responses: {
-      /** @description Returns a billing order resource */
+      /** @description Returns a Billing Order */
       200: {
         content: {
           "application/json": {
             data: components["schemas"]["Order"];
+            includes?: components["schemas"]["BillingOrderIncludes"];
           };
         };
       };
@@ -9311,22 +9726,25 @@ export interface operations {
   };
   /**
    * Update Billing Order
-   * @description Requires the `billing-orders-manage` capability.
+   * @description Requires the `billing-services-manage` capability.
    */
   updateBillingOrder: {
     parameters: {
+      query?: {
+        meta?: "due"[];
+        include?: components["parameters"]["OrderIncludeParam"];
+      };
       path: {
         /** @description The ID of the billing order. */
         orderId: string;
       };
     };
-    /** @description Parameters for creating a new order */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description Id associated with the tier plan */
+          /** @description ID associated with the tier plan */
           tier_plan_id?: string;
-          /** @description Id associated with the support plan */
+          /** @description ID associated with the support plan */
           support_plan_id?: string;
           /**
            * @description String that defines term length
@@ -9339,11 +9757,12 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a billing order resource. */
+      /** @description Returns a Billing Order. */
       200: {
         content: {
           "application/json": {
             data: components["schemas"]["Order"];
+            includes?: components["schemas"]["BillingOrderIncludes"];
           };
         };
       };
@@ -9351,17 +9770,18 @@ export interface operations {
     };
   };
   /**
-   * Create Order Job
-   * @description Used to confirm an order
+   * Create Billing Order Job
+   * @description Used to confirm a Billing Order.
+   *
+   * Requires the `billing-services-manage` capability.
    */
   createOrderJob: {
     parameters: {
       path: {
-        /** @description The ID of the requested order */
+        /** @description The ID of the requested Order */
         orderId: string;
       };
     };
-    /** @description Parameters for creating a new order job */
     requestBody?: {
       content: {
         "application/json": {
@@ -9374,11 +9794,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -9387,7 +9807,7 @@ export interface operations {
   };
   /**
    * List Support Plans
-   * @description Doesn't require a specific capability to call.
+   * @deprecated
    */
   getBillingSupportPlans: {
     parameters: {
@@ -9398,7 +9818,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a billing support plan. */
+      /** @description Returns available support plans. */
       200: {
         content: {
           "application/json": {
@@ -9410,12 +9830,12 @@ export interface operations {
     };
   };
   /**
-   * List Tiers
-   * @description Returns list of availiable tiers
+   * List Billing Tiers
+   * @description Returns list of availiable Billing Tiers.
    */
-  getTiers: {
+  getBillingTiers: {
     responses: {
-      /** @description Returns a collection of tier resources. */
+      /** @description Returns a list of available Billing Tiers. */
       200: {
         content: {
           "application/json": {
@@ -9428,7 +9848,9 @@ export interface operations {
   };
   /**
    * List Billing Methods
-   * @description Requires the `billing-methods-manage` capability.
+   * @description Lists the Billing Methods associated with the Hub defined in X-Hub-ID.
+   *
+   * Requires the `billing-methods-manage` capability.
    */
   getBillingMethods: {
     parameters: {
@@ -9477,8 +9899,8 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a billing method resource. */
-      200: {
+      /** @description Returns a Billing Method resource. */
+      201: {
         content: {
           "application/json": {
             data: components["schemas"]["Method"];
@@ -9489,7 +9911,7 @@ export interface operations {
     };
   };
   /**
-   * Fetch Billing Method
+   * Get Billing Method
    * @description Requires the `billing-methods-manage` capability.
    */
   getBillingMethod: {
@@ -9513,9 +9935,10 @@ export interface operations {
   };
   /**
    * Delete Biilling Method
-   * @description Requires the `billing-methods-manage` capability.
+   * @description Deletes the Billing Method. However, the primary payment method may not be deleted.
+   * Requires the `billing-methods-manage` capability.
    */
-  removeBillingMethod: {
+  deleteBillingMethod: {
     parameters: {
       path: {
         /** @description The ID of the billing method. */
@@ -9523,11 +9946,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
-      200: {
+      /** @description Returns a Job Descriptor. */
+      202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -9545,7 +9968,6 @@ export interface operations {
         methodId: string;
       };
     };
-    /** @description Parameters for updating a billing method. */
     requestBody?: {
       content: {
         "application/json": {
@@ -9572,7 +9994,9 @@ export interface operations {
   };
   /**
    * List Billing Invoices
-   * @description Requires the `billing-invoices-view` capability.
+   * @description List the Invoices assoicated with the Hub.
+   *
+   * Requires the `billing-invoices-view` capability.
    */
   getInvoices: {
     parameters: {
@@ -9586,6 +10010,8 @@ export interface operations {
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
          */
         filter?: {
+          /** @description `filter[search]=value` search for the specified text on supported fields. */
+          search?: string;
           /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the invoice's current state. */
           state?: string;
           /** @description The start date from when to pull the invoices */
@@ -9596,7 +10022,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a collection of invoice resources. */
+      /** @description Returns a list of Invoices. */
       200: {
         content: {
           "application/json": {
@@ -9608,7 +10034,7 @@ export interface operations {
     };
   };
   /**
-   * Fetch Billing Invoice
+   * Get Billing Invoice
    * @description Requires the `billing-invoices-view` capability.
    */
   getInvoice: {
@@ -9636,7 +10062,9 @@ export interface operations {
   };
   /**
    * Create Invoice Job
-   * @description Requires the `billing-invoices-pay` capability.
+   * @description Creates a new Job on an Invoice. Generally used to make a payment on an Invoice.
+   *
+   * Requires the `billing-invoices-pay` capability.
    */
   createInvoiceJob: {
     parameters: {
@@ -9645,7 +10073,6 @@ export interface operations {
         invoiceId: string;
       };
     };
-    /** @description Parameters for creating a new invoice job. */
     requestBody?: {
       content: {
         "application/json": {
@@ -9658,11 +10085,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
-      200: {
+      /** @description Returns a Job Descriptor. */
+      202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -9682,7 +10109,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a collection of billing service resources. */
+      /** @description Returns a list of Billing Services. */
       200: {
         content: {
           "application/json": {
@@ -9694,18 +10121,18 @@ export interface operations {
     };
   };
   /**
-   * Fetch Billing Service
+   * Get Billing Service
    * @description Requries the `billing-services-view` capability.
    */
   getBillingService: {
     parameters: {
       path: {
-        /** @description The ID of the billing service. */
+        /** @description The ID of the Billing Service. */
         servicesId: string;
       };
     };
     responses: {
-      /** @description Returns a billing service resources. */
+      /** @description Returns the Hub's specified Billing Service. */
       200: {
         content: {
           "application/json": {
@@ -9716,10 +10143,7 @@ export interface operations {
       default: components["responses"]["DefaultError"];
     };
   };
-  /**
-   * List Billing Overages
-   * @description Doesn't require a specific capability.
-   */
+  /** List Billing Overages */
   getBillingOverages: {
     parameters: {
       query?: {
@@ -9729,7 +10153,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a billing overage resource. */
+      /** @description Returns Billing Overages. */
       200: {
         content: {
           "application/json": {
@@ -9742,7 +10166,9 @@ export interface operations {
   };
   /**
    * List Billing Credits
-   * @description Requires the `billing-credits-view` capability.
+   * @description Lists the Billing Credits associated with the current Hub.
+   *
+   * Requires the `billing-credits-view` capability.
    */
   getCredits: {
     parameters: {
@@ -9755,10 +10181,8 @@ export interface operations {
         filter?: {
           /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the credit's current state. */
           state?: string;
-          /** @description The start date from when to pull the credits */
-          "range-start"?: components["schemas"]["DateTime"];
-          /** @description The end date from when to pull the credits */
-          "range-end"?: components["schemas"]["DateTime"];
+          /** @description Use a text-based search to filter the credits. */
+          search?: string;
         };
         page?: components["parameters"]["PageParam"];
       };
@@ -9776,7 +10200,7 @@ export interface operations {
     };
   };
   /**
-   * Fetch Billing Credit
+   * Get Billing Credit
    * @description Requires the `billing-credits-view` capability.
    */
   getCredit: {
@@ -9830,7 +10254,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a collection of environment resources. */
+      /** @description Returns a list of Environments. */
       200: {
         content: {
           "application/json": {
@@ -9852,14 +10276,14 @@ export interface operations {
     requestBody?: {
       content: {
         "application/json": {
-          /** @description A user defined name for the environment resource. */
+          /** @description A user defined name for the Environment. */
           name: string;
           identifier?: components["schemas"]["Identifier"];
-          /** @description The cluster this environment is associated with. */
+          /** @description The cluster this Environment is associated with. */
           cluster: string;
-          /** @description Contains details regarding the environment. */
+          /** @description Contains details regarding the Environment. */
           about: {
-            /** @description A custom description for this environment. */
+            /** @description A custom description for this Environment. */
             description: string;
           };
           features: components["schemas"]["Features"];
@@ -9867,7 +10291,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns an environment resource. */
+      /** @description Returns an Environment. */
       201: {
         content: {
           "application/json": {
@@ -9879,10 +10303,10 @@ export interface operations {
     };
   };
   /**
-   * Fetch Environment
+   * Get Environment
    * @description Requires the `environments-view` capability.
    */
-  getEnvironmentById: {
+  getEnvironment: {
     parameters: {
       query?: {
         /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
@@ -9896,7 +10320,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns an environment resource. */
+      /** @description Returns an Environment. */
       200: {
         content: {
           "application/json": {
@@ -9911,22 +10335,22 @@ export interface operations {
     };
   };
   /**
-   * Remove Environment
-   * @description Requires the `environments-update` capability.
+   * Delete Environment
+   * @description Requires the `environments-manage` capability.
    */
-  removeEnvironment: {
+  deleteEnvironment: {
     parameters: {
       path: {
-        /** @description The ID of the requested environment. */
+        /** @description The ID of the requested Environment. */
         environmentId: string;
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -9935,26 +10359,30 @@ export interface operations {
   };
   /**
    * Update Environment
-   * @description Updates the specificed environment, setting the values of the parameters passed. If any parameters are omitted, they will be left unchanged. Requires the `environments-update` capability.
+   * @description Updates the specificed Environment.
+   *
+   * Requires the `environments-manage` capability.
    */
   updateEnvironment: {
     parameters: {
       path: {
-        /** @description The ID of the requested environment. */
+        /** @description The ID of the requested Environment. */
         environmentId: string;
       };
     };
-    /** @description Parameters for updating an environment. */
+    /** @description Parameters for updating an Environment. */
     requestBody?: {
       content: {
         "application/json": {
-          name?: string;
-          about?: components["schemas"]["EnvironmentAbout"];
+          name?: string | null;
+          identifier?: string | null;
+          version?: string | null;
+          about?: components["schemas"]["EnvironmentAbout"] | null;
         };
       };
     };
     responses: {
-      /** @description Returns an environment resource. */
+      /** @description Returns an Environment. */
       200: {
         content: {
           "application/json": {
@@ -9967,27 +10395,29 @@ export interface operations {
   };
   /**
    * Create Environment Job
-   * @description Create a job for an environment, such as 'start' or 'stop'. Requires the `environments-state` capability.
+   * @description Create a job for an Environment, such as 'start' or 'stop'.
+   *
+   * Requires the `environments-manage` capability.
    */
   createEnvironmentJob: {
     parameters: {
       path: {
-        /** @description The ID of the requested environment. */
+        /** @description The ID of the requested Environment. */
         environmentId: string;
       };
     };
-    /** @description Parameters for creating a new environment job. */
+    /** @description Parameters for creating a new Environment job. */
     requestBody?: {
       content: {
         "application/json": components["schemas"]["EnvironmentStartAction"] | components["schemas"]["EnvironmentStopAction"] | components["schemas"]["EnvironmentInitializeAction"] | components["schemas"]["EnvironmentReconfigureDeploymentsAction"];
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -9995,8 +10425,10 @@ export interface operations {
     };
   };
   /**
-   * Fetch Environment Summary
-   * @description Fetches a single summary object for a specific environment. Contains useful and relevant data/statistics that would otherwise be several separate API calls.  Requires the `environments-view` capability.
+   * Get Environment Summary
+   * @description Gets the summary of an Environment. Contains useful and relevant data/statistics that would otherwise be several separate API calls.
+   *
+   * Requires the `environments-view` capability.
    */
   getEnvironmentSummary: {
     parameters: {
@@ -10019,14 +10451,14 @@ export interface operations {
   };
   /**
    * List Environment Deployments
-   * @description Gets a list of all deployments in the specified environment.
+   * @description Gets a list of all deployments in the specified Environment.
    *
    * Requires the `environments-view` capability.
    */
   getEnvironmentDeployments: {
     parameters: {
       path: {
-        /** @description The ID of the environment to get the list of deployments for. */
+        /** @description The ID of the Environment to get the list of deployments for. */
         environmentId: string;
       };
     };
@@ -10043,7 +10475,7 @@ export interface operations {
                   tags: components["schemas"]["Identifier"][];
                   /** @description The number of containers utilizing this version of this deployment. */
                   containers: number;
-                } | undefined;
+                };
               };
             };
           };
@@ -10053,10 +10485,10 @@ export interface operations {
     };
   };
   /**
-   * Fetch LB Info
+   * Get Load Balancer Service
    * @description Requires the `environments-view` capability.
    */
-  getLoadBalancerInfo: {
+  getLoadBalancerService: {
     parameters: {
       path: {
         /** @description The environmentId where the load balancer resides. */
@@ -10077,7 +10509,7 @@ export interface operations {
                 haproxy: components["schemas"]["HaProxyConfig"];
                 v1: components["schemas"]["V1LbConfig"];
               };
-              service: components["schemas"]["LoadBalancerEnvironmentService"];
+              service: components["schemas"]["LoadBalancerEnvironmentService"] | null;
             };
           };
         };
@@ -10086,10 +10518,10 @@ export interface operations {
     };
   };
   /**
-   * Reconfigure LB
+   * Create Load Balancer Service Job
    * @description Creates a task that will update the load balancer's configuration.
    */
-  reconfigureLoadBalancer: {
+  createLoadBalancerServiceJob: {
     parameters: {
       path: {
         /** @description The ID of the environment where this load balancer resides. */
@@ -10110,17 +10542,19 @@ export interface operations {
             high_availability?: boolean | null;
             /** @description A boolean representing if this service container is set to autoupdate or not */
             auto_update?: boolean | null;
-            config?: components["schemas"]["LoadBalancerConfig"];
+            config?: {
+              type: "json";
+            } & (Omit<components["schemas"]["LoadBalancerConfig"], "type"> | null);
           };
         };
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -10128,12 +10562,11 @@ export interface operations {
     };
   };
   /**
-   * Fetch load balancer v1 telemetry report
-   * @description ## Permissions
-   * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested environment.
+   * Get Load Balancer Telemetry Report
+   * @description Fetches a telemetry report for Cycle's native load balancer for the specified range.
    *
-   * ## Details
-   * Fetches a telemetry report for Cycle's native load balancer for the specified range.
+   * ## Permissions
+   * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested Environment.
    */
   getLoadBalancerTelemetryReport: {
     parameters: {
@@ -10167,12 +10600,11 @@ export interface operations {
     };
   };
   /**
-   * Fetch the latest load balancer v1 telemetry.
-   * @description ## Permissions
-   * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested environment.
+   * Get Latest Load Balancer Telemetry Report.
+   * @description Fetches the latest telemetry report for Cycle's native load balancer. Provides detailed information on a per-instance basis.
    *
-   * ## Details
-   * Fetches the latest telemetry report for Cycle's native load balancer. Provides detailed information on a per-instance basis.
+   * ## Permissions
+   * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested Environment.
    */
   getLoadBalancerLatestTelemetryReport: {
     parameters: {
@@ -10206,12 +10638,11 @@ export interface operations {
     };
   };
   /**
-   * Gets the latest relevant controllers where traffic data is present.
-   * @description ## Permissions
-   * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested environment.
+   * Get Latest Load Balancer Controller Telemetry
+   * @description Gets the controller information for the specified load balancer. Returns a similar struct to the 'latest' load balancer telemetry call, but does NOT return snapshots, just the controller information.
    *
-   * ## Details
-   * Gets the controller information for the specified load balancer. Returns a similar struct to the 'latest' load balancer telemetry call, but does NOT return snapshots, just the controller information.
+   * ## Permissions
+   * Requires the `environments-view` capability. Also requires the user to have access specifically to the requested Environment.
    */
   getLoadBalancerTelemetryLatestControllers: {
     parameters: {
@@ -10238,10 +10669,10 @@ export interface operations {
     };
   };
   /**
-   * Reconfigure Discovery
+   * Create Discovery Service Job
    * @description Creates a task that will update the discovery service's configuration.
    */
-  reconfigureDiscovery: {
+  createDiscoveryServiceJob: {
     parameters: {
       path: {
         /** @description The ID of the environment where this discovery service resides. */
@@ -10258,7 +10689,7 @@ export interface operations {
            */
           action: "reconfigure";
           contents: {
-            config?: components["schemas"]["DiscoveryConfig"];
+            config?: components["schemas"]["DiscoveryConfig"] | null;
             /** @description A boolean where `true` represents the desire to run the environment discovery service in high availability mode. */
             high_availability?: boolean | null;
             /** @description A boolean where `true` represents the desire to automatically update the environment discovery service. */
@@ -10268,11 +10699,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -10280,10 +10711,10 @@ export interface operations {
     };
   };
   /**
-   * Reconfigure Scheduler
+   * Create Scheduler Service Job
    * @description Creates a task that will update the scheduler service's configuration.
    */
-  reconfigureScheduler: {
+  createSchedulerServiceJob: {
     parameters: {
       path: {
         /** @description The ID of the environment where this scheduler service resides. */
@@ -10300,7 +10731,7 @@ export interface operations {
            */
           action: "reconfigure";
           contents: {
-            config?: Record<string, unknown> | null;
+            config?: components["schemas"]["SchedulerConfig"] | null;
             /** @description A boolean where `true` represents the desire to automatically update the environment scheduler service. */
             auto_update?: boolean | null;
           };
@@ -10308,11 +10739,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -10320,10 +10751,10 @@ export interface operations {
     };
   };
   /**
-   * Fetch VPN Info
+   * Get VPN Service
    * @description Requires the `environments-vpn` capability.
    */
-  getVPNInfo: {
+  getVPNService: {
     parameters: {
       path: {
         /** @description The environmentId where the VPN resides. */
@@ -10331,7 +10762,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a VPNInfo resource. */
+      /** @description Returns the VPN service. */
       200: {
         content: {
           "application/json": {
@@ -10343,10 +10774,10 @@ export interface operations {
     };
   };
   /**
-   * Fetch VPN Info
+   * Get VPN Logins
    * @description Requires the `environments-vpn` capability.
    */
-  getVpnLogins: {
+  getVPNLogins: {
     parameters: {
       query?: {
         sort?: components["parameters"]["SortParam"];
@@ -10413,7 +10844,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a VPN user resource. */
+      /** @description Returns a VPN User. */
       201: {
         content: {
           "application/json": {
@@ -10425,10 +10856,10 @@ export interface operations {
     };
   };
   /**
-   * Remove VPN user
+   * Delete VPN User
    * @description Requires the `environments-vpn-manage` capability.
    */
-  removeVPNUser: {
+  deleteVPNUser: {
     parameters: {
       path: {
         /** @description The environmentId where the VPN service the given user belongs to resides. */
@@ -10438,7 +10869,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a null data object. */
+      /** @description Returns no data. */
       200: {
         content: {
           "application/json": {
@@ -10450,28 +10881,28 @@ export interface operations {
     };
   };
   /**
-   * Create Environment VPN Job
-   * @description Used to reconfigure or reset the environment VPN. Requires the `environments-vpn-manage` capability.
+   * Create VPN Service Job
+   * @description Used to reconfigure or reset the Environment VPN. Requires the `environments-vpn-manage` capability.
    */
-  createEnvironmentVpnTask: {
+  createVPNServiceJob: {
     parameters: {
       path: {
-        /** @description The ID of the environment the VPN service resides in. */
+        /** @description The ID of the Environment the VPN service resides in. */
         environmentId: string;
       };
     };
-    /** @description The task contents used to build the environment VPN job. */
+    /** @description The task contents used to build the Environment VPN Job. */
     requestBody?: {
       content: {
         "application/json": components["schemas"]["VpnResetTask"] | components["schemas"]["VpnReconfigureTask"];
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -10479,8 +10910,10 @@ export interface operations {
     };
   };
   /**
-   * List Telemetry Data
-   * @description Requires the `environments-view` capability.
+   * Get Environment Instances Telemetry
+   * @description Get telemetry points on the number of instances and their states over a range of time.
+   *
+   * Requires the `environments-view` capability.
    */
   getEnvironmentInstancesTelemetry: {
     parameters: {
@@ -10497,12 +10930,12 @@ export interface operations {
         };
       };
       path: {
-        /** @description The ID of the desired environment */
+        /** @description The ID of the desired Environment */
         environmentId: string;
       };
     };
     responses: {
-      /** @description Returns a collection of telemetry data points. */
+      /** @description Returns a list of telemetry data points. */
       200: {
         content: {
           "application/json": {
@@ -10517,7 +10950,7 @@ export interface operations {
    * List Scoped Variables
    * @description Requires the `scoped-variables-view` capability.
    */
-  listScopedVariables: {
+  getScopedVariables: {
     parameters: {
       query?: {
         /**
@@ -10527,21 +10960,21 @@ export interface operations {
         filter?: {
           /** @description `filter[identifier]=value` List only those environments matching this identifier. May return multiple results. */
           identifier?: string;
-          /** @description `filter[search]=value` search for a value associated with a field on the given scoped variable(s). */
+          /** @description `filter[search]=value` search for a value associated with a field on the given Scoped Variable(s). */
           search?: string;
-          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the scoped variable's current state. */
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Scoped Variable's current state. */
           state?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
       };
       path: {
-        /** @description The ID of the requested environment. */
+        /** @description The ID of the requested Environment. */
         environmentId: string;
       };
     };
     responses: {
-      /** @description Returns a collection of scoped variable resources. */
+      /** @description Returns a list of Scoped Variables. */
       200: {
         content: {
           "application/json": {
@@ -10559,25 +10992,25 @@ export interface operations {
   createScopedVariable: {
     parameters: {
       path: {
-        /** @description The ID of the requested environment. */
+        /** @description The ID of the requested Environment. */
         environmentId: string;
       };
     };
-    /** @description Parameters for creating a scoped variable. */
+    /** @description Parameters for creating a Scoped Variable. */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description An identifier, similar to a key in an environment variable.  Its used when envoking the scoped variable. */
+          /** @description An identifier for this Scoped Variable. */
           identifier: string;
           scope: components["schemas"]["ScopedVariableScope"];
           access?: components["schemas"]["ScopedVariableAccess"];
-          /** @description The source or value of the scoped variable. */
+          /** @description The source or value of the Scoped Variable. */
           source: components["schemas"]["RawSource"] | components["schemas"]["URLSource"];
         };
       };
     };
     responses: {
-      /** @description Returns a scoped variable resource. */
+      /** @description Returns a Scoped Variable. */
       201: {
         content: {
           "application/json": {
@@ -10589,20 +11022,20 @@ export interface operations {
     };
   };
   /**
-   * Fetch Scoped Variable
+   * Get Scoped Variable
    * @description Requires the `scoped-variables-view` capability.
    */
-  fetchScopedVariable: {
+  getScopedVariable: {
     parameters: {
       path: {
-        /** @description The ID of the requested environment. */
+        /** @description The ID of the requested Environment. */
         environmentId: string;
-        /** @description The ID of the requested scoped variable. */
+        /** @description The ID of the requested Scoped Variable. */
         scopedVariableId: string;
       };
     };
     responses: {
-      /** @description Returns a scoped variable resource. */
+      /** @description Returns a Scoped Variable. */
       200: {
         content: {
           "application/json": {
@@ -10614,24 +11047,24 @@ export interface operations {
     };
   };
   /**
-   * Remove Scoped Variable
+   * Delete Scoped Variable
    * @description Requires the `scoped-variables-manage` capability.
    */
-  removeScopedVariableById: {
+  deleteScopedVariable: {
     parameters: {
       path: {
-        /** @description The ID of the requested environment. */
+        /** @description The ID of the requested Environment. */
         environmentId: string;
-        /** @description The ID of the requested scoped variable. */
+        /** @description The ID of the requested Scoped Variable. */
         scopedVariableId: string;
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -10645,27 +11078,27 @@ export interface operations {
   updateScopedVariable: {
     parameters: {
       path: {
-        /** @description The ID of the requested environment. */
+        /** @description The ID of the requested endpointnvironment. */
         environmentId: string;
-        /** @description The ID of the requested scoped variable. */
+        /** @description The ID of the requested Scoped Variable. */
         scopedVariableId: string;
       };
     };
-    /** @description Parameters for updating a scoped variable. */
+    /** @description Parameters for updating a Scoped Variable. */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description An identifier, similar to a key in an environment variable.  Its used when envoking the scoped variable. */
+          /** @description An identifier, similar to a key in an Environment variable.  Its used when envoking the Scoped Variable. */
           identifier?: string;
           scope?: components["schemas"]["ScopedVariableScope"];
           access?: components["schemas"]["ScopedVariableAccess"];
-          /** @description The source or value of the scoped variable. */
+          /** @description The source or value of the Scoped Variable. */
           source?: components["schemas"]["RawSource"] | components["schemas"]["URLSource"];
         };
       };
     };
     responses: {
-      /** @description Returns a scoped variable resource. */
+      /** @description Returns a Scoped Variable. */
       200: {
         content: {
           "application/json": {
@@ -10684,7 +11117,7 @@ export interface operations {
     parameters: {
       query?: {
         /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
-        meta?: ("instances_count" | "domain" | "domains" | "ips")[];
+        meta?: ("instances_count" | "domains" | "ips")[];
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
         include?: ("creators" | "images" | "stack_builds" | "stacks" | "environments")[];
         /**
@@ -10724,7 +11157,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a collection of container resources. */
+      /** @description Returns a list of Containers. */
       200: {
         content: {
           "application/json": {
@@ -10741,25 +11174,25 @@ export interface operations {
    * @description Requires the `containers-deploy` capability.
    */
   createContainer: {
-    /** @description Parameters for creating a new container. */
+    /** @description Parameters for creating a new Container. */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description A user defined name for the container. */
+          /** @description A user defined name for the Container. */
           name: string;
-          identifier?: string | null;
-          /** @description An identifier for the environment this container will be deployed to. */
+          identifier?: components["schemas"]["Identifier"] | null;
+          /** @description An identifier for the Environment this Container will be deployed to. */
           environment_id: string;
-          /** @description An identifier for the image used to create this container. */
+          /** @description An identifier for the Image used to create this Container. */
           image_id: string;
-          /** @description A boolean where true represents this container is stateful. */
+          /** @description A boolean where true represents this Container is stateful. */
           stateful: boolean;
           config: components["schemas"]["Config"];
-          /** @description When set to true, prevents this container from being deleted. */
+          /** @description When set to true, prevents this Container from being deleted. */
           lock?: boolean;
           deployment?: components["schemas"]["Deployment"] | null;
           volumes?: components["schemas"]["ContainerVolume"][];
-          /** @description User defined meta data for the container. */
+          /** @description Custom meta data. Not utilized by Cycle. */
           annotations?: {
             [key: string]: unknown;
           } | null;
@@ -10767,7 +11200,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a container resource. */
+      /** @description Returns a Container. */
       201: {
         content: {
           "application/json": {
@@ -10779,24 +11212,26 @@ export interface operations {
     };
   };
   /**
-   * Fetch Container
-   * @description Requires the `containers-view` capability.
+   * Get Container
+   * @description Gets a Container.
+   *
+   * Requires the `containers-view` capability.
    */
-  getContainerById: {
+  getContainer: {
     parameters: {
       query?: {
         /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
-        meta?: ("instances_count" | "domain" | "domains" | "ips")[];
+        meta?: ("instances_count" | "domains" | "ips")[];
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
         include?: ("creators" | "images" | "stack_builds" | "stacks" | "environments")[];
       };
       path: {
-        /** @description The ID of the requested container. */
+        /** @description The ID of the requested Container. */
         containerId: string;
       };
     };
     responses: {
-      /** @description Returns a container resource. */
+      /** @description Returns a Container. */
       200: {
         content: {
           "application/json": {
@@ -10810,21 +11245,21 @@ export interface operations {
   };
   /**
    * Delete Container
-   * @description Requires the `containers-update` capability.
+   * @description Requires the `containers-manage` capability.
    */
-  removeContainer: {
+  deleteContainer: {
     parameters: {
       path: {
-        /** @description The ID of the requested container. */
+        /** @description The ID of the requested Container. */
         containerId: string;
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -10833,36 +11268,38 @@ export interface operations {
   };
   /**
    * Update Container
-   * @description Updates the specified container, setting the values of the parameters passed.  If any parameters are omitted, they will be left unchanged. Requires the `contianers-update` capability.
+   * @description Updates the specified Container.
+   *
+   * Requires the `containers-manage` capability.
    */
   updateContainer: {
     parameters: {
       path: {
-        /** @description The ID of the container. */
+        /** @description The ID of the Container. */
         containerId: string;
       };
     };
-    /** @description Parameters for updating a container. */
+    /** @description Parameters for updating a Container. */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description The name for the container. */
+          /** @description The name for the Container. */
           name?: string;
           /** @description The name for the identifier. */
           identifier?: string;
-          /** @description Sets whether container should be deprecated. */
+          /** @description Sets whether Container should be deprecated. */
           deprecate?: boolean;
-          /** @description When set to true, prevents this container from being deleted. */
+          /** @description When set to true, prevents this Container from being deleted. */
           lock?: boolean;
-          /** @description User meta data for the container. */
+          /** @description User meta data for the Container. */
           annotation?: {
-            [key: string]: string | undefined;
+            [key: string]: string;
           };
         };
       };
     };
     responses: {
-      /** @description Returns the updated container resource. */
+      /** @description Returns the updated Container. */
       200: {
         content: {
           "application/json": {
@@ -10874,7 +11311,7 @@ export interface operations {
     };
   };
   /**
-   * Fetch Container Summary
+   * Get Container Summary
    * @description Requires the `containers-view` capability.
    */
   getContainerSummary: {
@@ -10885,11 +11322,16 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns an container summary resource. */
+      /** @description Returns an Container summary resource. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["ContainerSummary"];
+            /** @description Contains useful and relevant data/statistics for a container that would otherwise be several separate API calls. */
+            data: {
+              id: components["schemas"]["ID"];
+              state: components["schemas"]["ContainerState"];
+              stats?: components["schemas"]["StateCountSummary"] | null;
+            };
           };
         };
       };
@@ -10898,7 +11340,15 @@ export interface operations {
   };
   /**
    * Create Container Job
-   * @description Used to perform different actions on a given container. Requires the `containers-state`, `containers-update`, or `containers-volumes-manage` capability (respectively).
+   * @description Used to perform different actions on a given Container.
+   *
+   * Requires the following capabilities based on the task:
+   * `start`: `containers-manage`
+   * `stop`: `containers-manage`
+   * `reconfigure`: `containers-manage`
+   * `volumes.reconfigure`: `containers-volumes-manage`
+   * `reimage`: `containers-manage`
+   * `scale`: `containers-manage`
    */
   createContainerJob: {
     parameters: {
@@ -10914,11 +11364,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -10933,7 +11383,7 @@ export interface operations {
     parameters: {
       query?: {
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("creators" | "servers" | "locations" | "providers" | "containers" | "environments")[];
+        include?: ("creators" | "servers" | "locations" | "integrations" | "containers" | "environments")[];
         /**
          * @description ## Filter Field
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
@@ -10959,7 +11409,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a collection of contianer instance resources. */
+      /** @description Returns a list of Container Instances. */
       200: {
         content: {
           "application/json": {
@@ -10972,33 +11422,34 @@ export interface operations {
     };
   };
   /**
-   * Create Instance(s)
-   * @description Requires the `containers-update` capability.
+   * Create Instances
+   * @description Manually create Instances of a Container.
+   *
+   * Requires the `containers-update` capability.
    */
-  createContainerInstance: {
+  createInstances: {
     parameters: {
       path: {
-        /** @description The ID of the container this instance is created from. */
+        /** @description The ID of the Container this Instance is created from. */
         containerId: string;
       };
     };
-    /** @description Parameters for creating a container instance. */
     requestBody?: {
       content: {
         "application/json": {
-            /** @description The ID of the server the new instance(s) should be deployed to. */
+            /** @description The ID of the Server the new Instance(s) should be deployed to. */
             server_id: string;
-            /** @description The number of new instances to be created on the given server. */
+            /** @description The number of new Instances to be created on the given Server. */
             new_instances: number;
           }[];
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -11006,10 +11457,12 @@ export interface operations {
     };
   };
   /**
-   * Delete Instance(s)
-   * @description Requires the `containers-update` capability.
+   * Delete Container Instance(s)
+   * @description Manually delete Instances of a Container.
+   *
+   * Requires the `containers-update` capability.
    */
-  removeMultipleContainerInstances: {
+  deleteContainerInstances: {
     parameters: {
       path: {
         /** @description The ID of the container the instance(s) were created from. */
@@ -11017,11 +11470,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
-      200: {
+      /** @description Returns a Job Descriptor. */
+      202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -11029,14 +11482,14 @@ export interface operations {
     };
   };
   /**
-   * Fetch Instance
+   * Get Instance
    * @description Requires the `containers-view` capability.
    */
-  getContainerInstance: {
+  getInstance: {
     parameters: {
       query?: {
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("creators" | "servers" | "locations" | "providers" | "containers" | "environments")[];
+        include?: ("creators" | "servers" | "locations" | "integrations" | "containers" | "environments")[];
       };
       path: {
         /** @description The ID of the requested container. */
@@ -11046,7 +11499,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a container instance resource. */
+      /** @description Returns a Container Instance. */
       200: {
         content: {
           "application/json": {
@@ -11059,10 +11512,10 @@ export interface operations {
     };
   };
   /**
-   * Delete Instance
+   * Delete Container Instance
    * @description Requires the `containers-update` capability.
    */
-  removeContainerInstance: {
+  deleteInstance: {
     parameters: {
       path: {
         /** @description The ID of the requested container. */
@@ -11072,11 +11525,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor */
-      200: {
+      /** @description Returns a Job Descriptor. */
+      202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -11084,10 +11537,13 @@ export interface operations {
     };
   };
   /**
-   * Fetch SSH Credentials
-   * @description Requires the `containers-ssh` capability.
+   * Generate Instance SSH Credentials
+   * @description Generates credentials for connecting to an Instance via SSH. The generated endpoint/secret can be used to log in via SSH
+   * into the Instance without exposing ports on the container or host.
+   *
+   * Requires the `containers-ssh` capability.
    */
-  getSSHConnection: {
+  generateInstanceSSHCredentials: {
     parameters: {
       path: {
         /** @description The ID of the requested container. */
@@ -11097,7 +11553,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a SSH connection response. */
+      /** @description Returns an SSH connection response. */
       200: {
         content: {
           "application/json": {
@@ -11110,9 +11566,11 @@ export interface operations {
   };
   /**
    * Expire SSH Credentials
-   * @description Requires the `containers-ssh` capability.
+   * @description Instantly expires any SSH credentials generated for this Instance.
+   *
+   * Requires the `containers-ssh` capability.
    */
-  expireInstanceSSHTokens: {
+  expireInstanceSSHCredentials: {
     parameters: {
       path: {
         /** @description The ID of the requested container. */
@@ -11122,7 +11580,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a data object holding the amount of tokens removed. */
+      /** @description Returns the number of tokens removed. */
       200: {
         content: {
           "application/json": {
@@ -11138,10 +11596,12 @@ export interface operations {
     };
   };
   /**
-   * Create Instance Task
-   * @description Used to perform different actions on a given container instance, requries `containers-instance-migrate` capability.
+   * Create Instance Job
+   * @description Used to perform different actions on a given Container Instance. Can be used to migrate or undo a migration of a Container Instance.
+   *
+   * Requires the `containers-instance-migrate` capability.
    */
-  createContainerInstanceJob: {
+  createInstanceJob: {
     parameters: {
       path: {
         /** @description The ID of the requested container. */
@@ -11157,11 +11617,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -11169,24 +11629,24 @@ export interface operations {
     };
   };
   /**
-   * Fetch Instance Volume(s)
+   * List Instance Volumes
    * @description Requires the `containers-view` capability.
    */
-  getContainerInstanceVolumes: {
+  getInstanceVolumes: {
     parameters: {
       query?: {
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
       };
       path: {
-        /** @description The ID of the requested container. */
+        /** @description The ID of the requested Container. */
         containerId: string;
-        /** @description The ID for the container instance. */
+        /** @description The ID for the Container Instance. */
         instanceId: string;
       };
     };
     responses: {
-      /** @description Returns an array of container instance volume resources. */
+      /** @description Returns a list of Container Instance Volumes. */
       200: {
         content: {
           "application/json": {
@@ -11198,10 +11658,12 @@ export interface operations {
     };
   };
   /**
-   * Fetch Instance Telemetry Report
-   * @description Requires the `containers-view` capability.
+   * Get Instance Telemetry Report
+   * @description Retrieves a point-in-time report of an Instance's resource usage (CPU, RAM, Network, Storage, etc).
+   *
+   * Requires the `containers-view` capability.
    */
-  getInstanceResourcesTelemetryReport: {
+  getInstanceTelemetryReport: {
     parameters: {
       query?: {
         /**
@@ -11223,7 +11685,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns an instance telemetry report. */
+      /** @description Returns an Instance telemetry report. */
       200: {
         content: {
           "application/json": {
@@ -11235,15 +11697,18 @@ export interface operations {
     };
   };
   /**
-   * Instance Telemetry Stream Credentials
-   * @description Requires the `containers-view` capability. Retrieves an access token and URL to open a websocket to for streaming instance telemetry live. This connects directly to the compute layer on the server the instance is hosted on, and streams telemetry in real time.
+   * Instance Telemetry Stream Authorization
+   * @description Retrieves an access token and URL to open a websocket to for streaming instance telemetry live.
+   * This connects directly to the compute layer on the server the instance is hosted on, and streams telemetry in real time.
+   *
+   * Requires the `containers-view` capability.
    */
-  getInstanceResourcesTelemetryStream: {
+  getInstanceTelemetryStreamAuth: {
     parameters: {
       path: {
         /** @description The ID of the requested container. */
         containerId: string;
-        /** @description The ID for the container instance. */
+        /** @description The ID for the Container Instance. */
         instanceId: string;
       };
     };
@@ -11252,10 +11717,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            /**
-             * InstanceTelemetryStreamCredentials
-             * @description Credentials for connecting to the instance telemetry stream on compute.
-             */
+            /** @description Credentials for connecting to the instance telemetry stream on compute. */
             data: {
               /** @description The authentication token passed into the address as a URL parameter (?token). */
               token: string;
@@ -11270,9 +11732,11 @@ export interface operations {
   };
   /**
    * List Container Servers
-   * @description Requires the `containers-view` capability.
+   * @description Lists all Servers that currently have an Instance of this Container deployed to them.
+   *
+   * Requires the `containers-view` capability.
    */
-  ContainersListServers: {
+  getContainerServers: {
     parameters: {
       query?: {
         /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
@@ -11286,11 +11750,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a list of server instance resources. */
+      /** @description Returns an array of Server IDs / number of Instances of this Container deployed to them. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["ServersList"];
+            data: components["schemas"]["ServerInstancesSummary"];
           };
         };
       };
@@ -11298,16 +11762,18 @@ export interface operations {
     };
   };
   /**
-   * List Usable Servers
-   * @description Requires the `containers-view` capability.
+   * List Compatible Servers
+   * @description Gets a list of servers that are compatible with the specified Container and its restrictions (tags, etc).
+   *
+   * Requires the `containers-view` capability.
    */
-  getUsableServers: {
+  getCompatibleServers: {
     parameters: {
       query?: {
         /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
         meta?: ("node" | "instances_count")[];
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("location" | "models" | "providers")[];
+        include?: ("location" | "models" | "integrations")[];
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
       };
@@ -11317,7 +11783,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a list of server resources. */
+      /** @description Returns a list of Servers. */
       200: {
         content: {
           "application/json": {
@@ -11330,8 +11796,11 @@ export interface operations {
     };
   };
   /**
-   * Fetch Compatible Images
-   * @description Requires the `containers-view` capability.
+   * Get Compatible Images
+   * @description Returns a list of Images that are compatible with the specified Container.
+   * Used to quickly find Images that can be used for reimaging the Container.
+   *
+   * Requires the `containers-view` capability.
    */
   getCompatibleImages: {
     parameters: {
@@ -11340,12 +11809,12 @@ export interface operations {
         page?: components["parameters"]["PageParam"];
       };
       path: {
-        /** @description The ID of the requested container. */
+        /** @description The ID of the requested Container. */
         containerId: string;
       };
     };
     responses: {
-      /** @description Returns a collection of image resources. */
+      /** @description Returns a list of compatible Images. */
       200: {
         content: {
           "application/json": {
@@ -11357,17 +11826,19 @@ export interface operations {
     };
   };
   /**
-   * List Backups
+   * List Container Backups
    * @description Requires the `containers-backups-view` capability.
    */
-  getBackupsCollection: {
+  getContainerBackups: {
     parameters: {
       query?: {
+        /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
+        include?: "integrations"[];
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
       };
       path: {
-        /** @description The ID of the requested container. */
+        /** @description The ID of the requested Container. */
         containerId: string;
       };
     };
@@ -11376,7 +11847,8 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["Backup"][];
+            data: components["schemas"]["ContainerBackup"][];
+            includes?: components["schemas"]["ContainerBackupIncludes"];
           };
         };
       };
@@ -11384,11 +11856,17 @@ export interface operations {
     };
   };
   /**
-   * Fetch Backup
-   * @description Requires the `containers-backups-view` capability.
+   * Get a specific Container Backup
+   * @description Gets the specified Container Backup.
+   *
+   * Requires the `containers-backups-view` capability.
    */
-  getBackup: {
+  getContainerBackup: {
     parameters: {
+      query?: {
+        /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
+        include?: "integrations"[];
+      };
       path: {
         /** @description The ID of the requested container. */
         containerId: string;
@@ -11397,11 +11875,12 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a backup resource. */
+      /** @description Returns a Container Backup. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["Backup"];
+            data: components["schemas"]["ContainerBackup"];
+            includes?: components["schemas"]["ContainerBackupIncludes"];
           };
         };
       };
@@ -11409,24 +11888,24 @@ export interface operations {
     };
   };
   /**
-   * Delete Backup
+   * Delete Container Backup
    * @description Requires the `containers-backups-manage` capability.
    */
-  removeBackup: {
+  deleteContainerBackup: {
     parameters: {
       path: {
-        /** @description The ID of the requested container. */
+        /** @description The ID of the container. */
         containerId: string;
-        /** @description The ID for the container backup. */
+        /** @description The ID of the container backup. */
         backupId: string;
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -11434,10 +11913,13 @@ export interface operations {
     };
   };
   /**
-   * Create Backup Job
-   * @description Used to restore a backup for a given container instance. Requires the `containers-backups-manage` capability.
+   * Create Container Backup Job
+   * @description Creates a Container Backup Job.
+   * Can be used to restore a Container Backup for a given Container Instance.
+   *
+   * Requires the `containers-backups-manage` capability.
    */
-  restoreBackupJob: {
+  createContainerBackupJob: {
     parameters: {
       path: {
         /** @description The ID of the requested container. */
@@ -11446,7 +11928,6 @@ export interface operations {
         backupId: string;
       };
     };
-    /** @description Parameters for creating a new backup job. */
     requestBody?: {
       content: {
         "application/json": {
@@ -11455,20 +11936,20 @@ export interface operations {
            * @enum {string}
            */
           action: "restore";
-          /** @description Additional information the platform needs to create this job. */
+          /** @description Additional information the platform needs to create this Job. */
           contents: {
-            /** @description The ID of the instance this backup is being restored to. */
+            /** @description The ID of the instance this Container Backup is being restored to. */
             instance_id: string;
           };
         };
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -11476,10 +11957,10 @@ export interface operations {
     };
   };
   /**
-   * List Backup Logs
+   * List Container Backup Logs
    * @description Requires the `containers-backups-view` capability.
    */
-  getBackupLogs: {
+  getContainerBackupLogs: {
     parameters: {
       path: {
         /** @description The ID of the requested container. */
@@ -11489,11 +11970,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a collection of backup logs. */
+      /** @description Returns a collection of Container Backup Logs. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["Logs"][];
+            data: components["schemas"]["ContainerBackupLogs"][];
           };
         };
       };
@@ -11502,7 +11983,9 @@ export interface operations {
   };
   /**
    * List Telemetry Data
-   * @description Requires the `containers-view` capability.
+   * @description Gets a list of telemetry points describing the number and state of all Instances of this Container at a point in time.
+   *
+   * Requires the `containers-view` capability.
    */
   getContainerInstancesTelemetry: {
     parameters: {
@@ -11519,12 +12002,12 @@ export interface operations {
         };
       };
       path: {
-        /** @description The ID of the desired container */
+        /** @description The ID of the desired Container */
         containerId: string;
       };
     };
     responses: {
-      /** @description Returns a collection of telemetry data points. */
+      /** @description Returns a list of telemetry data points. */
       200: {
         content: {
           "application/json": {
@@ -11539,7 +12022,7 @@ export interface operations {
    * List DNS Zones
    * @description Requires the `dns-view` capability.
    */
-  getZonesCollection: {
+  getDNSZones: {
     parameters: {
       query?: {
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
@@ -11549,7 +12032,7 @@ export interface operations {
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
          */
         filter?: {
-          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the DNS zone's current state. */
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the DNS Zone's current state. */
           state?: string;
         };
         sort?: components["parameters"]["SortParam"];
@@ -11557,7 +12040,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a collection of DNS zone resources. */
+      /** @description Returns a collection of DNS Zones. */
       200: {
         content: {
           "application/json": {
@@ -11574,7 +12057,7 @@ export interface operations {
    * @description Requires the `dns-manage` capability.
    */
   createDNSZone: {
-    /** @description Parameters for creating a new DNS zone. */
+    /** @description Parameters for creating a new DNS Zone. */
     requestBody?: {
       content: {
         "application/json": {
@@ -11586,7 +12069,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns the DNS zone resource. */
+      /** @description Returns the DNS Zone resource. */
       201: {
         content: {
           "application/json": {
@@ -11598,7 +12081,7 @@ export interface operations {
     };
   };
   /**
-   * Fetch DNS Zone
+   * Get DNS Zone
    * @description Requires the `dns-view` capability.
    */
   getDNSZone: {
@@ -11613,7 +12096,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
-            data?: components["schemas"]["Zone"];
+            data: components["schemas"]["Zone"];
           };
         };
       };
@@ -11621,10 +12104,10 @@ export interface operations {
     };
   };
   /**
-   * Remove DNS Zone
+   * Delete DNS Zone
    * @description Requires the `dns-manage` capability.
    */
-  removeDNSZone: {
+  deleteDNSZone: {
     parameters: {
       path: {
         /** @description The ID of the zone. */
@@ -11632,11 +12115,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
-      200: {
+      /** @description Returns a Job Descriptor. */
+      202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -11682,9 +12165,11 @@ export interface operations {
   };
   /**
    * Create DNS Zone Job
-   * @description Used to perform different actions on a given DNS zone, requires the `dns-manage` capability.
+   * @description Used to perform different actions on a given DNS zone.
+   *
+   * Requires the `dns-manage` capability.
    */
-  DNSZoneTask: {
+  createDNSZoneJob: {
     parameters: {
       path: {
         /** @description The ID of the zone. */
@@ -11704,11 +12189,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -11716,10 +12201,10 @@ export interface operations {
     };
   };
   /**
-   * List Records
+   * List DNS Zone Records
    * @description Requires the `dns-view` capability.
    */
-  getRecordsCollection: {
+  getDNSZoneRecords: {
     parameters: {
       query?: {
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
@@ -11741,7 +12226,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a collection of DNS zone resources. */
+      /** @description Returns a collection of DNS Zone Records. */
       200: {
         content: {
           "application/json": {
@@ -11754,17 +12239,17 @@ export interface operations {
     };
   };
   /**
-   * Create Record
+   * Create DNS Zone Record
    * @description Requires the `dns-manage` capability.
    */
-  createDNSRecord: {
+  createDNSZoneRecord: {
     parameters: {
       path: {
-        /** @description The ID of the zone. */
+        /** @description The ID of the Zone. */
         zoneId: string;
       };
     };
-    /** @description Parameters for creating a new DNS record. */
+    /** @description Parameters for creating a new DNS Zone Record. */
     requestBody?: {
       content: {
         "application/json": {
@@ -11787,24 +12272,24 @@ export interface operations {
     };
   };
   /**
-   * Delete Record
+   * Delete DNS Zone Record
    * @description Requires the `dns-manage` capability.
    */
-  removeDNSRecord: {
+  deleteDNSZoneRecord: {
     parameters: {
       path: {
-        /** @description The ID of the zone. */
+        /** @description The ID of the Zone. */
         zoneId: string;
-        /** @description The ID of the record. */
+        /** @description The ID of the DNS Zone Record. */
         recordId: string;
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
-      200: {
+      /** @description Returns a Job Descriptor. */
+      202: {
         content: {
           "application/json": {
-            data?: components["schemas"]["TaskDescriptor"];
+            data?: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -11812,19 +12297,19 @@ export interface operations {
     };
   };
   /**
-   * Update DNS Record
+   * Update DNS Zone Record
    * @description Requires the `dns-manage` capability.
    */
-  updateDNSRecord: {
+  updateDNSZoneRecord: {
     parameters: {
       path: {
-        /** @description The ID of the zone. */
+        /** @description The ID of the Zone. */
         zoneId: string;
         /** @description The ID of the record. */
         recordId: string;
       };
     };
-    /** @description Parameters for updating a DNS record. The name value cannot be updated and is omitted from the properties. */
+    /** @description Parameters for updating a DNS Zone Record. The name value cannot be updated and is omitted from the properties. */
     requestBody?: {
       content: {
         "application/json": {
@@ -11833,7 +12318,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a DNS record resource. */
+      /** @description Returns a DNS Zone Record. */
       200: {
         content: {
           "application/json": {
@@ -11845,10 +12330,12 @@ export interface operations {
     };
   };
   /**
-   * Create a DNS record Job
-   * @description Used to perform different actionson a given DNS record, requires the `dns-manage` capability.
+   * Create a DNS Zone Record Job
+   * @description Used to perform different actions on a given DNS Zone record.
+   *
+   * Requires the `dns-manage` capability.
    */
-  DNSRecordTask: {
+  createDNSZoneRecordJob: {
     parameters: {
       path: {
         /** @description The ID of the zone. */
@@ -11857,7 +12344,7 @@ export interface operations {
         recordId: string;
       };
     };
-    /** @description Parameters for creating a new DNS zone job. */
+    /** @description Parameters for creating a new DNS Zone Record Job. */
     requestBody?: {
       content: {
         "application/json": {
@@ -11870,11 +12357,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -11882,10 +12369,10 @@ export interface operations {
     };
   };
   /**
-   * List TLS Generate Attempts
+   * List TLS Generation Attempts
    * @description Requires the `dns-view` capability.
    */
-  DNSTLSAttempts: {
+  getTLSGenerationAttempts: {
     parameters: {
       query?: {
         /**
@@ -11901,7 +12388,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a list of TLS certificate generation attempt resources. */
+      /** @description Returns a list of TLS certificate generation attempts. */
       200: {
         content: {
           "application/json": {
@@ -11913,10 +12400,12 @@ export interface operations {
     };
   };
   /**
-   * Fetch Domain TLS Certificate
-   * @description Requires the `dns-view` capability.
+   * Lookup TLS Certificate
+   * @description Lookup and retrieve a TLS certificate bundle for a specified domain.
+   *
+   * Requires the `dns-view` capability.
    */
-  lookupDnsCertificate: {
+  lookupTLSCertificate: {
     parameters: {
       query: {
         /** @description The domain to lookup. */
@@ -11926,7 +12415,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a TLS certificate bundle resource. */
+      /** @description Returns a TLS certificate bundle. */
       200: {
         content: {
           "application/json": {
@@ -11939,7 +12428,7 @@ export interface operations {
   };
   /**
    * List Hubs
-   * @description Lists all associated hubs.
+   * @description Lists all associated Hubs.
    */
   getHubs: {
     parameters: {
@@ -11952,15 +12441,15 @@ export interface operations {
         filter?: {
           /** @description `filter[identifier]=value` List only those environments matching this identifier. May return multiple results. */
           identifier?: string;
-          /** @description `filter[search]=value` search hubs for a value associated with a field on the given hub(s). */
+          /** @description `filter[search]=value` search hubs for a value associated with a field on the given Hub(s). */
           search?: string;
-          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the hub's current state. */
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Hub's current state. */
           state?: string;
         };
       };
     };
     responses: {
-      /** @description Returns a list of hub resources. */
+      /** @description Returns a list of Hubs. */
       200: {
         content: {
           "application/json": {
@@ -11973,23 +12462,22 @@ export interface operations {
   };
   /**
    * Create Hub
-   * @description Create a hub resource.
+   * @description Create a Hub.
    */
   createHub: {
-    /** @description Parameters for creating a hub. */
+    /** @description Parameters for creating a Hub. */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description A name for the hub. */
+          /** @description A name for the Hub. */
           name?: string;
           identifier?: components["schemas"]["Identifier"];
-          integrations?: components["schemas"]["HubIntegrations"];
           webhooks?: components["schemas"]["HubWebhooks"];
         };
       };
     };
     responses: {
-      /** @description Returns a hub resource. */
+      /** @description Returns a Hub resource. */
       200: {
         content: {
           "application/json": {
@@ -12001,7 +12489,7 @@ export interface operations {
     };
   };
   /**
-   * Fetch Hub
+   * Get Hub
    * @description Requires the `hubs-view` capability.
    */
   getHub: {
@@ -12024,16 +12512,16 @@ export interface operations {
     };
   };
   /**
-   * Remove Hub
+   * Delete Hub
    * @description Requires the `hubs-delete` capability. This can only be aquired by being the hub owner.
    */
-  removeHub: {
+  deleteHub: {
     responses: {
       /** @description Returns a task descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -12051,7 +12539,6 @@ export interface operations {
         "application/json": {
           /** @description A name for the hub. */
           name?: string;
-          integrations?: components["schemas"]["HubIntegrations"];
           webhooks?: components["schemas"]["HubWebhooks"];
         };
       };
@@ -12068,10 +12555,49 @@ export interface operations {
       default: components["responses"]["DefaultError"];
     };
   };
+  /** List Hub Capabilities */
+  getHubCapabilities: {
+    responses: {
+      /** @description Returns a list of capabilities. */
+      200: {
+        content: {
+          "application/json": {
+            data: components["schemas"]["Capability"][];
+            meta: {
+              /** @description Human-readable captions keyed by the platform level capability it describes. */
+              captions: {
+                [key: string]: string;
+              };
+            };
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
   /**
-   * List Activity
-   * @description Doesn't require a specific capability.
+   * Get Hub Usage
+   * @description Requires the `hubs-view` capability.
    */
+  getHubUsage: {
+    parameters: {
+      query?: {
+        filter?: components["parameters"]["FilterParam"];
+      };
+    };
+    responses: {
+      /** @description Returns usage detail points of the Hub over a range of time. */
+      200: {
+        content: {
+          "application/json": {
+            data: components["schemas"]["HubUsageDatum"][];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /** List Hub Activity */
   getHubActivity: {
     parameters: {
       query?: {
@@ -12111,7 +12637,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a collection of activity resources. */
+      /** @description Returns a list of Hub Activity entries. */
       200: {
         content: {
           "application/json": {
@@ -12124,57 +12650,18 @@ export interface operations {
     };
   };
   /**
-   * List Hub Capabilities
-   * @description Does not require a capability.
-   */
-  getHubCapabilities: {
-    responses: {
-      /** @description Returns a list of capabilities. */
-      200: {
-        content: {
-          "application/json": {
-            data: components["schemas"]["Capability"][];
-          };
-        };
-      };
-      default: components["responses"]["DefaultError"];
-    };
-  };
-  /**
-   * Fetch Hub
-   * @description Requires the `hubs-view` capability.
-   */
-  getHubUsage: {
-    parameters: {
-      query?: {
-        filter?: components["parameters"]["FilterParam"];
-      };
-    };
-    responses: {
-      /** @description Returns an hubUsageResults resource. */
-      200: {
-        content: {
-          "application/json": {
-            data: components["schemas"]["HubUsageDatum"][];
-          };
-        };
-      };
-      default: components["responses"]["DefaultError"];
-    };
-  };
-  /**
-   * Remove Hub Invite
+   * Delete Hub Invite
    * @description Requires the `hub-invites-manage` capability.
    */
-  removeHubInvite: {
+  deleteHubInvite: {
     parameters: {
       path: {
-        /** @description The ID of the hub invite. */
+        /** @description The ID of the Hub Invite. */
         inviteId: string;
       };
     };
     responses: {
-      /** @description Returns a hub membership resource. */
+      /** @description Returns a Hub Membership. */
       200: {
         content: {
           "application/json": {
@@ -12202,7 +12689,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a list of membership resources. */
+      /** @description Returns a list of Memberships. */
       200: {
         content: {
           "application/json": {
@@ -12219,26 +12706,23 @@ export interface operations {
    * @description Requires the `hubs-invites-send` capability.
    */
   createHubInvite: {
-    /** @description Parameters for creating a hub invite. */
+    /** @description Parameters for creating a Hub invite. */
     requestBody?: {
       content: {
         "application/json": {
           /** @description The email address of the invitee. */
           recipient?: string;
-          /**
-           * @description The account role.
-           * @enum {string}
-           */
-          role?: "owner" | "admin" | "developer" | "analyst";
-          /** @description The environment permissions the invitee will have */
+          /** @description The account role. */
+          role_id?: components["schemas"]["ID"];
+          /** @description The Environment permissions the invitee will have */
           permissions?: {
-            /** @description Boolean value that indicates the user has access to all environments */
+            /** @description Boolean value that indicates the user has access to all Environments */
             all_environments: boolean;
             /** @description A list of objects that describe the specific environments the invitee will have access to */
             environments: {
-                /** @description The ID of the environment */
+                /** @description The ID of the Environment */
                 id: string;
-                /** @description Boolean indicating the invitee has manage rights to environment */
+                /** @description Boolean indicating the invitee has manage rights to Environment */
                 manage: boolean;
               }[];
           };
@@ -12246,7 +12730,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a hub membership resource. */
+      /** @description Returns a Hub Membership. */
       201: {
         content: {
           "application/json": {
@@ -12258,7 +12742,7 @@ export interface operations {
     };
   };
   /**
-   * List Hub Memberships
+   * List Hub Members
    * @description Requires the `hubs-members-view` capability.
    */
   getHubMembers: {
@@ -12267,14 +12751,14 @@ export interface operations {
         /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
         meta?: "capabilities"[];
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("senders" | "hubs" | "accounts")[];
+        include?: ("senders" | "hubs" | "accounts" | "roles")[];
         sort?: components["parameters"]["SortParam"];
         filter?: components["parameters"]["FilterParam"];
         page?: components["parameters"]["PageParam"];
       };
     };
     responses: {
-      /** @description Returns a list of memebership resources. */
+      /** @description Returns a list of Hub Memberships. */
       200: {
         content: {
           "application/json": {
@@ -12287,8 +12771,8 @@ export interface operations {
     };
   };
   /**
-   * List Hub Memberships
-   * @description Gets the membership information for the current hub for the requesting account.
+   * Get Hub Membership
+   * @description Gets the Hub Membership for the requesting Account.
    */
   getHubMembership: {
     parameters: {
@@ -12296,14 +12780,14 @@ export interface operations {
         /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
         meta?: "capabilities"[];
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: "accounts"[];
+        include?: ("senders" | "hubs" | "accounts" | "roles")[];
         sort?: components["parameters"]["SortParam"];
         filter?: components["parameters"]["FilterParam"];
         page?: components["parameters"]["PageParam"];
       };
     };
     responses: {
-      /** @description Returns a hub membership. */
+      /** @description Returns a Hub Membership. */
       200: {
         content: {
           "application/json": {
@@ -12316,22 +12800,22 @@ export interface operations {
     };
   };
   /**
-   * Fetch Hub Member
+   * Get Hub Member
    * @description Requires the `hubs-members-view` capability.
    */
   getHubMember: {
     parameters: {
       query?: {
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("senders" | "hubs" | "accounts")[];
+        include?: ("senders" | "hubs" | "accounts" | "roles")[];
       };
       path: {
-        /** @description The ID for the given member. */
+        /** @description The ID for the given Hub member. */
         memberId: string;
       };
     };
     responses: {
-      /** @description Returns a membership resource. */
+      /** @description Returns a Hub Membership. */
       200: {
         content: {
           "application/json": {
@@ -12344,29 +12828,32 @@ export interface operations {
     };
   };
   /**
-   * Remove Hub Member
+   * Delete Hub Member
    * @description Requires the `hubs-members-manage` capability.
    */
-  removeHubMember: {
+  deleteHubMember: {
     parameters: {
       path: {
-        /** @description The ID for the given member. */
+        /** @description The ID of the given Hub Member. */
         memberId: string;
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
       default: components["responses"]["DefaultError"];
     };
   };
-  /** Update a Hub Member */
+  /**
+   * Update Hub Member
+   * @description Requires the `hubs-members-manage` capability.
+   */
   updateHubMember: {
     parameters: {
       path: {
@@ -12374,21 +12861,18 @@ export interface operations {
         memberId: string;
       };
     };
-    /** @description Parameters for updating a hub membership. */
+    /** @description Parameters for updating a Hub membership. */
     requestBody?: {
       content: {
         "application/json": {
-          /**
-           * @description The account role.
-           * @enum {string}
-           */
-          role?: "owner" | "admin" | "developer" | "analyst";
+          /** @description The account role. */
+          role_id?: components["schemas"]["ID"];
           permissions?: components["schemas"]["Permissions"];
         };
       };
     };
     responses: {
-      /** @description Returns a hub membership resource. */
+      /** @description Returns a Hub Membership. */
       200: {
         content: {
           "application/json": {
@@ -12400,24 +12884,24 @@ export interface operations {
     };
   };
   /**
-   * Fetch Members Account
+   * Get Hub Member Account
    * @description Requires the `hubs-members-view` capability.
    */
-  getHubMembersAccount: {
+  getHubMemberAccount: {
     parameters: {
       query?: {
         /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
         meta?: "capabilities"[];
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("senders" | "hubs" | "accounts")[];
+        include?: ("senders" | "hubs" | "accounts" | "roles")[];
       };
       path: {
-        /** @description The ID of the member account. */
+        /** @description The ID of the member's Account. */
         accountId: string;
       };
     };
     responses: {
-      /** @description Returns a membership resource. */
+      /** @description Returns a Hub Membership. */
       200: {
         content: {
           "application/json": {
@@ -12478,7 +12962,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns an API Key resource. */
+      /** @description Returns an API Key. */
       201: {
         content: {
           "application/json": {
@@ -12490,10 +12974,10 @@ export interface operations {
     };
   };
   /**
-   * Fetch API Key
+   * Get API Key
    * @description Requries the `api-keys-manage` capability.
    */
-  getApiKey: {
+  getAPIKey: {
     parameters: {
       path: {
         /** @description The ID of the API Key. */
@@ -12513,10 +12997,10 @@ export interface operations {
     };
   };
   /**
-   * remove Api Key
-   * @description Requires the 'api-keys-delete' capability.
+   * Delete API Key
+   * @description Requires the 'api-keys-manage' capability.
    */
-  removeApiKey: {
+  deleteAPIKey: {
     parameters: {
       path: {
         /** @description The ID of the API Key. */
@@ -12524,7 +13008,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns an API Key resource */
+      /** @description Returns an API Key. */
       200: {
         content: {
           "application/json": {
@@ -12539,7 +13023,7 @@ export interface operations {
    * Update API Key
    * @description Requires the `api-keys-manage` capability.
    */
-  updateApiKey: {
+  updateAPIKey: {
     parameters: {
       path: {
         /** @description The ID of the API Key. */
@@ -12563,7 +13047,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns and API Key resource. */
+      /** @description Returns an API Key. */
       200: {
         content: {
           "application/json": {
@@ -12575,12 +13059,429 @@ export interface operations {
     };
   };
   /**
+   * List Hub Roles
+   * @description Lists the Roles that have been created for this Hub.
+   *
+   * Requires the `hubs-roles-manage` capability.
+   */
+  getRoles: {
+    parameters: {
+      query?: {
+        sort?: components["parameters"]["SortParam"];
+        filter?: components["parameters"]["FilterParam"];
+        page?: components["parameters"]["PageParam"];
+      };
+    };
+    responses: {
+      /** @description Returns a list of Hub Roles. */
+      200: {
+        content: {
+          "application/json": {
+            data: components["schemas"]["Role"][];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Create Hub Role
+   * @description Creates a custom Role for a Hub.
+   *
+   * Requires the `hubs-roles-manage` capability.
+   */
+  createRole: {
+    /** @description Parameters for creating a new Hub Role. */
+    requestBody?: {
+      content: {
+        "application/json": {
+          /** @description A name given to the Role. */
+          name?: string | null;
+          identifier: string;
+          /** @description The list of platform level capabilities assigned to this Role. */
+          capabilities?: {
+            all: boolean;
+            specific: components["schemas"]["Capability"][];
+          } | null;
+          /** @description An integer between 0 and 10 that indicates the Role hierarchy. An account can only edit a Role that is less than their rank. The 'owner' Role is rank 10. */
+          rank: number;
+          /** @description Custom user-defined properties for storing extra information on the Role. Not utilized by Cycle. */
+          extra?: {
+            [key: string]: string;
+          } | null;
+        };
+      };
+    };
+    responses: {
+      /** @description Returns a Hub Role. */
+      201: {
+        content: {
+          "application/json": {
+            data: components["schemas"]["Role"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Get Hub Role
+   * @description Retrieves the specified Role.
+   *
+   * Requries the `hubs-roles-manage` capability.
+   */
+  getRole: {
+    parameters: {
+      path: {
+        /** @description The ID of the Role. */
+        roleId: string;
+      };
+    };
+    responses: {
+      /** @description Returns a Role. */
+      200: {
+        content: {
+          "application/json": {
+            data?: components["schemas"]["Role"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Delete Hub Role
+   * @description Marks a Role as 'deleted'.
+   *
+   * Requires the 'hubs-roles-manage' capability.
+   */
+  deleteRole: {
+    parameters: {
+      path: {
+        /** @description The ID of the Role. */
+        roleId: string;
+      };
+    };
+    responses: {
+      /** @description Returns a Job Descriptor. */
+      202: {
+        content: {
+          "application/json": {
+            data: components["schemas"]["JobDescriptor"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Update Hub Role
+   * @description Updates various properties of a specific Role.
+   *
+   * Requires the `hubs-roles-manage` capability.
+   */
+  updateRole: {
+    parameters: {
+      path: {
+        /** @description The ID of the Role. */
+        roleId: string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": {
+          /** @description A name given to the Role. */
+          name?: string | null;
+          identifier: string;
+          /** @description The list of platform level capabilities assigned to this Role. */
+          capabilities?: {
+            /** @description If true, the Role has all capabilities. */
+            all: boolean;
+            specific: components["schemas"]["Capability"][];
+          } | null;
+          rank: number;
+          /** @description Custom user-defined properties for storing extra information on the Role. Not utilized by Cycle. */
+          extra?: {
+            [key: string]: string;
+          } | null;
+        };
+      };
+    };
+    responses: {
+      /** @description Returns the updated Hub Role. */
+      200: {
+        content: {
+          "application/json": {
+            data: components["schemas"]["Role"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Get Integration
+   * @description Retrieves details of a single Integration associated with the current hub.
+   *
+   * Requires the `hubs-integrations-view` capability.
+   */
+  getIntegration: {
+    parameters: {
+      query?: {
+        /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
+        meta?: "definition"[];
+      };
+      path: {
+        /** @description The ID of the Integration to retrieve. */
+        integrationId: string;
+      };
+    };
+    responses: {
+      /** @description Details of the specified Integration */
+      200: {
+        content: {
+          "application/json": {
+            data: components["schemas"]["Integration"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Delete an Integration
+   * @description Deletes the specified Integration from the current hub, marking it as deleted and returning the updated Integration.
+   */
+  deleteIntegration: {
+    parameters: {
+      path: {
+        /** @description The ID of the Integration to delete. */
+        integrationId: string;
+      };
+    };
+    responses: {
+      /** @description Returns a Job Descriptor. */
+      202: {
+        content: {
+          "application/json": {
+            data: components["schemas"]["JobDescriptor"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Update Integration
+   * @description Updates the specified Integration within the current hub. If the Integration definition specifies that it requires verification, then you must submit a verify task to enable it.
+   */
+  updateIntegration: {
+    parameters: {
+      query?: {
+        /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
+        meta?: "definition"[];
+      };
+      path: {
+        /** @description The ID of the Integration to update. */
+        integrationId: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description A new name for the Integration. */
+          name?: string | null;
+          identifier?: components["schemas"]["Identifier"];
+          auth?: components["schemas"]["IntegrationAuth"] | null;
+          /** @description Updated key-value pairs associated with the Integration. */
+          extra?: {
+            [key: string]: string;
+          } | null;
+        };
+      };
+    };
+    responses: {
+      /** @description Returns the updated Integration. */
+      200: {
+        content: {
+          "application/json": {
+            data: components["schemas"]["Integration"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * List Integrations
+   * @description Lists all integrations associated with the current Hub, with optional filtering.
+   *
+   * Requires the `hubs-integrations-view` capability.
+   */
+  getIntegrations: {
+    parameters: {
+      query?: {
+        page?: components["parameters"]["PageParam"];
+        /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
+        meta?: "definition"[];
+        /**
+         * @description ## Filter Field
+         * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for. Supports filtering by state and a text search.
+         */
+        filter?: {
+          /** @description `filter[state]=value` Filters integrations by their current state. For example, `filter[state]=active` would return only integrations in an active state. */
+          state?: string;
+          /** @description `filter[search]=value` Performs a text search across relevant fields of the integrations. For example, `filter[search]=example` would return integrations that have "example" in any of the searchable fields */
+          search?: string;
+          /** @description `filter[identifier]=value` Filters integrations by their identifier. For example, `filter[identifier]=abstraction` would return only integrations with the abstraction identifier. */
+          identifier?: string;
+          /** @description `filter[category]=value` Filters integrations by their category. For example, `filter[category]=infrastructure-provider` would return only integrations that are capable of provisioning infrastructure. */
+          category?: string;
+        };
+      };
+    };
+    responses: {
+      /** @description A list of integrations */
+      200: {
+        content: {
+          "application/json": {
+            data: components["schemas"]["Integration"][];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Create Integration
+   * @description Create an Integration resource within a hub. If the Integration definition specifies that it requires verification, then you must submit a verify task to enable it.
+   */
+  createIntegration: {
+    parameters: {
+      query?: {
+        /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
+        meta?: "definition"[];
+      };
+    };
+    /** @description Parameters for creating an Integration. */
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description A name for the Integration. */
+          name?: string | null;
+          /** @description Unique vendor for the Integration, subject to validation. */
+          vendor: string;
+          identifier?: components["schemas"]["Identifier"];
+          /** @description Authentication information for the Integration. */
+          auth?: {
+            /** @description The region associated with the Integration. */
+            region?: string | null;
+            /** @description The namespace associated with the Integration. */
+            namespace?: string | null;
+            /** @description API key for accessing the Integration. */
+            api_key?: string | null;
+            /** @description Key ID for accessing the Integration. */
+            key_id?: string | null;
+            /** @description Secret for accessing the Integration. */
+            secret?: string | null;
+            /** @description Subscription ID for the Integration. */
+            subscription_id?: string | null;
+            /** @description Client ID for the Integration. */
+            client_id?: string | null;
+            /** @description Base64 encoded configuration for the Integration. */
+            base64_config?: string | null;
+          };
+          /** @description Additional key-value pairs associated with the Integration. */
+          extra?: {
+            [key: string]: string;
+          };
+        };
+      };
+    };
+    responses: {
+      /** @description Returns the new Integration. */
+      201: {
+        content: {
+          "application/json": {
+            data: components["schemas"]["Integration"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Get Available Integrations
+   * @description Returns a map of available integrations categorized by their type.
+   */
+  getAvailableIntegrations: {
+    responses: {
+      /** @description A map of categories to lists of integration definitions. */
+      200: {
+        content: {
+          "application/json": {
+            data: {
+              "image-builders"?: components["schemas"]["IntegrationDefinition"][] | null;
+              "object-storage"?: components["schemas"]["IntegrationDefinition"][] | null;
+              "tls-certificate-generation"?: components["schemas"]["IntegrationDefinition"][] | null;
+              "infrastructure-provider"?: components["schemas"]["IntegrationDefinition"][] | null;
+              billing?: components["schemas"]["IntegrationDefinition"][] | null;
+            };
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
+   * Create a new Hub Integration Job.
+   * @description Creates a new Job targeted at the provided Hub Integration.
+   *
+   * ## Required Permissions
+   *   - Requires a valid hub membership to the target hub.
+   *   - Requires the `hubs-integrations-manage` capability.
+   */
+  createIntegrationJob: {
+    parameters: {
+      path: {
+        /** @description The ID of the Hub Integration. */
+        integrationId: string;
+      };
+    };
+    /** @description Parameters for creating a new Hub Integration Job. */
+    requestBody?: {
+      content: {
+        "application/json": {
+          /**
+           * @description The type of Job/selected Job action to create.
+           * @enum {string}
+           */
+          action: "verify";
+        };
+      };
+    };
+    responses: {
+      /** @description Returns a Job Descriptor. */
+      202: {
+        content: {
+          "application/json": {
+            data: components["schemas"]["JobDescriptor"];
+          };
+        };
+      };
+      default: components["responses"]["DefaultError"];
+    };
+  };
+  /**
    * Get Search Index
-   * @description Requires the view capability for each returned segment
+   * @description Gets a pre-built search index, containing IDs and basic information for many commonly used resources on the Hub.
+   * Can be used to build a 'quick search' functionality for referencing the most frequently used resources.
+   *
+   * Requires the `view` capability for each returned segment, i.e. to retrieve Containers, you must have `containers-view`.
    */
   getSearchIndex: {
     responses: {
-      /** @description Returns the index resources. */
+      /** @description Returns an indexed search matrix. */
       200: {
         content: {
           "application/json": {
@@ -12601,7 +13502,7 @@ export interface operations {
         /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
         meta?: "containers_count"[];
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("creators" | "stack_builds" | "stacks" | "sources")[];
+        include?: ("creators" | "stack_builds" | "stacks" | "sources" | "integrations")[];
         /**
          * @description ## Filter Field
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
@@ -12609,13 +13510,13 @@ export interface operations {
         filter?: {
           /** @description `filter[identifier]=value` List only those images matching this identifier. May return multiple results. */
           identifier?: string;
-          /** @description `filter[search]=value` search for a value associated with a field on the given image(s). */
+          /** @description `filter[search]=value` search for a value associated with a field on the given Image(s). */
           search?: string;
-          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the image's current state. */
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Image's current state. */
           state?: string;
-          /** @description `filter[source_type]=value` filter images by the image source's type.  Can be: `direct` or `stack_build` */
+          /** @description `filter[source_type]=value` filter images by the Image source's type.  Can be: `direct` or `stack_build` */
           source_type?: string;
-          /** @description `filter[source_id]=ID` image filtering by source ID.  Submit the ID of the image source you wish to filter for and the return will be any images created from that source. */
+          /** @description `filter[source_id]=ID` Image filtering by source ID.  Submit the ID of the Image source you wish to filter for and the return will be any Images created from that source. */
           source_id?: string;
         };
         sort?: components["parameters"]["SortParam"];
@@ -12623,7 +13524,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a collection of image resources. */
+      /** @description Returns a list of Images. */
       200: {
         content: {
           "application/json": {
@@ -12637,36 +13538,36 @@ export interface operations {
   };
   /**
    * Create Image
-   * @description Requires the `images-import` capability.
+   * @description Requires the `images-manage` capability.
    */
   createImage: {
-    /** @description Parameters for creating a new image. */
+    /** @description Parameters for creating a new Image. */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description A name for the image. */
+          /** @description A name for the Image. */
           name?: string;
-          /** @description The ID for the image source to be used. */
+          /** @description The ID for the Image source to be used. */
           source_id: string;
-          /** @description A build object, holding information important to the image build. */
+          /** @description A build object, holding information important to the Image build. */
           build?: {
-            /** @description An object holding key value build time arguments needed for the image during build time. */
+            /** @description An object holding key value build time arguments needed for the Image during build time. */
             args?: {
-              [key: string]: string | undefined;
+              [key: string]: string;
             };
           };
-          /** @description An override object to be used for a single image create request. */
+          /** @description An override object to be used for a single Image create request. */
           override?: {
-            /** @description For image sources with `docker-hub` or `docker-registry` origin types. A target to be used for overridding the default target - should include an image and a tag. */
+            /** @description For Image sources with `docker-hub` or `docker-registry` origin types. A target to be used for overridding the default target - should include an Image and a tag. */
             target?: string;
-            /** @description For image sources with `docker-file` origin types. A URL pointing to a .tar.gz file of a repo with a Dockerfile in it - can be used instead of linking Cycle directly to a repository. */
+            /** @description For Image sources with `docker-file` origin types. A URL pointing to a .tar.gz file of a repo with a Dockerfile in it - can be used instead of linking Cycle directly to a repository. */
             targz_url?: string;
           };
         };
       };
     };
     responses: {
-      /** @description Returns an image resource. */
+      /** @description Returns an Image. */
       201: {
         content: {
           "application/json": {
@@ -12678,7 +13579,7 @@ export interface operations {
     };
   };
   /**
-   * Fetch Image
+   * Get Image
    * @description Requires the `images-view` capability.
    */
   getImage: {
@@ -12687,7 +13588,7 @@ export interface operations {
         /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
         meta?: "containers_count"[];
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("creators" | "stack_builds" | "stacks" | "sources")[];
+        include?: ("creators" | "stack_builds" | "stacks" | "sources" | "integrations")[];
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
       };
@@ -12697,7 +13598,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a image resource. */
+      /** @description Returns a Image. */
       200: {
         content: {
           "application/json": {
@@ -12711,9 +13612,9 @@ export interface operations {
   };
   /**
    * Delete Image
-   * @description Requires the `images-updae` capability.
+   * @description Requires the `images-manage` capability.
    */
-  removeImage: {
+  deleteImage: {
     parameters: {
       path: {
         /** @description The ID of the image. */
@@ -12721,11 +13622,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -12734,7 +13635,7 @@ export interface operations {
   };
   /**
    * Update Image
-   * @description Requires the `images-updae` capability.
+   * @description Requires the `images-manage` capability.
    */
   updateImage: {
     parameters: {
@@ -12753,7 +13654,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns an image resource. */
+      /** @description Returns an Image. */
       200: {
         content: {
           "application/json": {
@@ -12765,18 +13666,18 @@ export interface operations {
     };
   };
   /**
-   * Fetch Build Log
+   * Get Image Build Log
    * @description Requires the `images-view` capability.
    */
   getImageBuildLog: {
     parameters: {
       path: {
-        /** @description The ID of the image. */
+        /** @description The ID of the Image. */
         imageId: string;
       };
     };
     responses: {
-      /** @description Returns a build log resource. */
+      /** @description Returns an Image's build log. */
       200: {
         content: {
           "application/json": {
@@ -12789,32 +13690,34 @@ export interface operations {
   };
   /**
    * Images Prune
-   * @description Used to perform different actions on a given image. Requires the `images-delete` capability.
+   * @description Used to perform different actions on a given image.
+   *
+   * Requires the `images-manage` capability.
    */
-  createImageCollectionJob: {
-    /** @description Parameters for creating a new images collection job. */
+  createImagesJob: {
+    /** @description Parameters for creating a new Images Job. */
     requestBody?: {
       content: {
         "application/json": {
           /**
-           * @description The action is the job type to create.
+           * @description The action is the Job type to create.
            * @enum {string}
            */
           action: "prune";
-          /** @description Additional contents needed by the platform to create the job. */
+          /** @description Additional contents needed by the platform to create the Job. */
           contents: {
-            /** @description A list of source_ids to be pruned. */
+            /** @description A list of IDs to be pruned. */
             source_ids: string[];
           };
         };
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -12823,16 +13726,18 @@ export interface operations {
   };
   /**
    * Image Jobs
-   * @description Used to perform different actions on a given image.  Requires the `images-import` capabiltiy.
+   * @description Used to perform different actions on a given Image.
+   *
+   * Requires the `images-import` capability.
    */
   createImageJob: {
     parameters: {
       path: {
-        /** @description The ID of the requested image. */
+        /** @description The ID of the requested Image. */
         imageId: string;
       };
     };
-    /** @description Parameters for creating a new image job. */
+    /** @description Parameters for creating a new Image job. */
     requestBody?: {
       content: {
         "application/json": {
@@ -12842,11 +13747,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -12854,16 +13759,16 @@ export interface operations {
     };
   };
   /**
-   * List Sources
-   * @description Requires the `images-view` capability.
+   * List Image Sources
+   * @description Requires the `images-sources-view` capability.
    */
-  getSourcesCollection: {
+  getImageSources: {
     parameters: {
       query?: {
         /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
         meta?: "images_count"[];
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: "creators"[];
+        include?: ("creators" | "integrations")[];
         /**
          * @description ## Filter Field
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
@@ -12871,9 +13776,9 @@ export interface operations {
         filter?: {
           /** @description `filter[identifier]=value` List only those image sources matching this identifier. May return multiple results. */
           identifier?: string;
-          /** @description `filter[search]=value` search for a value associated with a field on the given image source(s). */
+          /** @description `filter[search]=value` search for a value associated with a field on the given Image Source(s). */
           search?: string;
-          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the image source's current state. */
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Image Source's current state. */
           state?: string;
         };
         sort?: components["parameters"]["SortParam"];
@@ -12881,7 +13786,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a collection of image source resources. */
+      /** @description Returns a list of Image Sources. */
       200: {
         content: {
           "application/json": {
@@ -12894,29 +13799,32 @@ export interface operations {
     };
   };
   /**
-   * Create Source
-   * @description requires the `images-import` capability.
+   * Create Image Source
+   * @description Requires the `images-sources-manage` capability.
    */
   createImageSource: {
-    /** @description Parameters for creating an image source. */
+    /** @description Parameters for creating an Image Source. */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description A name for the image source. */
+          /** @description A name for the Image Source. */
           name?: string;
           identifier?: components["schemas"]["Identifier"];
+          builder?: {
+            integration_id: components["schemas"]["HybridIdentifier"];
+          } | null;
           type: components["schemas"]["ImageSourceType"];
           origin: components["schemas"]["ImageOrigin"];
-          /** @description User defined information about the image source. */
+          /** @description User defined information about the Image Source. */
           about?: {
-            /** @description A description of the image source. */
+            /** @description A description of the Image Source. */
             description: string | null;
           };
         };
       };
     };
     responses: {
-      /** @description Returns an image source resource. */
+      /** @description Returns an Image Source. */
       201: {
         content: {
           "application/json": {
@@ -12928,24 +13836,24 @@ export interface operations {
     };
   };
   /**
-   * Fetch Source
-   * @description Requires the `images-view` capability.
+   * Get Image Source
+   * @description Requires the `images-sources-view` capability.
    */
-  getSource: {
+  getImageSource: {
     parameters: {
       query?: {
         /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
         meta?: "images_count"[];
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: "creators"[];
+        include?: ("creators" | "integrations")[];
       };
       path: {
-        /** @description The ID of the image source. */
+        /** @description The ID of the Image Source. */
         sourceId: string;
       };
     };
     responses: {
-      /** @description Returns a single image source. */
+      /** @description Returns an Image Source. */
       200: {
         content: {
           "application/json": {
@@ -12958,22 +13866,22 @@ export interface operations {
     };
   };
   /**
-   * Remove a given image source
-   * @description Requires the `images-import` capability.
+   * Delete Image Source
+   * @description Requires the `images-sources-manage` capability.
    */
-  removeImageSource: {
+  deleteImageSource: {
     parameters: {
       path: {
-        /** @description The ID of the image source. */
+        /** @description The ID of the Image Source. */
         sourceId: string;
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -12981,13 +13889,13 @@ export interface operations {
     };
   };
   /**
-   * Update Source
-   * @description Requires the `images-import` capability.
+   * Update Image Source
+   * @description Requires the `images-sources-manage` capability.
    */
   updateImageSource: {
     parameters: {
       path: {
-        /** @description The ID of the image source. */
+        /** @description The ID of the Image Source. */
         sourceId: string;
       };
     };
@@ -12998,6 +13906,9 @@ export interface operations {
           /** @description A name for the image source. */
           name?: string;
           origin?: components["schemas"]["ImageOrigin"];
+          builder?: ({
+            integration_id?: components["schemas"]["HybridIdentifier"] | null;
+          }) | null;
           /** @description User defined information about the image source. */
           about?: {
             /** @description A description of the image source. */
@@ -13007,7 +13918,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns an image source resource. */
+      /** @description Returns an Image Source. */
       200: {
         content: {
           "application/json": {
@@ -13019,7 +13930,7 @@ export interface operations {
     };
   };
   /**
-   * Fetch Infrastructure Summary
+   * Get Infrastructure Summary
    * @description Requires the `infrastructure-servers-view` capability.
    */
   getInfrastructureSummary: {
@@ -13047,43 +13958,7 @@ export interface operations {
       default: components["responses"]["DefaultError"];
     };
   };
-  /**
-   * List Native Providers
-   * @description No capability required, public information.
-   */
-  getNativeProviders: {
-    parameters: {
-      query?: {
-        /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
-        meta?: "locations"[];
-        /**
-         * @description ## Filter Field
-         * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         */
-        filter?: {
-          /** @description `filter[search]=value` search for a value associated with a field on the given native provider(s). */
-          search?: string;
-        };
-        sort?: components["parameters"]["SortParam"];
-        page?: components["parameters"]["PageParam"];
-      };
-    };
-    responses: {
-      /** @description Returns a list of natively supported providers. */
-      200: {
-        content: {
-          "application/json": {
-            data: components["schemas"]["NativeProvider"][];
-          };
-        };
-      };
-      default: components["responses"]["DefaultError"];
-    };
-  };
-  /**
-   * List Provider Servers
-   * @description Requires the `infrastructure-providers-view` capability.
-   */
+  /** List Provider Servers */
   getProviderServers: {
     parameters: {
       query?: {
@@ -13099,26 +13974,23 @@ export interface operations {
         };
       };
       path: {
-        /** @description The identifier for the given provider. Example `gcp`, `exuinix-metal`, `a-<abstract-provider-id>`, etc. */
-        providerIdentifier: string;
+        /** @description The vendor for the given provider. Example `gcp`, `equinix-metal`, `abstraction`, etc. Can also use a Provider Integration ID. */
+        providerVendor: string;
       };
     };
     responses: {
-      /** @description A list of currently provisioned servers from a provider. */
+      /** @description A list of currently provisioned servers associated with a Provider Integration. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["ProviderServer"][];
+            data: components["schemas"]["ProviderServerModel"][];
           };
         };
       };
       default: components["responses"]["DefaultError"];
     };
   };
-  /**
-   * List Provider Locations
-   * @description No capability required, public information (datacenter locations).
-   */
+  /** List Provider Locations */
   getProviderLocations: {
     parameters: {
       query?: {
@@ -13126,16 +13998,16 @@ export interface operations {
         page?: components["parameters"]["PageParam"];
       };
       path: {
-        /** @description The identifier for the given provider. Example `gcp`, `equinix-metal`, `a-<abstract-provider-id>`, etc. */
-        providerIdentifier: string;
+        /** @description The vendor for the given Provider Integration. Example `gcp`, `equinix-metal`, `abstraction`, etc. Can also use the Integration ID. */
+        providerVendor: string;
       };
     };
     responses: {
-      /** @description Returns a list of provider locations. */
+      /** @description A list of locations this Provider Integration supports. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["InfrastructureProviderLocation"][];
+            data: components["schemas"]["ProviderLocation"][];
           };
         };
       };
@@ -13143,215 +14015,7 @@ export interface operations {
     };
   };
   /**
-   * List Providers
-   * @description Requires the `infrastructure-providers-view` capability.
-   */
-  getProviders: {
-    parameters: {
-      query?: {
-        /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
-        meta?: ("node" | "instances_count" | "locations" | "identifier")[];
-        /**
-         * @description ## Filter Field
-         * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-         */
-        filter?: {
-          /** @description `filter[search]=value` search for a value associated with a field on the given provider(s). */
-          search?: string;
-          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the provider's current state. */
-          state?: string;
-        };
-        sort?: components["parameters"]["SortParam"];
-        page?: components["parameters"]["PageParam"];
-      };
-    };
-    responses: {
-      /** @description A collection of providers. */
-      200: {
-        content: {
-          "application/json": {
-            data: components["schemas"]["Provider"][];
-          };
-        };
-      };
-      default: components["responses"]["DefaultError"];
-    };
-  };
-  /**
-   * Create Provider
-   * @description Requires the `infrastructure-providers-manage` capability.
-   */
-  createProvider: {
-    /** @description Parameters for creating a provider. */
-    requestBody?: {
-      content: {
-        "application/json": {
-          /** @description An integration object defining the provider integration assets and endpoints. */
-          integration: {
-            /** @description Nativly supported IAL provider integration. */
-            native?: {
-              /** @description An identifier for the provider. */
-              identifier: string;
-              auth: components["schemas"]["IALAuth"];
-            };
-            /** @description Custom provider information. */
-            abstraction?: {
-              /** @description A name for the custom provider abstraction. */
-              name: string;
-              /** @description The url to use when making calls to the abstraction for provision events. */
-              base_url: string;
-              auth?: components["schemas"]["IALAuth"];
-            };
-          };
-        };
-      };
-    };
-    responses: {
-      /** @description Returns a provider resource. */
-      201: {
-        content: {
-          "application/json": {
-            data: components["schemas"]["Provider"];
-          };
-        };
-      };
-      default: components["responses"]["DefaultError"];
-    };
-  };
-  /**
-   * Fetch Provider
-   * @description Requires the `infrastructure-providers-view` capability.
-   */
-  getProvider: {
-    parameters: {
-      query?: {
-        /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
-        meta?: "identifier"[];
-      };
-      path: {
-        /** @description The identifier for the given provider. Example `gcp`, `equinix-metal`, `a-<abstract-provider-id>`, etc. */
-        providerIdentifier: string;
-      };
-    };
-    responses: {
-      /** @description A single provider resource. */
-      200: {
-        content: {
-          "application/json": {
-            data: components["schemas"]["Provider"];
-          };
-        };
-      };
-      default: components["responses"]["DefaultError"];
-    };
-  };
-  /**
-   * Remove Provider
-   * @description Requires the `infrastructure-providers-manage` capability.
-   */
-  removeProvider: {
-    parameters: {
-      path: {
-        /** @description The identifier for the given provider. Example `gcp`, `equinix-metal`, `a-<abstract-provider-id>`, etc. */
-        providerIdentifier: string;
-      };
-    };
-    responses: {
-      /** @description Returns a task descriptor. */
-      202: {
-        content: {
-          "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
-          };
-        };
-      };
-      default: components["responses"]["DefaultError"];
-    };
-  };
-  /**
-   * Update Provider
-   * @description Requires the `infrastructure-providers-manage` capability.
-   */
-  updateProvider: {
-    parameters: {
-      path: {
-        /** @description The identifier for the given provider. Example `gcp`, `equinix-metal`, `a-<abstract-provider-id>`, etc. */
-        providerIdentifier: string;
-      };
-    };
-    /** @description Parameters for updating a provider. */
-    requestBody?: {
-      content: {
-        "application/json": {
-          /** @description An integration object defining the provider integration assets and endpoints. */
-          integration: {
-            /** @description Nativly supported IAL provider integration. */
-            native?: {
-              /** @description An identifier for the provider. */
-              identifier: string;
-              auth: components["schemas"]["IALAuth"];
-            };
-            /** @description Custom provider information. */
-            abstraction?: {
-              /** @description A name for the custom provider abstraction. */
-              name: string;
-              /** @description The url to use when making calls to the abstraction for provision events. */
-              base_url: string;
-              auth?: components["schemas"]["IALAuth"];
-            };
-          };
-        };
-      };
-    };
-    responses: {
-      /** @description Returns a provider resource. */
-      200: {
-        content: {
-          "application/json": {
-            data: components["schemas"]["Provider"];
-          };
-        };
-      };
-      default: components["responses"]["DefaultError"];
-    };
-  };
-  /**
-   * Providers Jobs
-   * @description Requires the `infrastructure-providers-manage` capability.
-   */
-  createProviderJob: {
-    parameters: {
-      path: {
-        /** @description The identifier for the given provider. Example `gcp`, `equinix-metal`, `a-<abstract-provider-id>`, etc. */
-        providerIdentifier: string;
-      };
-    };
-    /** @description Parameters for creating a provider job. */
-    requestBody?: {
-      content: {
-        "application/json": {
-          /**
-           * @description The action the job takes.
-           * @enum {string}
-           */
-          action: "verify";
-        };
-      };
-    };
-    responses: {
-      /** @description Returns a task descriptor. */
-      202: {
-        content: {
-          "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
-          };
-        };
-      };
-      default: components["responses"]["DefaultError"];
-    };
-  };
-  /**
-   * Get Auto-Scale Groups list
+   * List Auto-Scale Groups
    * @description Requires the `autoscale-groups-manage` capability.
    */
   getAutoScaleGroups: {
@@ -13359,7 +14023,7 @@ export interface operations {
       query?: {
         page?: components["parameters"]["PageParam"];
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("providers" | "models" | "locations")[];
+        include?: ("integrations" | "models" | "locations")[];
         /**
          * @description ## Filter Field
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
@@ -13377,7 +14041,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description A collection of autoscale group resources. */
+      /** @description Returns a list of Auto-Scale Groups. */
       200: {
         content: {
           "application/json": {
@@ -13394,7 +14058,7 @@ export interface operations {
    * @description Requires the 'autoscale-groups-manage'
    */
   createAutoScaleGroup: {
-    /** @description Parameters for creating an auto-scale group */
+    /** @description Parameters for creating an Auto-Scale Group */
     requestBody?: {
       content: {
         "application/json": {
@@ -13407,7 +14071,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns an auto-scale group resource. */
+      /** @description Returns an Auto-Scale Group. */
       201: {
         content: {
           "application/json": {
@@ -13419,22 +14083,22 @@ export interface operations {
     };
   };
   /**
-   * Fetch Auto-Scale Group
+   * Get Auto-Scale Group
    * @description Requires the `autoscale-groups-view` capability.
    */
   getAutoScaleGroup: {
     parameters: {
       query?: {
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("providers" | "models" | "locations")[];
+        include?: ("integrations" | "models" | "locations")[];
       };
       path: {
-        /** @description The ID for the given auto-scale group. */
+        /** @description The ID for the given Auto-Scale Group. */
         groupId: string;
       };
     };
     responses: {
-      /** @description A single auto-scale group resource. */
+      /** @description Returns an Auto-Scale Group. */
       200: {
         content: {
           "application/json": {
@@ -13447,10 +14111,10 @@ export interface operations {
     };
   };
   /**
-   * Remove Auto-Scale Group
+   * Delete Auto-Scale Group
    * @description Requires the `autoscale-group-manage` capability.
    */
-  removeAutoScaleGroup: {
+  deleteAutoScaleGroup: {
     parameters: {
       path: {
         /** @description The ID for the given autoscale group. */
@@ -13462,7 +14126,7 @@ export interface operations {
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -13476,11 +14140,11 @@ export interface operations {
   updateAutoScaleGroup: {
     parameters: {
       path: {
-        /** @description The ID for the given auto-scale group. */
+        /** @description The ID for the given Auto-Scale Group. */
         groupId: string;
       };
     };
-    /** @description Parameters for creating an auto-scale group */
+    /** @description Parameters for creating an Auto-Scale Group */
     requestBody?: {
       content: {
         "application/json": {
@@ -13493,7 +14157,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns an autoscale group resource. */
+      /** @description Returns an Auto-Scale Group. */
       200: {
         content: {
           "application/json": {
@@ -13508,13 +14172,13 @@ export interface operations {
    * List Servers
    * @description Requires the `servers-view` capability.
    */
-  getServersCollection: {
+  getServers: {
     parameters: {
       query?: {
         /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
         meta?: ("node" | "instances_count")[];
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("locations" | "models" | "providers")[];
+        include?: ("locations" | "models" | "integrations")[];
         /**
          * @description ## Filter Field
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
@@ -13522,7 +14186,7 @@ export interface operations {
         filter?: {
           /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the provider's current state. */
           state?: string;
-          /** @description `filter[tags]=tagone,tagtwo,tagthree` filtering by server tag.  Enter one or more tags (comma separated) and the return will include servers that match any tags in the list. */
+          /** @description `filter[tags]=tagone,tagtwo,tagthree` filtering by Server tag.  Enter one or more tags (comma separated) and the return will include servers that match any tags in the list. */
           tags?: string;
           /** @description `filter[clusters]=clusterone,clustertwo` filtering by cluster.  Enter one or more clusters (commas separated) and the return will include servers that match any clusters in the list. */
           clusters?: string;
@@ -13534,7 +14198,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description A collection of server resources. */
+      /** @description Returns a list of Servers. */
       200: {
         content: {
           "application/json": {
@@ -13551,7 +14215,7 @@ export interface operations {
    * @description Requires the `servers-provision` capability.
    */
   createServer: {
-    /** @description Parameters for creating a server. */
+    /** @description Parameters for creating a Server. */
     requestBody?: {
       content: {
         "application/json": {
@@ -13559,13 +14223,13 @@ export interface operations {
           cluster: string;
           /** @description An array of servers to provision. */
           servers: {
-              /** @description The provider this server is from. */
-              provider: string;
-              /** @description The model ID of the server. */
+              /** @description The ID of the provider integration to use for this Server. */
+              integration_id: components["schemas"]["ID"];
+              /** @description The model ID of the Server. */
               model_id: string;
-              /** @description The location ID of the server. */
+              /** @description The location ID of the Server. */
               location_id: string;
-              /** @description The number of this server at this location to deploy. */
+              /** @description The number of this Server at this location to deploy. */
               quantity: number;
               /** @description An array of hostnames for the given servers. */
               hostnames?: string[];
@@ -13581,11 +14245,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -13593,24 +14257,24 @@ export interface operations {
     };
   };
   /**
-   * Fetch Server
+   * Get Server
    * @description Requires the `servers-view` capability.
    */
-  getSingleServer: {
+  getServer: {
     parameters: {
       query?: {
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("locations" | "models" | "providers")[];
+        include?: ("locations" | "models" | "integrations")[];
         /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
         meta?: ("node" | "instances_count")[];
       };
       path: {
-        /** @description The ID for the given server. */
+        /** @description The ID for the given Server. */
         serverId: string;
       };
     };
     responses: {
-      /** @description A single server resource. */
+      /** @description Returns a Server. */
       200: {
         content: {
           "application/json": {
@@ -13623,25 +14287,25 @@ export interface operations {
     };
   };
   /**
-   * Remove Server
-   * @description Requires the `servers-update` capability.
+   * Delete Server
+   * @description Requires the `servers-manage` capability.
    */
-  removeServer: {
+  deleteServer: {
     parameters: {
       query?: {
         options?: components["parameters"]["OptionParam"];
       };
       path: {
-        /** @description The ID for the given server. */
+        /** @description The ID of the Server. */
         serverId: string;
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -13650,30 +14314,30 @@ export interface operations {
   };
   /**
    * Update Server
-   * @description Requires the `servers-update` capability.
+   * @description Requires the `servers-manage` capability.
    */
   updateServer: {
     parameters: {
       path: {
-        /** @description The ID for the given server. */
+        /** @description The ID for the given Server. */
         serverId: string;
       };
     };
-    /** @description Parameters for updating a server. */
+    /** @description Parameters for updating a Server. */
     requestBody?: {
       content: {
         "application/json": {
           /** @description Server constriants. */
           constraints: {
-            /** @description A list of server tags. */
+            /** @description A list of Server tags. */
             tags?: string[];
-            /** @description Server constraints for the given server. */
+            /** @description Server constraints for the given Server. */
             allow?: {
-              /** @description A boolean where true represents the server can accept containers with no tags set. */
+              /** @description A boolean where true represents the Server can accept containers with no tags set. */
               pool: boolean;
-              /** @description A boolean where true represents the server being a target for service containers. */
+              /** @description A boolean where true represents the Server being a target for service containers. */
               services: boolean;
-              /** @description A boolean where true represents the desire for the server to allow the overcommitting of shares. */
+              /** @description A boolean where true represents the desire for the Server to allow the overcommitting of shares. */
               overcommit: boolean;
             };
           };
@@ -13681,7 +14345,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description A server resource. */
+      /** @description Returns a Server. */
       200: {
         content: {
           "application/json": {
@@ -13693,8 +14357,10 @@ export interface operations {
     };
   };
   /**
-   * List Server Telemetry
-   * @description Requires the `servers-view` capability. This call requires the filter query be used.
+   * Get Server Telemetry
+   * @description This call requires the filter query parameter to be used.
+   *
+   * Requires the `servers-view` capability.
    */
   getServerTelemetry: {
     parameters: {
@@ -13704,21 +14370,21 @@ export interface operations {
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
          */
         filter?: {
-          /** @description The start date from when to pull server telemetry data */
+          /** @description The start date from when to pull Server telemetry data */
           "range-start"?: components["schemas"]["DateTime"];
-          /** @description The end date from when to pull server telemetry data */
+          /** @description The end date from when to pull Server telemetry data */
           "range-end"?: components["schemas"]["DateTime"];
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
       };
       path: {
-        /** @description The ID for the given server. */
+        /** @description The ID for the given Server. */
         serverId: string;
       };
     };
     responses: {
-      /** @description A list of telemetry points. */
+      /** @description Returns a list of telemetry points. */
       200: {
         content: {
           "application/json": {
@@ -13738,7 +14404,7 @@ export interface operations {
       query?: {
         page?: components["parameters"]["PageParam"];
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("creator" | "servers" | "locations" | "providers" | "containers" | "environments")[];
+        include?: ("creator" | "servers" | "locations" | "integrations" | "containers" | "environments")[];
       };
       path: {
         /** @description The ID for the given server. */
@@ -13746,7 +14412,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description A list of instance resources. */
+      /** @description Returns a list of Instances present on this Server. */
       200: {
         content: {
           "application/json": {
@@ -13760,27 +14426,27 @@ export interface operations {
   };
   /**
    * Create Server Job
-   * @description Used to perform different actions on a given server. Requires the `servers-state` capability.
+   * @description Used to perform different actions on a given Server. Requires the `servers-manage` capability.
    */
   createServerJob: {
     parameters: {
       path: {
-        /** @description The ID for the given server. */
+        /** @description The ID for the given Server. */
         serverId: string;
       };
     };
-    /** @description Parameters for creating the new server job. */
+    /** @description Parameters for creating the new Server Job. */
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["ReconfigureSharedFs"] | components["schemas"]["ReconfigureServer"] | components["schemas"]["RestartServer"] | components["schemas"]["RestartCompute"] | components["schemas"]["RestartComputeSpawner"];
+        "application/json": components["schemas"]["ReconfigureSharedFs"] | components["schemas"]["ReconfigureServer"] | components["schemas"]["RestartServer"] | components["schemas"]["RestartCompute"] | components["schemas"]["RestartComputeSpawner"] | components["schemas"]["EvacuateServer"];
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
-      200: {
+      /** @description Returns a Job Descriptor. */
+      202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -13805,7 +14471,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a list of server tags. */
+      /** @description Returns a list of Server Tags. */
       200: {
         content: {
           "application/json": components["schemas"]["ServerTags"];
@@ -13815,12 +14481,12 @@ export interface operations {
     };
   };
   /**
-   * List Servers Clusters
+   * List Clusters
    * @description Requires the `servers-view` capability.
    */
-  GetServersClusters: {
+  GetClusters: {
     responses: {
-      /** @description A collection of cluster identifiers. */
+      /** @description Returns a list of Clusters on this Hub. */
       200: {
         content: {
           "application/json": {
@@ -13832,7 +14498,7 @@ export interface operations {
     };
   };
   /**
-   * Fetch Server Usage
+   * Get Server Usage
    * @description Requires the `servers-view` capability.
    */
   GetServerUsage: {
@@ -13843,7 +14509,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Server data usage collection. */
+      /** @description Returns usage data for the Server. */
       200: {
         content: {
           "application/json": {
@@ -13855,8 +14521,10 @@ export interface operations {
     };
   };
   /**
-   * Get the credentials to connect to a server's console.
-   * @description Requires the `servers-console` capability.
+   * Get Server Console
+   * @description Gets the authorization information required to connect to a Server console websocket.
+   *
+   * Requires the `servers-console` capability.
    */
   GetServerConsole: {
     parameters: {
@@ -13866,13 +14534,12 @@ export interface operations {
       };
     };
     responses: {
-      /** @description A successful credentials response. */
+      /** @description Returns console credentials for the Server. */
       200: {
         content: {
           "application/json": {
-            /** ServerConsoleCredentials */
             data: {
-              /** @description The URL to open a websocket to. */
+              /** @description The websocket target URL. */
               address: string;
               /** @description The authentication token for the console socket. It should be appended as the URL parameter "token" to the address. */
               token: string;
@@ -13884,23 +14551,35 @@ export interface operations {
     };
   };
   /**
-   * List Pools
+   * List IP Pools
    * @description Requires the `infrastructure-ips-manage` capability.
    */
   getInfrastructureIPPools: {
     parameters: {
       query?: {
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("creators" | "servers" | "providers" | "locations")[];
+        include?: ("servers" | "integrations" | "locations")[];
+        /**
+         * @description ## Filter Field
+         * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
+         */
+        filter?: {
+          /** @description `filter[available]=true` filter for IPs that are available for use. */
+          available?: string;
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the IP's current state. */
+          state?: string;
+        };
+        sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
       };
     };
     responses: {
-      /** @description A collection of pool resources. */
+      /** @description A list of IP Pools. */
       200: {
         content: {
           "application/json": {
             data: components["schemas"]["Pool"][];
+            includes?: components["schemas"]["PoolIncludes"];
           };
         };
       };
@@ -13908,14 +14587,14 @@ export interface operations {
     };
   };
   /**
-   * Fetch Pool IP
+   * Get IP Pool
    * @description Requires the `infrastructure-ips-manage` capability.
    */
-  getInfrastructureIPPool: {
+  getIPPool: {
     parameters: {
       query?: {
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-        include?: ("creators" | "servers" | "providers" | "locations")[];
+        include?: ("servers" | "integrations" | "locations")[];
       };
       path: {
         /** @description The ID for the given pool. */
@@ -13923,7 +14602,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description A single pool resource. */
+      /** @description An IP Pool. */
       200: {
         content: {
           "application/json": {
@@ -13936,22 +14615,22 @@ export interface operations {
     };
   };
   /**
-   * Remove Pool IP
+   * Delete IP Pool
    * @description Requires the `infrastructure-ips-manage` capability.
    */
-  removeIpPool: {
+  deleteIPPool: {
     parameters: {
       path: {
-        /** @description The ID for the given pool. */
+        /** @description The ID for the given IP Pool. */
         poolId: string;
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -13959,18 +14638,18 @@ export interface operations {
     };
   };
   /**
-   * List Pool IP's
+   * List Pool IPs
    * @description Requires the `infrastructure-ips-manage` capability.
    */
-  getPoolsIPs: {
+  getPoolIPs: {
     parameters: {
       path: {
-        /** @description The ID for the given pool. */
+        /** @description The ID of the IP Pool to fetch the IPs of. */
         poolId: string;
       };
     };
     responses: {
-      /** @description A collection of IPs. */
+      /** @description A list of IPs. */
       200: {
         content: {
           "application/json": {
@@ -13982,12 +14661,12 @@ export interface operations {
     };
   };
   /**
-   * Fetch Deployment Strategies
-   * @description This endpoint returns available container deployment strategies.
+   * Get Deployment Strategies
+   * @description Gets the available deployment strategies that can be used to orchestrate containers.
    */
   getDeploymentStrategies: {
     responses: {
-      /** @description Deployment strategies. */
+      /** @description Returns available deployment strategies. */
       200: {
         content: {
           "application/json": {
@@ -14007,8 +14686,8 @@ export interface operations {
     };
   };
   /**
-   * List Jobs.
-   * @description Requires the `jobs-view` permission.
+   * List Jobs
+   * @description Requires the `apionly-jobs-view` permission.
    */
   getJobs: {
     parameters: {
@@ -14020,9 +14699,9 @@ export interface operations {
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
          */
         filter?: {
-          /** @description The start date from when to fetch jobs */
+          /** @description The start date from when to fetch Jobs */
           "range-start"?: components["schemas"]["DateTime"];
-          /** @description The end date from when to fetch jobs */
+          /** @description The end date from when to fetch Jobs */
           "range-end"?: components["schemas"]["DateTime"];
           /** @description `filter[search]=value` search jobs for a value associated with a field on the given job(s). */
           search?: string;
@@ -14034,7 +14713,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description A collection of job resources. */
+      /** @description Returns a list of Jobs. */
       200: {
         content: {
           "application/json": {
@@ -14047,18 +14726,18 @@ export interface operations {
     };
   };
   /**
-   * Fetch Job
-   * @description Requires the `jobs-view` permission.
+   * Get Job
+   * @description Requires the `apionly-jobs-view` permission.
    */
   getJob: {
     parameters: {
       path: {
-        /** @description The ID for the given job. */
+        /** @description The ID for the given Job. */
         jobId: string;
       };
     };
     responses: {
-      /** @description A job resources. */
+      /** @description A Job resources. */
       200: {
         content: {
           "application/json": {
@@ -14071,11 +14750,11 @@ export interface operations {
   };
   /**
    * List Latest Jobs
-   * @description Requires the `jobs-view` permission.
+   * @description Requires the `apionly-jobs-view` permission.
    */
   getLatestJobs: {
     responses: {
-      /** @description A collection of job resources. */
+      /** @description Returns a list of Jobs. */
       200: {
         content: {
           "application/json": {
@@ -14104,9 +14783,9 @@ export interface operations {
         filter?: {
           /** @description `filter[identifier]=value` List only those stacks matching this identifier. May return multiple results. */
           identifier?: string;
-          /** @description `filter[search]=value` search for a value associated with a field on the given stack(s). */
+          /** @description `filter[search]=value` search for a value associated with a field on the given Stack(s). */
           search?: string;
-          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the stack's current state. */
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Stack's current state. */
           state?: string;
         };
         sort?: components["parameters"]["SortParam"];
@@ -14114,7 +14793,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description A collection of stack resources. */
+      /** @description Returns a list of Stacks. */
       200: {
         content: {
           "application/json": {
@@ -14131,23 +14810,23 @@ export interface operations {
    * @description Requires the `stacks-manage` capability.
    */
   createStack: {
-    /** @description Parameters for creating a new stack. */
+    /** @description Parameters for creating a new Stack. */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description A name for the stack. */
+          /** @description A name for the Stack. */
           name: string;
           identifier?: components["schemas"]["Identifier"];
-          /** @description A map of default variable values used when building this stack. A variable can be added anywhere in a stack using the format `{{var}}` where `var` would be a key in this map. */
+          /** @description A map of default variable values used when building this Stack. A variable can be added anywhere in a Stack using the format `{{var}}` where `var` would be a key in this map. */
           variables?: {
-            [key: string]: string | undefined;
+            [key: string]: string;
           };
           source: components["schemas"]["StackSource"];
         };
       };
     };
     responses: {
-      /** @description Returns a stack resource. */
+      /** @description Returns a Stack. */
       201: {
         content: {
           "application/json": {
@@ -14159,18 +14838,18 @@ export interface operations {
     };
   };
   /**
-   * Fetch Stack
+   * Get Stack
    * @description Requires the `stacks-view` capability.
    */
   getStack: {
     parameters: {
       path: {
-        /** @description The ID of the stack */
+        /** @description The ID of the Stack */
         stackId: string;
       };
     };
     responses: {
-      /** @description Returns a stack resource. */
+      /** @description Returns a Stack resource. */
       200: {
         content: {
           "application/json": {
@@ -14182,22 +14861,22 @@ export interface operations {
     };
   };
   /**
-   * Remove Stack
+   * Delete Stack
    * @description Requires the `stacks-manage` capability.
    */
-  removeStack: {
+  deleteStack: {
     parameters: {
       path: {
-        /** @description The ID of the stack */
+        /** @description The ID of the Stack */
         stackId: string;
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
-      200: {
+      /** @description Returns a Job Descriptor. */
+      202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -14211,26 +14890,26 @@ export interface operations {
   updateStack: {
     parameters: {
       path: {
-        /** @description The ID of the stack */
+        /** @description The ID of the Stack */
         stackId: string;
       };
     };
-    /** @description Parameters for updating a stack. */
+    /** @description Parameters for updating a Stack. */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description A name for the stack. */
+          /** @description A name for the Stack. */
           name?: string;
-          /** @description A map of default variable values used when building this stack. A variable can be added anywhere in a stack using the format `{{var}}` where `var` would be a key in this map. */
+          /** @description A map of default variable values used when building this Stack. A variable can be added anywhere in a Stack using the format `{{var}}` where `var` would be a key in this map. */
           variables?: {
-            [key: string]: string | undefined;
+            [key: string]: string;
           };
           source?: components["schemas"]["StackSource"];
         };
       };
     };
     responses: {
-      /** @description Returns an updated stack resource. */
+      /** @description Returns the updated Stack. */
       200: {
         content: {
           "application/json": {
@@ -14248,16 +14927,16 @@ export interface operations {
   createStackJob: {
     parameters: {
       path: {
-        /** @description The ID of the stack */
+        /** @description The ID of the Stack */
         stackId: string;
       };
     };
-    /** @description Parameters for creating a new stack job. */
+    /** @description Parameters for creating a new Stack Job. */
     requestBody?: {
       content: {
         "application/json": {
           /**
-           * @description The job to do.
+           * @description The Job to do.
            * @enum {string}
            */
           action: "prune";
@@ -14265,11 +14944,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -14277,18 +14956,20 @@ export interface operations {
     };
   };
   /**
-   * Fetch Stack Build
-   * @description Requires the `stacks-view` capability.
+   * Look Up Stack Build
+   * @description Look up a Stack Build using only the Build ID, instead of requiring a Stack ID as well.
+   *
+   * Requires the `stacks-view` capability.
    */
-  getStackBuildLookup: {
+  lookupStackBuild: {
     parameters: {
       path: {
-        /** @description The ID of the build. */
+        /** @description The ID of the Build. */
         buildId: string;
       };
     };
     responses: {
-      /** @description Returns a stack build resource. */
+      /** @description Returns a Stack Build. */
       200: {
         content: {
           "application/json": {
@@ -14313,21 +14994,21 @@ export interface operations {
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
          */
         filter?: {
-          /** @description `filter[search]=value` search for a value associated with a field on the given stack build(s). */
+          /** @description `filter[search]=value` search for a value associated with a field on the given Stack Build(s). */
           search?: string;
-          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the stack build's current state. */
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Stack Build's current state. */
           state?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
       };
       path: {
-        /** @description The ID of the stack */
+        /** @description The ID of the Stack. */
         stackId: string;
       };
     };
     responses: {
-      /** @description Returns a collection of stack builds. */
+      /** @description Returns a list of Stack Builds. */
       200: {
         content: {
           "application/json": {
@@ -14339,17 +15020,17 @@ export interface operations {
     };
   };
   /**
-   * Create Stack Build
+   * Create Build
    * @description Requires the `stacks-manage` capability.
    */
   createStackBuild: {
     parameters: {
       path: {
-        /** @description The ID of the stack */
+        /** @description The ID of the Stack */
         stackId: string;
       };
     };
-    /** @description Parameters for creating a new stack build. */
+    /** @description Parameters for creating a new Stack Build. */
     requestBody?: {
       content: {
         "application/json": {
@@ -14359,7 +15040,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a stack build resource. */
+      /** @description Returns a Stack Build. */
       201: {
         content: {
           "application/json": {
@@ -14371,20 +15052,20 @@ export interface operations {
     };
   };
   /**
-   * Fetch Stack Build
+   * Get Stack Build
    * @description Requires the `stacks-view` capability.
    */
   getStackBuild: {
     parameters: {
       path: {
-        /** @description The ID of the stack. */
+        /** @description The ID of the Stack. */
         stackId: string;
-        /** @description The ID of the build. */
+        /** @description The ID of the Build. */
         buildId: string;
       };
     };
     responses: {
-      /** @description Returns a stack build resource. */
+      /** @description Returns a Stack Build. */
       200: {
         content: {
           "application/json": {
@@ -14396,24 +15077,24 @@ export interface operations {
     };
   };
   /**
-   * Remove Stack Build
+   * Delete Stack Build
    * @description Requires the `stacks-manage` capability.
    */
-  removeStackBuild: {
+  deleteStackBuild: {
     parameters: {
       path: {
-        /** @description The ID of the stack. */
+        /** @description The ID of the Stack. */
         stackId: string;
-        /** @description The ID of the build. */
+        /** @description The ID of the Build. */
         buildId: string;
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -14427,24 +15108,24 @@ export interface operations {
   createStackBuildJob: {
     parameters: {
       path: {
-        /** @description The ID of the stack. */
+        /** @description The ID of the Stack. */
         stackId: string;
-        /** @description The ID of the build. */
+        /** @description The ID of the Build. */
         buildId: string;
       };
     };
-    /** @description Parameters for creating a new stack build job. */
+    /** @description Parameters for creating a new Stack Build Job. */
     requestBody?: {
       content: {
         "application/json": components["schemas"]["GenerateStackBuildAction"] | components["schemas"]["DeployStackBuildAction"];
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -14452,7 +15133,7 @@ export interface operations {
     };
   };
   /**
-   * List SDN Network
+   * List Networks
    * @description Requires the `sdn-networks-view` capability.
    */
   getNetworks: {
@@ -14465,9 +15146,9 @@ export interface operations {
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
          */
         filter?: {
-          /** @description `filter[search]=value` search for a value associated with a field on the given network(s). */
+          /** @description `filter[search]=value` search for a value associated with a field on the given Network(s). */
           search?: string;
-          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the network's current state. */
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Network's current state. */
           state?: string;
         };
         sort?: components["parameters"]["SortParam"];
@@ -14475,7 +15156,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a collection of network resources. */
+      /** @description Returns a list of Networks. */
       200: {
         content: {
           "application/json": {
@@ -14488,33 +15169,33 @@ export interface operations {
     };
   };
   /**
-   * Create SDN Network
+   * Create Network
    * @description Requires the `sdn-networks-manage` capability.
    */
-  createSDNNetwork: {
+  createNetwork: {
     parameters: {
       query?: {
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
         include?: ("creators" | "environments")[];
       };
     };
-    /** @description Parameters for creating a new network. */
+    /** @description Parameters for creating a new Network. */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description The name of the network. */
+          /** @description The name of the Network. */
           name: string;
-          /** @description A network identifier used to construct http calls that specifically use this network over another. */
+          /** @description A Network identifier used to construct http calls that specifically use this Network over another. */
           identifier: string;
-          /** @description The infrastructure cluster the environments belonging to this network belong to. */
+          /** @description The infrastructure Cluster the Environments belonging to this Network belong to. */
           cluster: string;
-          /** @description An array of environment Ids */
+          /** @description An array of Environment Ids */
           environments: string[];
         };
       };
     };
     responses: {
-      /** @description Returns a network resource. */
+      /** @description Returns a Network. */
       201: {
         content: {
           "application/json": {
@@ -14527,7 +15208,7 @@ export interface operations {
     };
   };
   /**
-   * Fetch SDN Network
+   * Get Network
    * @description Requires the `sdn-networks-view` capability.
    */
   getNetwork: {
@@ -14537,12 +15218,12 @@ export interface operations {
         include?: ("creators" | "environments")[];
       };
       path: {
-        /** @description The ID of the network. */
+        /** @description The ID of the Network. */
         networkId: string;
       };
     };
     responses: {
-      /** @description Returns a single network resource. */
+      /** @description Returns a Network. */
       200: {
         content: {
           "application/json": {
@@ -14555,22 +15236,22 @@ export interface operations {
     };
   };
   /**
-   * Remove SDN Network
+   * Delete Network
    * @description Requires the `sdn-networks-manage` capability.
    */
-  removeSDNNetwork: {
+  deleteNetwork: {
     parameters: {
       path: {
-        /** @description The ID of the network. */
+        /** @description The ID of the Network. */
         networkId: string;
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
-      200: {
+      /** @description Returns a Job Descriptor. */
+      202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -14578,31 +15259,31 @@ export interface operations {
     };
   };
   /**
-   * Update SDN Network
+   * Update Network
    * @description Requires the `sdn-networks-manage` capability.
    */
-  updateSDNNetwork: {
+  updateNetwork: {
     parameters: {
       query?: {
         /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
         include?: ("creators" | "environments")[];
       };
       path: {
-        /** @description The ID of the network. */
+        /** @description The ID of the Network. */
         networkId: string;
       };
     };
-    /** @description Parameters for updating a network. */
+    /** @description Parameters for updating a Network. */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description The name of the network. */
+          /** @description The name of the Network. */
           name?: string;
         };
       };
     };
     responses: {
-      /** @description Returns a network resource. */
+      /** @description Returns a Network. */
       200: {
         content: {
           "application/json": {
@@ -14615,39 +15296,39 @@ export interface operations {
     };
   };
   /**
-   * Create SDN Job
+   * Create Network Job
    * @description Requires the `sdn-networks-manage` capability.
    */
   createNetworkJob: {
     parameters: {
       path: {
-        /** @description The ID of the network. */
+        /** @description The ID of the Network. */
         networkId: string;
       };
     };
-    /** @description Parameters for creating a new sdn job. */
+    /** @description Parameters for creating a new Network Job. */
     requestBody?: {
       content: {
         "application/json": {
           /**
-           * @description The job to do.
+           * @description The Job to do.
            * @enum {string}
            */
           action: "reconfigure";
-          /** @description Additional information needed for the job. */
+          /** @description Additional information needed for the Job. */
           contents: {
-            /** @description An array of environment identifiers for the network. */
+            /** @description An array of environment identifiers for the Network. */
             environment_ids: string[];
           };
         };
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
-      200: {
+      /** @description Returns a Job Descriptor. */
+      202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -14672,7 +15353,7 @@ export interface operations {
           identifier?: string;
           /** @description `filter[search]=value` search for a value associated with a field on the given pipelines(s). */
           search?: string;
-          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the pipeline's current state. */
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Pipeline's current state. */
           state?: string;
         };
         sort?: components["parameters"]["SortParam"];
@@ -14680,7 +15361,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a collection of pipeline resources. */
+      /** @description Returns a list of Pipelines. */
       200: {
         content: {
           "application/json": {
@@ -14697,24 +15378,24 @@ export interface operations {
    * @description Requires the `pipelines-manage` capability.
    */
   createPipeline: {
-    /** @description Parameters for creating a new pipeline. */
+    /** @description Parameters for creating a new Pipeline. */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description A name for the pipeline. */
+          /** @description A name for the Pipeline. */
           name: string;
           identifier?: components["schemas"]["Identifier"];
-          /** @description Setting to true enables variable and other advanced logic support on this pipeline. This is a one-way toggle. Once set to true, it cannot be set back to false. */
+          /** @description Setting to true enables variable and other advanced logic support on this Pipeline. This is a one-way toggle. Once set to true, it cannot be set back to false. */
           dynamic?: boolean;
           /** @description An array of stages. */
           stages?: components["schemas"]["PipelineStage"][];
-          /** @description A boolean where true signifies the pipeline is disabled. */
+          /** @description A boolean where true signifies the Pipeline is disabled. */
           disable?: boolean;
         };
       };
     };
     responses: {
-      /** @description Returns a pipeline resource. */
+      /** @description Returns a Pipeline. */
       201: {
         content: {
           "application/json": {
@@ -14726,8 +15407,8 @@ export interface operations {
     };
   };
   /**
-   * Fetch Pipeline
-   * @description Requires the `pieplines-view` capability.
+   * Get Pipeline
+   * @description Requires the `pipelines-view` capability.
    */
   getPipeline: {
     parameters: {
@@ -14736,12 +15417,12 @@ export interface operations {
         include?: ("creators" | "name" | "components")[];
       };
       path: {
-        /** @description The ID of the pipeline. */
+        /** @description The ID of the Pipeline. */
         pipelineId: string;
       };
     };
     responses: {
-      /** @description Returns a pipeline resource. */
+      /** @description Returns a Pipeline. */
       200: {
         content: {
           "application/json": {
@@ -14754,22 +15435,22 @@ export interface operations {
     };
   };
   /**
-   * Remove Pipeline
+   * Delete Pipeline
    * @description Requires the `pipelines-manage` capability.
    */
-  removePipeline: {
+  deletePipeline: {
     parameters: {
       path: {
-        /** @description The ID of the pipeline. */
+        /** @description The ID of the Pipeline. */
         pipelineId: string;
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -14777,33 +15458,33 @@ export interface operations {
     };
   };
   /**
-   * Create Pipeline
+   * Update Pipeline
    * @description Requires the `pipelines-manage` capability.
    */
   updatePipeline: {
     parameters: {
       path: {
-        /** @description The ID of the pipeline. */
+        /** @description The ID of the Pipeline. */
         pipelineId: string;
       };
     };
-    /** @description Parameters for updating a pipeline. */
+    /** @description Parameters for updating a Pipeline. */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description A name for the pipeline. */
+          /** @description A name for the Pipeline. */
           name?: string;
-          /** @description Setting to true enables variable and other advanced logic support on this pipeline. This is a one-way toggle. Once set to true, it cannot be set back to false. */
+          /** @description Setting to true enables variable and other advanced logic support on this Pipeline. This is a one-way toggle. Once set to true, it cannot be set back to false. */
           dynamic?: boolean;
           /** @description An array of stages. */
           stages?: components["schemas"]["PipelineStage"][];
-          /** @description A boolean where true signifies the pipeline is disabled. */
+          /** @description A boolean where true signifies the Pipeline is disabled. */
           disable?: boolean;
         };
       };
     };
     responses: {
-      /** @description Returns a pipeline resource. */
+      /** @description Returns a Pipeline resource. */
       200: {
         content: {
           "application/json": {
@@ -14816,7 +15497,9 @@ export interface operations {
   };
   /**
    * List Pipeline Runs
-   * @description Requires the `pieplines-view` capability.
+   * @description List information about times this Pipeline has run.
+   *
+   * Requires the `pipelines-view` capability.
    */
   getPipelineRuns: {
     parameters: {
@@ -14831,11 +15514,11 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Returns a list of pipeline run resources. */
+      /** @description Returns a list of Pipeline runs. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["Run"][];
+            data: components["schemas"]["PipelineRun"][];
             includes?: {
               creators?: components["schemas"]["CreatorInclude"];
             };
@@ -14852,34 +15535,34 @@ export interface operations {
   createPipelineJob: {
     parameters: {
       path: {
-        /** @description The ID of the pipeline. */
+        /** @description The ID of the Pipeline. */
         pipelineId: string;
       };
     };
-    /** @description Parameters for creating a new pipeline job. */
+    /** @description Parameters for creating a new Pipeline job. */
     requestBody?: {
       content: {
         "application/json": {
           /**
-           * @description The job to do.
+           * @description The requested action to perform.
            * @enum {string}
            */
           action: "trigger";
           contents?: {
-            /** @description A map of variables to pass into the pipeline when it runs. */
+            /** @description A map of variables to pass into the Pipeline when it runs. */
             variables?: {
-              [key: string]: string | undefined;
+              [key: string]: string;
             };
           };
         };
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -14898,21 +15581,21 @@ export interface operations {
          * The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
          */
         filter?: {
-          /** @description `filter[search]=value` search for a value associated with a field on the given trigger key(s). */
+          /** @description `filter[search]=value` search for a value associated with a field on the given Trigger Key(s). */
           search?: string;
-          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the trigger key's current state. */
+          /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Trigger Key's current state. */
           state?: string;
         };
         sort?: components["parameters"]["SortParam"];
         page?: components["parameters"]["PageParam"];
       };
       path: {
-        /** @description The ID of the pipeline. */
+        /** @description The ID of the Pipeline. */
         pipelineId: string;
       };
     };
     responses: {
-      /** @description Returns a collection of trigger key resources. */
+      /** @description Returns a list of Trigger Keys. */
       200: {
         content: {
           "application/json": {
@@ -14930,23 +15613,23 @@ export interface operations {
   createPipelineTriggerKey: {
     parameters: {
       path: {
-        /** @description The ID of the pipeline. */
+        /** @description The ID of the Pipeline. */
         pipelineId: string;
       };
     };
-    /** @description Parameters for creating a new pipeline trigger key. */
+    /** @description Parameters for creating a new Pipeline Trigger Key. */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description A name for the trigger key. */
+          /** @description A name for the Trigger Key. */
           name?: string;
-          /** @description An array of ips this trigger key is usable from. */
+          /** @description An array of ips this Trigger Key is usable from. */
           ips?: string[];
         };
       };
     };
     responses: {
-      /** @description Returns a trigger key resource. */
+      /** @description Returns a Trigger Key. */
       201: {
         content: {
           "application/json": {
@@ -14958,20 +15641,20 @@ export interface operations {
     };
   };
   /**
-   * Fetch Trigger Key
+   * Get Trigger Key
    * @description Requires the `pipelines-manage` capability.
    */
   getPipelineTriggerKey: {
     parameters: {
       path: {
-        /** @description The ID of the pipeline. */
+        /** @description The ID of the Pipeline. */
         pipelineId: string;
-        /** @description The ID of the trigger key. */
+        /** @description The ID of the Trigger Key. */
         triggerKeyId: string;
       };
     };
     responses: {
-      /** @description Returns a trigger key resource. */
+      /** @description Returns a Trigger Key. */
       200: {
         content: {
           "application/json": {
@@ -14986,21 +15669,21 @@ export interface operations {
    * Delete Trigger Key
    * @description Requires the `pipelines-manage` capability.
    */
-  removePipelineTriggerKey: {
+  deletePipelineTriggerKey: {
     parameters: {
       path: {
-        /** @description The ID of the pipeline. */
+        /** @description The ID of the Pipeline. */
         pipelineId: string;
-        /** @description The ID of the trigger key. */
+        /** @description The ID of the Trigger Key. */
         triggerKeyId: string;
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
-      200: {
+      /** @description Returns a Job Descriptor. */
+      202: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -15014,29 +15697,28 @@ export interface operations {
   updatePipelineTriggerKey: {
     parameters: {
       path: {
-        /** @description The ID of the pipeline. */
+        /** @description The ID of the Pipeline. */
         pipelineId: string;
-        /** @description The ID of the trigger key. */
+        /** @description The ID of the Trigger Key. */
         triggerKeyId: string;
       };
     };
-    /** @description Req body for updating trigger key */
     requestBody?: {
       content: {
         "application/json": {
-          /** @description Set name of trigger key */
+          /** @description Set name of Trigger Key */
           name?: string;
-          /** @description List of Ip Restrictions */
+          /** @description List of IP Restrictions */
           ips?: string[];
         };
       };
     };
     responses: {
-      /** @description Returns a task descriptor. */
+      /** @description Returns a Job Descriptor. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["TaskDescriptor"];
+            data: components["schemas"]["JobDescriptor"];
           };
         };
       };
@@ -15045,15 +15727,38 @@ export interface operations {
   };
   /**
    * Hub Notification Pipeline Auth
-   * @description Requires the `hubs-notifications-listen` capability.
+   * @description Initializes authorization for the Hub notification pipeline. The Hub notification pipeline is a one-way streaming websocket that
+   * sends real-time 'notifications' as things are happening on the Hub. These notifications tell some basic information about an event,
+   * and it is up to the user to fetch additional details, if deemed necessary.
+   *
+   * Requesting this endpoint without a `?token=<token>` URL parameter will result in receiving a short lived token in the response body. That
+   * token can then be applied to the URL parameter to the same endpoint to upgrade the connection to a WebSocket.
+   *
+   * Requires the `apionly-notifications-listen` capability.
    */
-  pipelineAuth: {
+  getHubNotificationSocketAuth: {
     responses: {
-      /** @description Returns a token. */
+      /** @description WebSocket protocol upgrade response, connection is upgraded to WebSocket. */
+      101: {
+        headers: {
+          /** @description Should be 'upgrade'. */
+          Connection?: string;
+          /** @description Specifies the protocol to which the connection is upgraded. */
+          Upgrade?: "websocket";
+          /** @description Accept key for the WebSocket protocol handshake. */
+          "Sec-WebSocket-Accept"?: string;
+        };
+        content: never;
+      };
+      /** @description Returns the credentials necessary for upgrading this connection into a web socket. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["HubNotificationToken"];
+            /** HubNotificationPipelineAuthResponse */
+            data: {
+              /** @description A token used for connecting to the Hub notification pipeline websocket API. */
+              token: string;
+            };
           };
         };
       };
@@ -15061,24 +15766,33 @@ export interface operations {
     };
   };
   /**
-   * Instance Console Auth
-   * @description Requires the `contaiers-console` capability.
+   * Instance Console Stream Authorization
+   * @description Returns the authorization information necessary to connect to a Container Instance's console.
+   * To connect via WebSocket, use the returned address, and append the returned token as a URL parameter: `<address>?token=<token>`.
+   *
+   * Requires the `containers-console` capability.
    */
-  instanceConsoleAuth: {
+  getInstanceConsoleStreamAuth: {
     parameters: {
       path: {
-        /** @description The ID for the container */
+        /** @description The ID for the Container */
         containerId: string;
-        /** @description The ID of the instance. */
+        /** @description The ID of the Instance. */
         instanceId: string;
       };
     };
     responses: {
-      /** @description Returns a token and address. */
+      /** @description Returns authorization information necessary for accessing a Container Instance's console. */
       200: {
         content: {
           "application/json": {
-            data: components["schemas"]["InstanceConsoleAuth"];
+            /** InstanceConsoleAuth */
+            data: {
+              /** @description A token used for connecting to the Instance console. */
+              token: string;
+              /** @description The protocol and url for connecting to the Instance console. */
+              address: string;
+            };
           };
         };
       };
@@ -15121,8 +15835,10 @@ export interface operations {
     };
   };
   /**
-   * Look up a resource identifier
-   * @description Given a (base64) resource identifier string, returns the ID of the targeted resource
+   * Look up a resource identifier.
+   * @description Given a (base64'd) resource identifier string (i.e. `cluster:production/env:abc`), returns the ID of the matching resource.
+   * If more than one resource matches the identifier, or no resource matches the identifier, this endpoint will return an error.
+   * Given identifiers are NOT unique, you may need to be more specific to target the exact identifier.
    */
   lookupIdentifier: {
     parameters: {

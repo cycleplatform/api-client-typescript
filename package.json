@@ -1,48 +1,48 @@
 {
-  "name": "@cycleplatform/api-client-typescript",
-  "version": "0.1.16",
-  "description": "A Cycle API client for the web/nodejs",
-  "main": "./dist/index.umd.cjs",
-  "module": "./dist/index.js",
-  "type": "module",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.umd.cjs"
+    "name": "@cycleplatform/api-client-typescript",
+    "version": "0.2.0",
+    "description": "A Cycle API client for the web/nodejs with type safety.",
+    "main": "./dist/index.umd.cjs",
+    "module": "./dist/index.js",
+    "type": "module",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.umd.cjs"
+        }
+    },
+    "types": "./src/index.ts",
+    "scripts": {
+        "test": "vitest",
+        "test:ts": "tsc --noEmit",
+        "build:spec": "(cd api-spec; npm run build:platform)",
+        "build:client": "npm run build:spec && npx openapi-typescript ./api-spec/dist/platform.yml --output ./src/generated/types.ts",
+        "build:lib": "npm run build:client && vite build",
+        "prepublishOnly": "npm run build:lib"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/cycleplatform/api-client-typescript.git"
+    },
+    "keywords": [
+        "cycleplatform",
+        "api",
+        "client"
+    ],
+    "author": "Petrichor Holdings, Inc.",
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/cycleplatform/api-client-typescript/issues"
+    },
+    "homepage": "https://github.com/cycleplatform/api-client-typescript#readme",
+    "dependencies": {
+        "openapi-fetch": "0.9.3"
+    },
+    "devDependencies": {
+        "msw": "2.2.13",
+        "openapi-typescript": "6.7.5",
+        "typescript": "^5.4.4",
+        "vite": "5.2.8",
+        "vitest": "1.4.0"
     }
-  },
-  "types": "./src/index.ts",
-  "scripts": {
-    "test": "vitest",
-    "test:ts": "tsc --noEmit",
-    "build:spec": "(cd api-spec; npm run build:public && npm run build:internal)",
-    "build:client": "npm run build:spec && npx openapi-typescript ./api-spec/dist/public-api.yml --output ./src/generated/types.ts",
-    "build:lib": "npm run build:client && vite build",
-    "prepublishOnly": "npm run build:lib"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/cycleplatform/api-client-typescript.git"
-  },
-  "keywords": [
-    "cycleplatform",
-    "api",
-    "client"
-  ],
-  "author": "Petrichor Holdings, Inc.",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/cycleplatform/api-client-typescript/issues"
-  },
-  "homepage": "https://github.com/cycleplatform/api-client-typescript#readme",
-  "dependencies": {
-    "openapi-fetch": "0.7.2"
-  },
-  "devDependencies": {
-    "msw": "1.2.3",
-    "openapi-typescript": "6.4.4",
-    "typescript": "^5.0.4",
-    "vite": "4.4.11",
-    "vitest": "0.33.0"
-  }
 }

@@ -1,24 +1,26 @@
 import { afterAll, afterEach, beforeAll } from "vitest";
 import { setupServer } from "msw/node";
-import { rest } from "msw";
+import { HttpResponse, http } from "msw";
 
 export const restHandlers = [
-  rest.get("https://api.cycle.io/v1/environments", (req, res, ctx) => {
-    return res(
-      ctx.status(403),
-      ctx.json({}),
-      ctx.set("X-AUTH-TOKEN", req.headers.get("Authorization") || ""),
-      ctx.set("X-HUB-ID", req.headers.get("X-Hub-Id") || "")
-    );
-  }),
-  rest.get("https://api.dev.cycle.io/v1/environments", (req, res, ctx) => {
-    return res(
-      ctx.status(403),
-      ctx.json({}),
-      ctx.set("X-AUTH-TOKEN", req.headers.get("Authorization") || ""),
-      ctx.set("X-HUB-ID", req.headers.get("X-Hub-Id") || "")
-    );
-  }),
+    http.get("https://api.dev.cycle.io/v1/environments", ({ request }) => {
+        return new HttpResponse("{}", {
+            status: 403,
+            headers: {
+                "X-AUTH-TOKEN": request.headers.get("Authorization") || "",
+                "X-HUB-ID": request.headers.get("X-Hub-Id") || "",
+            },
+        });
+    }),
+    http.get("https://api.cycle.io/v1/environments", ({ request }) => {
+        return new HttpResponse("{}", {
+            status: 403,
+            headers: {
+                "X-AUTH-TOKEN": request.headers.get("Authorization") || "",
+                "X-HUB-ID": request.headers.get("X-Hub-Id") || "",
+            },
+        });
+    }),
 ];
 
 const server = setupServer(...restHandlers);
