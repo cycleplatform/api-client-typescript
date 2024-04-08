@@ -7,8 +7,14 @@
     "type": "module",
     "exports": {
         ".": {
-            "import": "./dist/index.js",
-            "require": "./dist/index.umd.cjs"
+            "import": {
+                "default": "./dist/index.js",
+                "types": "./src/index.ts"
+            },
+            "require": {
+                "default": "./dist/index.umd.cjs",
+                "types": "./src/index.ts"
+            }
         }
     },
     "types": "./src/index.ts",
