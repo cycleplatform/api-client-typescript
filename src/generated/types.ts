@@ -1867,11 +1867,8 @@ export interface components {
       start: components["schemas"]["DateTime"];
       /** @description A timestamp describing the end of a billing term. */
       end: components["schemas"]["DateTime"];
-      /**
-       * @description The term renewal period.
-       * @enum {string|null}
-       */
-      renew: "once" | "monthly" | "yearly";
+      /** @description The term renewal period. */
+      renew: ("once" | "monthly" | "yearly") | null;
     };
     /**
      * HubBillingProfile
@@ -3002,10 +2999,8 @@ export interface components {
            * `request`: Asks the client to send a TLS certificate, but does not require nor validate it.
            * `require`: Requires a certificate be sent for the request to be valid, but does not validate the certificate.
            * `require-verify`: Requires both that the client send a certificate, and that the certificate is valid. This is required when using https.
-           *
-           * @enum {string|null}
            */
-          client_auth?: "none" | "request" | "require" | "require-verify";
+          client_auth?: ("none" | "request" | "require" | "require-verify") | null;
         }) | null;
         /** @description Defines how the length of various sorts of timeouts when communicating with the destination. */
         timeouts: {
@@ -5649,11 +5644,8 @@ export interface components {
       annotations?: {
         [key: string]: unknown;
       } | null;
-      /**
-       * @description The role of a given container if it has one.
-       * @enum {string|null}
-       */
-      role?: "orchestrator";
+      /** @description The role of a given container if it has one. */
+      role?: "orchestrator" | null;
       /** @description A boolean where true signifies the container is stateful. */
       stateful: boolean;
       /** @description A boolean where true signifies the container is marked as deprecated. */
@@ -11204,7 +11196,7 @@ export interface operations {
       201: {
         content: {
           "application/json": {
-            data?: components["schemas"]["Container"];
+            data: components["schemas"]["Container"];
           };
         };
       };
