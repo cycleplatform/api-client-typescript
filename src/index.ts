@@ -1,7 +1,7 @@
 import createClient, { type Middleware } from "openapi-fetch";
-import type { paths, components } from "./generated/types";
+import type { paths, components, operations } from "./generated/types";
 
-export { paths, components };
+export { paths, components, operations };
 
 export function getClient({
     apiKey,
