@@ -20,10 +20,10 @@ export function getClient({
     });
 
     const authMiddleware: Middleware = {
-        async onRequest(req) {
-            req.headers.set("Authorization", `Bearer ${apiKey}`);
-            req.headers.set("X-Hub-Id", hubId);
-            return req;
+        async onRequest({request}) {
+            request.headers.set("Authorization", `Bearer ${apiKey}`);
+            request.headers.set("X-Hub-Id", hubId);
+            return request;
         },
     };
 

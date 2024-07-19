@@ -15,12 +15,14 @@
         "moduleResolution": "node",
         "noUnusedLocals": true,
         "noUnusedParameters": true,
+        "noUncheckedIndexedAccess": true,
         "preserveWatchOutput": true,
         "skipLibCheck": true,
         "strict": true
     },
-    "include": ["./src"],
+    "include": ["src", "tests"],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "dist"
     ]
 }

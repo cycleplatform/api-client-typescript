@@ -1,6 +1,6 @@
 {
     "name": "@cycleplatform/api-client-typescript",
-    "version": "0.2.5",
+    "version": "0.3.0",
     "description": "A Cycle API client for the web/nodejs with type safety.",
     "main": "./dist/index.umd.cjs",
     "module": "./dist/index.js",
@@ -21,8 +21,7 @@
     "scripts": {
         "test": "vitest",
         "test:ts": "tsc --noEmit",
-        "build:spec": "(cd api-spec; npm run build:platform)",
-        "build:client": "npm run build:spec && npx openapi-typescript ./api-spec/dist/platform.yml --output ./src/generated/types.ts",
+        "build:client": "openapi-typescript ./api-spec/platform/api.yml --output ./src/generated/types.ts",
         "build:lib": "npm run build:client && vite build",
         "prepublishOnly": "npm run build:lib"
     },
@@ -42,13 +41,13 @@
     },
     "homepage": "https://github.com/cycleplatform/api-client-typescript#readme",
     "dependencies": {
-        "openapi-fetch": "0.9.3"
+        "openapi-fetch": "0.10.2"
     },
     "devDependencies": {
-        "msw": "2.2.13",
-        "openapi-typescript": "6.7.5",
-        "typescript": "^5.4.4",
-        "vite": "5.2.8",
-        "vitest": "1.4.0"
+        "msw": "^2.3.2",
+        "openapi-typescript": "^7.0.4",
+        "typescript": "^5.5.3",
+        "vite": "^5.3.4",
+        "vitest": "^2.0.3"
     }
 }
