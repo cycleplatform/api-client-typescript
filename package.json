@@ -41,7 +41,7 @@
     },
     "homepage": "https://github.com/cycleplatform/api-client-typescript#readme",
     "dependencies": {
-        "openapi-fetch": "0.10.2"
+        "openapi-fetch": "^0.10.2"
     },
     "devDependencies": {
         "msw": "^2.3.2",
