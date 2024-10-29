@@ -333,7 +333,7 @@ export interface paths {
         put?: never;
         /**
          * Create Invoice Job
-         * @description Creates a new Job on an Invoice. Generally used to make a payment on an Invoice.
+         * @description Creates a new job for an Invoice. Generally used to make a payment on an invoice.
          *
          *     Requires the `billing-invoices-pay` capability.
          *
@@ -400,6 +400,29 @@ export interface paths {
          * @description Requires the `billing-methods-manage` capability.
          */
         patch: operations["updateBillingMethod"];
+        trace?: never;
+    };
+    "/v1/billing/methods/{methodId}/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Billing Method Job
+         * @description Creates a new job for a billing method. Generally used to verify a payment method.
+         *
+         *     Requires the `billing-methods-manage` capability.
+         *
+         */
+        post: operations["createBillingMethodJob"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/v1/billing/orders": {
@@ -739,29 +762,6 @@ export interface paths {
          *
          */
         get: operations["getCompatibleImages"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/containers/{containerId}/telemetry/instances": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List Telemetry Data
-         * @description Gets a list of telemetry points describing the number and state of all Instances of this Container at a point in time.
-         *
-         *     Requires the `containers-view` capability.
-         *
-         */
-        get: operations["getContainerInstancesTelemetry"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1441,29 +1441,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/environments/{environmentId}/telemetry/instances": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Environment Instances Telemetry
-         * @description Get telemetry points on the number of instances and their states over a range of time.
-         *
-         *     Requires the `environments-view` capability.
-         *
-         */
-        get: operations["getEnvironmentInstancesTelemetry"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/environments/{environmentId}/deployments": {
         parameters: {
             query?: never;
@@ -1481,6 +1458,29 @@ export interface paths {
         get: operations["getEnvironmentDeployments"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/environments/{environmentId}/export/stack": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Export As Stack
+         * @description Exports an environment as a stack file for reuse.
+         *
+         *     Requires the `environments-manage` capability. You must also have management permissions on the target environment ACL.
+         *
+         */
+        post: operations["exportStack"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3110,6 +3110,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/monitoring/logs/aggregate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Aggregate Logs
+         * @description A query for retrieving container instance logs.
+         *     Allows aggregate narrowing through filtering, searching, and scope parameters.
+         *     If 'local' is set to true, only cached logs will be queried, and logs in object storage will be ignored.  This leads to much faster performance.
+         *
+         *     Requires the `monitor-view` capability.
+         *
+         */
+        post: operations["aggregateLogs"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/monitoring/monitors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Monitoring Monitors
+         * @description Returns location information about the monitors used for Cycle's external monitoring service.
+         *     These monitors are used for determining the latency between the public internet and environment
+         *     load balancers.
+         *
+         */
+        get: operations["getMonitoringMonitors"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/pipelines": {
         parameters: {
             query?: never;
@@ -3205,6 +3253,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/pipelines/{pipelineId}/runs/{runId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Pipeline Run
+         * @description Requires the `pipelines-view` capability.
+         */
+        get: operations["getPipelineRun"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/pipelines/{pipelineId}/tasks": {
         parameters: {
             query?: never;
@@ -3239,6 +3307,23 @@ export interface paths {
          * @description Requires the `pipelines-manage` capability.
          */
         post: operations["clonePipeline"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/pipelines/{pipelineId}/trigger": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Trigger Pipeline */
+        post: operations["triggerPipeline"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3596,6 +3681,110 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/vms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Virtual Machines
+         * @description Requires the `vms-view` capability.
+         */
+        get: operations["getVirtualMachines"];
+        put?: never;
+        /**
+         * Create Virtual Machine
+         * @description Requires the `vms-deploy` capability.
+         */
+        post: operations["createVirtualMachine"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vms/{vmId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Virtual Machine
+         * @description Retrieves a single virtual machine by ID.
+         *
+         *     Requires the `vms-view` capability.
+         *
+         */
+        get: operations["getVirtualMachine"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Virtual Machine
+         * @description Requires the `vms-manage` capability.
+         */
+        delete: operations["deleteVirtualMachine"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Virtual Machine
+         * @description Updates the specified virtual machine.
+         *
+         *     Requires the `vms-manage` capability.
+         *
+         */
+        patch: operations["updateVirtualMachine"];
+        trace?: never;
+    };
+    "/v1/vms/{vmId}/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Virtual Machine Job
+         * @description Used to perform different actions on a virtual machine.
+         *
+         *     Requires the following capabilities based on the task:
+         *     `start`: `vms-manage`
+         *     `stop`: `vms-manage`
+         *
+         */
+        post: operations["createVirtualMachineJob"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vms/images/base": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Virtual Machine Base Images
+         * @description Retrieves the list of available base images for virtual machines provided by Cycle.
+         *
+         */
+        get: operations["getVirtualMachineBaseImages"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/utils/resource/lookup": {
         parameters: {
             query?: never;
@@ -3644,7 +3833,7 @@ export interface components {
          * @description A capability that a user or API key that represents what an API key or a user can do.
          * @enum {string}
          */
-        Capability: "api-keys-manage" | "apionly-jobs-view" | "apionly-notifications-listen" | "autoscale-groups-manage" | "autoscale-groups-view" | "billing-credits-view" | "billing-invoices-pay" | "billing-invoices-view" | "billing-methods-manage" | "billing-services-manage" | "billing-services-view" | "containers-backups-manage" | "containers-backups-view" | "containers-console" | "containers-deploy" | "containers-instances-migrate" | "containers-lock" | "containers-ssh" | "containers-manage" | "containers-view" | "containers-functions-trigger" | "containers-volumes-manage" | "containers-volumes-view" | "dns-certs-view" | "dns-manage" | "dns-view" | "environments-deployments-manage" | "environments-manage" | "environments-scopedvariables-manage" | "environments-scopedvariables-view" | "environments-services-manage" | "environments-view" | "environments-vpn" | "environments-vpn-manage" | "hubs-delete" | "hubs-integrations-manage" | "hubs-integrations-view" | "hubs-invites-manage" | "hubs-invites-send" | "hubs-members-manage" | "hubs-members-view" | "hubs-roles-manage" | "hubs-roles-view" | "hubs-usage-view" | "hubs-update" | "hubs-auditlog-view" | "images-manage" | "images-sources-manage" | "images-sources-view" | "images-view" | "ips-manage" | "servers-console" | "servers-decommission" | "servers-login" | "clusters-manage" | "clusters-view" | "servers-provision" | "servers-manage" | "servers-view" | "monitor-manage" | "monitor-view" | "pipelines-manage" | "pipelines-trigger" | "pipelines-view" | "sdn-networks-manage" | "sdn-networks-view" | "security-manage" | "security-view" | "stacks-builds-deploy" | "stacks-builds-manage" | "stacks-manage" | "stacks-view";
+        Capability: "api-keys-manage" | "apionly-jobs-view" | "apionly-notifications-listen" | "autoscale-groups-manage" | "autoscale-groups-view" | "billing-credits-view" | "billing-invoices-pay" | "billing-invoices-view" | "billing-methods-manage" | "billing-services-manage" | "billing-services-view" | "containers-backups-manage" | "containers-backups-view" | "containers-console" | "containers-deploy" | "containers-instances-migrate" | "containers-lock" | "containers-ssh" | "containers-manage" | "containers-view" | "containers-functions-trigger" | "containers-volumes-manage" | "containers-volumes-view" | "dns-certs-view" | "dns-manage" | "dns-view" | "environments-deployments-manage" | "environments-manage" | "environments-scopedvariables-manage" | "environments-scopedvariables-view" | "environments-services-manage" | "environments-view" | "environments-vpn" | "environments-vpn-manage" | "hubs-delete" | "hubs-integrations-manage" | "hubs-integrations-view" | "hubs-invites-manage" | "hubs-invites-send" | "hubs-members-manage" | "hubs-members-view" | "hubs-roles-manage" | "hubs-roles-view" | "hubs-usage-view" | "hubs-update" | "hubs-auditlog-view" | "images-manage" | "images-sources-manage" | "images-sources-view" | "images-view" | "ips-manage" | "servers-console" | "servers-decommission" | "servers-login" | "clusters-manage" | "clusters-view" | "servers-provision" | "servers-manage" | "servers-view" | "monitor-manage" | "monitor-view" | "pipelines-manage" | "pipelines-trigger" | "pipelines-view" | "sdn-networks-manage" | "sdn-networks-view" | "security-manage" | "security-view" | "stacks-builds-deploy" | "stacks-builds-manage" | "stacks-manage" | "stacks-view" | "vms-view" | "vms-manage" | "vms-deploy" | "vms-console" | "vms-lock";
         /**
          * Error
          * @description The Cycle API uses standard HTTP response codes to indicate the success or failure of an API request. Codes in the `2xx` range indicate success. Codes in the `4xx` range indicate a request that failed due to input, and codes in the `5xx` range indicate an error on Cycle's part (rare).
@@ -3685,13 +3874,11 @@ export interface components {
          * ID
          * Format: objectid
          * @description A 24 character hex string used to identify a unique resource.
-         * @example 651586fca6078e98982dbd90
          */
         ID: string;
         /**
          * DateTime
          * Format: date-time
-         * @example 2021-01-30T08:30:00Z
          */
         DateTime: string;
         /**
@@ -3859,7 +4046,6 @@ export interface components {
         /**
          * HubID
          * @description The unique ID of the Hub this resource was created in.
-         * @example 651586fca6078e98982dbd90
          */
         HubID: string;
         /** MembershipState */
@@ -4318,9 +4504,10 @@ export interface components {
              */
             type: "tier" | "support";
             term: components["schemas"]["Term"];
-            /** @description 1/10th of a cent. */
-            price: string;
-            discount: string;
+            /** @description 1/10th of a cent (mills). */
+            price: number;
+            /** @description 1/10th of a cent (mills). */
+            discount: number;
         };
         /**
          * PaymentGateway
@@ -4347,9 +4534,12 @@ export interface components {
          * @description A billing payment result.
          */
         PaymentResult: {
-            /** @description A boolean where true represents the success of the payment. */
-            success: boolean;
-            /** @description A description of the error that took place. */
+            /**
+             * @description The status of a payment.
+             * @enum {string}
+             */
+            status?: "success" | "processing" | "cancelled" | "error";
+            /** @description A description of the error that took place when processing the payment. */
             error: string;
         };
         /**
@@ -4407,10 +4597,10 @@ export interface components {
         /** InvoiceState */
         InvoiceState: {
             /**
-             * @description The current state of the container.
+             * @description The current state of the invoice.
              * @enum {string}
              */
-            current: "new" | "billing" | "billed" | "processing" | "partially-paid" | "paid" | "refunding" | "refunded" | "crediting" | "credited" | "voiding" | "voided" | "uncollectible";
+            current: "new" | "billing" | "billed" | "processing" | "partially-paid" | "awaiting-funds" | "paid" | "refunding" | "refunded" | "crediting" | "credited" | "voiding" | "voided" | "uncollectible";
         } & components["schemas"]["State"];
         /**
          * InvoiceMeta
@@ -4477,27 +4667,65 @@ export interface components {
             zip: string;
         };
         /**
-         * BillingMethodExpiration
-         * @description Expiration information for a billing method
+         * StripeCreditCard
+         * @description A payment method that utilizes a credit card via Stripe.
          */
-        BillingMethodExpiration: {
-            /** @description The month the billing method expires. */
-            month: number;
-            /** @description The year the billing method expires. */
-            year: number;
+        StripeCreditCard: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "stripe-credit-card";
+            details: {
+                /** @description The name on the credit card. */
+                name: string;
+                /** @description The brand of card. */
+                brand: string;
+                expiration: {
+                    /** @description The month the billing method expires. */
+                    month: number;
+                    /** @description The year the billing method expires. */
+                    year: number;
+                };
+                /** @description The last 4 digits of the card. */
+                last_4: string;
+            };
         };
         /**
-         * CreditCard
-         * @description Information about a credit card.
+         * StripeUsBankAcct
+         * @description A payment method that utilizes a US bank account via Stripe.
          */
-        CreditCard: {
-            /** @description A name associated with the credit cards usage. */
-            name: string;
-            /** @description The brand of card - ex VISA. */
-            brand: string;
-            expiration: components["schemas"]["BillingMethodExpiration"];
-            /** @description The last 4 digits of the card. */
-            last_4: string;
+        StripeUsBankAcct: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "stripe-us-bank-acct";
+            details: {
+                /** @description The name of the owner of the bank account. */
+                name: string;
+                /** @description The last 4 numbers of the bank account number. */
+                last_4: string;
+            };
+        };
+        /**
+         * MethodSource
+         * @description The underlying source (credit card, bank account, etc) used by a payment method.
+         */
+        MethodSource: components["schemas"]["StripeCreditCard"] | components["schemas"]["StripeUsBankAcct"];
+        /**
+         * Mandate
+         * @description Information about the creator of a payment method for compliance purposes.
+         */
+        Mandate: {
+            /** @description The date when the mandate was accepted */
+            accepted: components["schemas"]["DateTime"];
+            /** @description The IP address at the time the mandate was accepted. */
+            ip: string;
+            /** @description The user agent of the browser when the mandate was accepted. */
+            user_agent: string;
+            /** @description The email associated with the account that accepted the mandate */
+            email: string;
         };
         /**
          * BillingMethod
@@ -4511,13 +4739,14 @@ export interface components {
             primary: boolean;
             address: components["schemas"]["Address"];
             creator: components["schemas"]["CreatorScope"];
-            credit_card: components["schemas"]["CreditCard"];
+            source: components["schemas"]["MethodSource"];
+            mandate?: components["schemas"]["Mandate"];
             state: {
                 /**
                  * @description The current state of the method.
                  * @enum {string}
                  */
-                current: "live" | "deleting" | "deleted";
+                current: "live" | "pending-verification" | "deleting" | "deleted";
             } & components["schemas"]["State"];
             /**
              * CreditCardEvents
@@ -4631,12 +4860,14 @@ export interface components {
         PromoCode: {
             /** @description The promo "code". */
             code: string;
+            expires: components["schemas"]["DateTime"];
             /** @description The amount of credit the promo code offers. */
             credit: {
-                [key: string]: {
-                    amount?: components["schemas"]["BillingAmount"];
-                    expires?: components["schemas"]["DateTime"];
-                } | undefined;
+                amount?: components["schemas"]["BillingAmount"];
+                expires?: {
+                    interval: string;
+                    number: number;
+                };
             } | null;
             /** PromoCodeState */
             state: {
@@ -4828,6 +5059,8 @@ export interface components {
             image_storage: components["schemas"]["BillingImageStorage"];
             builds: components["schemas"]["BillingBuilds"];
             hidden: boolean;
+            /** @description An array of hub IDs with access to the tier. */
+            hubs?: components["schemas"]["Identifier"][] | null;
             description: string;
         };
         /**
@@ -4895,23 +5128,17 @@ export interface components {
         };
         /** IPNet */
         IPNet: {
-            /**
-             * @description The IP address.
-             * @example fd00::21:0:0:0
-             */
+            /** @description The IP address. */
             ip: string;
-            /**
-             * @description The CIDR notation, describing the range of IP addresses.
-             * @example fd00::21:0:0:0/96
-             */
+            /** @description The CIDR notation, describing the range of IP addresses. */
             cidr: string;
         };
         /**
          * LegacyNetwork
-         * @description Legacy network information for an Environment.
+         * @description Legacy network information for an environment.
          */
         LegacyNetwork: {
-            /** @description The IPv4 subnet Id. */
+            /** @description The IPv4 subnet id. */
             subnet: number;
             /** @description IPv4 information available from environments using legacy networking. */
             ipv4?: components["schemas"]["IPNet"] | null;
@@ -4927,7 +5154,7 @@ export interface components {
             /** @description The private network subnet ID for this container and its instances. */
             container_subnet?: string | null;
             ipv6?: components["schemas"]["IPNet"] | null;
-            legacy: components["schemas"]["LegacyNetwork"] | null;
+            legacy?: components["schemas"]["LegacyNetwork"] | null;
         };
         /**
          * ServiceContainerIdentifier
@@ -4943,7 +5170,9 @@ export interface components {
             id: components["schemas"]["ID"] | null;
             /** @description An image that is packaged with Cycle directly, such as the global load balancer. */
             extension: {
-                identifier: components["schemas"]["Identifier"];
+                /** @enum {string} */
+                identifier: "virtual-machine-v1";
+                id?: components["schemas"]["ID"];
             } | null;
             /** @description If a service container, the identifier specifying which service it is. */
             service: components["schemas"]["ServiceContainerIdentifier"] | null;
@@ -4982,7 +5211,6 @@ export interface components {
         /**
          * Duration
          * @description A string signifying a duration of time. Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h", "d", "w", "y".
-         * @example 72h45m2s
          */
         Duration: string;
         /**
@@ -5111,7 +5339,6 @@ export interface components {
          * WebhookURL
          * @description A URL describing the destination Cycle should send a POST webhook payload to.
          *
-         * @example https://example.com/cycle/autoscale
          */
         WebhookURL: string;
         /**
@@ -5168,10 +5395,7 @@ export interface components {
             type: "network-throughput";
             details: {
                 private: boolean;
-                /**
-                 * @description The limit (maximum) amount of throughput each instance of the given container can use before triggering a scaling event.
-                 * @example 1G, 2M
-                 */
+                /** @description The limit (maximum) amount of throughput each instance of the given container can use before triggering a scaling event. */
                 bandwidth: string;
             };
         };
@@ -5272,10 +5496,7 @@ export interface components {
                 readonly?: boolean;
             };
             devices?: {
-                /**
-                 * @description The size of the shared host memory device (/dev/shm).
-                 * @example 64M, 128M, 512M
-                 */
+                /** @description The size of the shared host memory device (/dev/shm). */
                 shm_size?: string | null;
             } | null;
         };
@@ -5297,10 +5518,7 @@ export interface components {
             };
             /** @description Configuration settings for limits and reserves of RAM resources for the given container. */
             ram: {
-                /**
-                 * @description The limit (maximum) amount of RAM each instance of the given container can use.
-                 * @example 1G, 2M
-                 */
+                /** @description The limit (maximum) amount of RAM each instance of the given container can use. */
                 limit?: string;
                 /** @description The reserve (allocation) of RAM given to each instance of the container. */
                 reserve?: string;
@@ -5309,7 +5527,6 @@ export interface components {
         /**
          * HybridIdentifier
          * @description Either a resource ID (objectid - i.e. 651586fca6078e98982dbd90) or a resource Identifier (human-readable)
-         * @example my-image-source
          */
         HybridIdentifier: string;
         /**
@@ -5406,7 +5623,6 @@ export interface components {
          * Version
          * @description Version can be any string, but if it begins with a "v", semantic version will be enforced. A [Semantic Version](https://semver.org/) string. Follows the format vMAJOR.MINOR.PATCH-build.
          *
-         * @example v1.2.3-dev
          */
         Version: string;
         /**
@@ -5430,10 +5646,7 @@ export interface components {
             read_only: boolean;
             /** @description Configuration for settings local to the container filesystem. */
             local?: {
-                /**
-                 * @description The maximum size this volume can grow to. Container volumes on Cycle are thinly provisioned, meaning this isn't an allocation - the volume will only use the space it needs up to this size.
-                 * @example 10G
-                 */
+                /** @description The maximum size this volume can grow to. Container volumes on Cycle are thinly provisioned, meaning this isn't an allocation - the volume will only use the space it needs up to this size. */
                 max_size: string;
                 /** @description A boolean where true signifies using the largest drive over 2TB for the target server. */
                 storage_pool?: boolean;
@@ -5585,6 +5798,13 @@ export interface components {
                         /** @description If enabled, Cycle will attempt to match inbound requests to the closest load balancer geographically. */
                         enable: boolean;
                     };
+                    wildcard?: {
+                        /**
+                         * @description If enabled, subdomains will resolve for wildcard records. If disabled, only the primary domain will resolve.
+                         * @default false
+                         */
+                        resolve_sub_domains: boolean;
+                    } | null;
                 };
             } & ({
                 /** @description The ID of the container this record is related to. */
@@ -5864,15 +6084,33 @@ export interface components {
          */
         WafConfig: {
             rules: {
+                /** @description Some information about the rule. */
                 description: string;
+                /** @description A boolean that indicates if the rule should be active or skipped. */
                 skip: boolean;
-                /** @enum {string} */
+                /**
+                 * @description A string that describes if the role should allow or deny traffic based on the conditions.
+                 * @enum {string}
+                 */
                 type: "allow" | "deny";
+                /**
+                 * @description A string that describes if both attributes need to be true (match all) or if only one of the conditions needs to be true (match any).
+                 * @enum {string}
+                 */
+                match: "any" | "all";
+                /** @description An array of the specific conditions for the rule. */
                 conditions: {
-                    /** @enum {string} */
+                    /**
+                     * @description A string that describes the match type for the condition.
+                     * @enum {string}
+                     */
                     type: "ip-match" | "geo-match" | "url-match" | "method-match" | "header-match";
-                    /** @enum {string} */
+                    /**
+                     * @description A string that indicates the range of values relative to the value property.
+                     * @enum {string}
+                     */
                     operator: "==" | "!=" | ">" | "<" | ">=" | "<=";
+                    /** @description The value corresponding to the condition type. */
                     value: string;
                 }[];
             }[];
@@ -6012,8 +6250,10 @@ export interface components {
                     url?: string;
                 } | null;
                 proxy?: {
-                    /** @description The proxy domain for this router. */
+                    /** @description The domain that this router will proxy. */
                     domain?: string | null;
+                    /** @description The full URL that this router will proxy. */
+                    url?: string | null;
                     /** @description Allows the load balancer to modify content before it reaches the user. */
                     content_mod?: {
                         /** @description An array that describes a list of replacement match/value pairs. */
@@ -6027,10 +6267,7 @@ export interface components {
                 } | null;
                 caching?: {
                     files?: {
-                        /**
-                         * @description Regex string that describes the files to cache.
-                         * @example (.*)\\.(js|jpg|css|png|svg)$
-                         */
+                        /** @description Regex string that describes the files to cache. */
                         match: string;
                         /** @description Time string that describes the time to live. */
                         ttl: components["schemas"]["Duration"];
@@ -6048,7 +6285,7 @@ export interface components {
                 /** @description The specific domains to match against. */
                 domains: string[] | null;
                 /** @description The specific ports to match against. */
-                internal_port: number[] | null;
+                internal_ports: number[] | null;
                 path?: string | null;
                 /** @description Match traffic destined (or not destined) for a particular container. */
                 containers?: {
@@ -6095,21 +6332,21 @@ export interface components {
                     /** @description The duration the load balancer will wait before timing out while attempting to connect to the destination. */
                     destination_connection: components["schemas"]["Duration"];
                 };
-                /** @description Additional configuration options specific to the selected mode (tcp/http). */
-                extension?: components["schemas"]["TcpRouterConfig"] | components["schemas"]["HttpRouterConfig"] | components["schemas"]["UdpRouterConfig"];
+                extension?: null | (components["schemas"]["TcpRouterConfig"] | components["schemas"]["HttpRouterConfig"] | components["schemas"]["UdpRouterConfig"]);
             };
         };
         /** V1LbController */
         V1LbController: {
-            default: boolean;
             /** @description A human-readable identifier for this controller. It will default to the port, i.e. `port-443`, but can be renamed to anything, such as the service this controller represents. */
             identifier: string;
+            /** @description The port inbound trafic is accepted on. */
+            port: number;
             waf?: components["schemas"]["WafConfig"] | null;
             /**
              * V1LbControllerTransport
              * @description Defines how traffic comes in to the load balancer, and how the load balancer handles it.
              */
-            transport: {
+            transport?: {
                 /** @description When true, this controller is disabled and will not be used. */
                 disable: boolean;
                 /**
@@ -6125,8 +6362,6 @@ export interface components {
                     performance: boolean;
                     /** @description Defines how traffic gets into the load balancer. */
                     ingress: {
-                        /** @description The port inbound trafic is accepted on. */
-                        port: number;
                         tls?: {
                             /** @description Enables or disables TLS. */
                             enable: boolean;
@@ -6147,7 +6382,7 @@ export interface components {
                 };
                 /** @description Defines where traffic is sent. Many can be defined per controller. */
                 routers: components["schemas"]["V1LbConfigRouter"][];
-            };
+            } | null;
         };
         /** V1LbConfig */
         V1LbConfig: {
@@ -6193,7 +6428,7 @@ export interface components {
          * LoadBalancerConfig
          * @description The config object for the loadbalancer service.
          */
-        LoadBalancerConfig: (Record<string, never> | null) & (components["schemas"]["V1LbType"] | components["schemas"]["HaProxyLbType"] | components["schemas"]["DefaultLbType"]);
+        LoadBalancerConfig: components["schemas"]["V1LbType"] | components["schemas"]["HaProxyLbType"] | components["schemas"]["DefaultLbType"];
         /**
          * LoadBalancerEnvironmentService
          * @description Information about the environments loadbalancer service(s).
@@ -6207,7 +6442,7 @@ export interface components {
             high_availability: boolean;
             /** @description A boolean representing if this service container is set to autoupdate or not */
             auto_update?: boolean;
-            config: components["schemas"]["LoadBalancerConfig"];
+            config: components["schemas"]["LoadBalancerConfig"] | null;
         };
         /**
          * DiscoveryConfig
@@ -6224,6 +6459,8 @@ export interface components {
                     ipv6?: string[] | null;
                 } | undefined;
             } | null;
+            /** @description A list of custom DNS resolver strings.  Can specifify domains or ips. */
+            custom_resolvers?: string[];
         };
         /**
          * DiscoveryEnvironmentService
@@ -6377,7 +6614,7 @@ export interface components {
         };
         /**
          * Environment
-         * @description Environments are groups of containers with a private network built between them. For more information on environments, see the [main docs](https://docs.cycle.io/environments/overview/).
+         * @description Environments are groups of containers with a private network built between them. For more information on environments, see the [main docs](https://cycle.io/docs/platform/introduction-to-environments).
          */
         Environment: {
             id: components["schemas"]["ID"];
@@ -6464,31 +6701,19 @@ export interface components {
             accounts?: {
                 [key: string]: components["schemas"]["PublicAccount"] | undefined;
             };
-            /**
-             * @description Included creators that are employees of Cycle, keyed by ID.
-             * @example null
-             */
+            /** @description Included creators that are employees of Cycle, keyed by ID. */
             employees?: {
                 [key: string]: components["schemas"]["PublicAccount"] | undefined;
             };
-            /**
-             * @description Included creators that are not Cycle accounts, keyed by ID.
-             * @example null
-             */
+            /** @description Included creators that are not Cycle accounts, keyed by ID. */
             visitors?: {
                 [key: string]: components["schemas"]["PublicAccount"] | undefined;
             };
-            /**
-             * @description Included creators that are Cycle environments (usually automatically created resources), keyed by ID.
-             * @example null
-             */
+            /** @description Included creators that are Cycle environments (usually automatically created resources), keyed by ID. */
             environments?: {
                 [key: string]: components["schemas"]["Environment"] | undefined;
             };
-            /**
-             * @description Included creators that are Cycle API Keys, keyed by ID.
-             * @example null
-             */
+            /** @description Included creators that are Cycle API Keys, keyed by ID. */
             api_keys?: {
                 [key: string]: components["schemas"]["ApiKeyCreator"] | undefined;
             };
@@ -6555,15 +6780,14 @@ export interface components {
         };
         /**
          * RepoSourceType
-         * @description Information about the repostiory.
+         * @description Information about the repository.
          */
         RepoType: {
             /** @description The URL of the repository. */
             url: string;
             /** @description An optional branch arguement.  Default value is `master`. */
             branch?: string;
-            /** @description Authentication information for the repository. */
-            auth?: (Record<string, never> | null) & (components["schemas"]["CredentialsHTTP"] | components["schemas"]["CredentialsSSH"]);
+            auth?: null | (components["schemas"]["CredentialsHTTP"] | components["schemas"]["CredentialsSSH"]);
             /** @description Repository reference information. */
             ref?: {
                 /** @description The type of reference being used. */
@@ -6689,7 +6913,7 @@ export interface components {
          * RegistryAuth
          * @description Authentication details for a third party image registry/source.
          */
-        RegistryAuth: components["schemas"]["RegistryAuthUser"] | components["schemas"]["RegistryAuthProvider"] | components["schemas"]["RegistryAuthWebhook"] | null;
+        RegistryAuth: components["schemas"]["RegistryAuthUser"] | components["schemas"]["RegistryAuthProvider"] | components["schemas"]["RegistryAuthWebhook"];
         /**
          * OciRegistryOrigin
          * @description An image origin that pulls images fro an OCI-compatible registry. Also used for provider-native registries, such as AWS ECR.
@@ -6706,7 +6930,7 @@ export interface components {
                 target: string;
                 /** @description The url of the remote registry. */
                 url: string;
-                auth?: components["schemas"]["RegistryAuth"];
+                auth?: components["schemas"]["RegistryAuth"] | null;
             };
         };
         /**
@@ -6944,6 +7168,11 @@ export interface components {
             [key: string]: components["schemas"]["Image"] | undefined;
         };
         /**
+         * StackVariable
+         * @description A variable specified in a stack spec.
+         */
+        StackVariable: string;
+        /**
          * StackSpecScopedVariableUrlSource
          * @description A variable who's value is fetched from a URL when the container starts.
          */
@@ -6955,14 +7184,14 @@ export interface components {
             type: "url";
             details: {
                 /** @description The URL to call to fetch the value. */
-                url: string;
+                url: string | components["schemas"]["StackVariable"];
                 /** @description Additional headers that can be attached to the URL request. Useful for adding meta-data to third-party services. */
                 headers: {
                     [key: string]: unknown;
-                };
+                } | components["schemas"]["StackVariable"];
                 /** @description A URL that can be provided to authenticate with a third party secret service. Cycle will make a request to this URL before fetching the secret URL, and use the response as the value of an Authorization header when requesting the secret. */
-                auth_token_url: string | null;
-            };
+                auth_token_url: (string | null) | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
         };
         /**
          * StackSpecScopedVariableRawSource
@@ -6976,210 +7205,190 @@ export interface components {
             type: "raw";
             details: {
                 /** @description The value of the variable. */
-                value: string;
+                value: string | components["schemas"]["StackVariable"];
                 /** @description A boolean where true represents the text the user is entering will be multi line. */
-                blob: boolean;
-                secret?: {
+                blob: boolean | components["schemas"]["StackVariable"];
+                secret?: ({
                     /** @description A string describing the IV Hex associated with the encryption of the variable. */
-                    iv?: string;
+                    iv?: string | components["schemas"]["StackVariable"];
                     /** @description A user specified hint that will suggest what the encryption key might be */
-                    hint?: string;
-                } | null;
-            };
+                    hint?: string | components["schemas"]["StackVariable"];
+                } | null) | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
         };
         /** StackSpecScopedVariable */
         StackSpecScopedVariable: {
-            identifier: components["schemas"]["Identifier"];
+            identifier: components["schemas"]["Identifier"] | components["schemas"]["StackVariable"];
             scope: {
                 /** @description Describes the containers that have access to this scoped variable. */
                 containers: {
                     /** @description If true, all containers in the environment will have access to this variable. */
-                    global: boolean;
+                    global: boolean | components["schemas"]["StackVariable"];
                     /** @description A list of container IDs that are granted access to this variable. */
-                    ids?: string[] | null;
+                    ids?: (string[] | null) | components["schemas"]["StackVariable"];
                     /** @description A list of container identifiers that are granted access to this variable. */
-                    identifiers?: components["schemas"]["Identifier"][] | null;
-                };
-            };
+                    identifiers?: (components["schemas"]["Identifier"][] | null) | components["schemas"]["StackVariable"];
+                } | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
             access: {
                 /** @description Grants access to this variable from within a container as an environment variable. */
                 env_variable?: {
                     /** @description The environment variable inside the container that stores the value of the variable. */
-                    key: string;
-                } | null;
+                    key: string | components["schemas"]["StackVariable"];
+                } | components["schemas"]["StackVariable"] | null;
                 /** @description Grants access to this variable over the Internal API. */
-                internal_api?: {
+                internal_api?: ({
                     /** @description Sets the duration that this variable can be accessed over the Internal API, after container start. Provides additional security as sensitive data can only be accessed for a limited time. */
-                    duration?: components["schemas"]["Duration"] | null;
-                } | null;
+                    duration?: components["schemas"]["Duration"] | components["schemas"]["StackVariable"] | null;
+                } | null) | components["schemas"]["StackVariable"];
                 /** @description Grants access to this variable as a file inside the container. */
-                file?: {
+                file?: ({
                     /** @description When true, Cycle will interpret this variable as a base-64 encoded string, and decode it before writing it to the file inside the container. */
-                    decode: boolean;
-                    /**
-                     * @description The absolute path to write the variable to (including file name). If `null`, it will be written to `/var/run/cycle/variables/{variable-identifier}`.
-                     * @example /var/run/cycle/variables/<myVariable>
-                     */
-                    path: string | null;
-                } | null;
-            };
-            /** @description Describes the source/value of the variable.
-             *     - **raw**: Directly set the value of the variable in the stack. - **url**: Cycle will fetch the variable content from a remote source when the container starts.
-             *      */
-            source?: (Record<string, never> | null) & (components["schemas"]["StackSpecScopedVariableUrlSource"] | components["schemas"]["StackSpecScopedVariableRawSource"]);
+                    decode: boolean | components["schemas"]["StackVariable"];
+                    /** @description The absolute path to write the variable to (including file name). If `null`, it will be written to `/var/run/cycle/variables/{variable-identifier}`. */
+                    path: (string | null) | components["schemas"]["StackVariable"];
+                } | null) | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
+            source?: (components["schemas"]["StackSpecScopedVariableUrlSource"] | components["schemas"]["StackSpecScopedVariableRawSource"]) | components["schemas"]["StackVariable"] | null;
         };
         /**
-         * StackImageOrigin
+         * StackSpecImageOrigin
          * @description The origin of the image.
          */
-        StackImageOrigin: components["schemas"]["DockerHubOrigin"] | components["schemas"]["DockerFileOrigin"] | components["schemas"]["DockerRegistryOrigin"] | components["schemas"]["OciRegistryOrigin"] | components["schemas"]["CycleSourceOrigin"];
+        StackSpecImageOrigin: components["schemas"]["DockerHubOrigin"] | components["schemas"]["DockerFileOrigin"] | components["schemas"]["DockerRegistryOrigin"] | components["schemas"]["OciRegistryOrigin"] | components["schemas"]["CycleSourceOrigin"];
         /** StackSpecContainerImage */
         StackSpecContainerImage: {
             /** @description The human-readable name of this image. */
-            name?: string | null;
+            name?: (string | null) | components["schemas"]["StackVariable"];
             /** @description Instructions on how to fetch or build this image. */
-            origin: components["schemas"]["StackImageOrigin"];
+            origin: components["schemas"]["StackSpecImageOrigin"] | components["schemas"]["StackVariable"];
             /** @description Additional details applied when building an image. */
-            build?: {
+            build?: ({
                 /** @description A map of build arguments applied to the image at build time. */
                 args: {
                     [key: string]: string | undefined;
-                };
-            } | null;
+                } | components["schemas"]["StackVariable"];
+            } | null) | components["schemas"]["StackVariable"];
             /** @description A specific builder to use. By default, Cycle uses its factory service and a standard build command to build images, but this can be enhanced by using an image builder integration. */
-            builder?: {
+            builder?: ({
                 /** @description The ID of the integration to use when building the image. The integration must support image building to be compatible. */
                 integration_id: components["schemas"]["HybridIdentifier"];
-            } | null;
+            } | null) | components["schemas"]["StackVariable"];
         };
         /**
-         * StackContainerConfigNetwork
+         * StackSpecContainerConfigNetwork
          * @description Stack configuration options related to the container's network.
          */
-        StackContainerConfigNetwork: {
-            /**
-             * @description The level of public network access this container should have.
-             * @enum {string}
-             */
-            public: "enable" | "disable" | "egress-only";
+        StackSpecContainerConfigNetwork: {
+            /** @description The level of public network access this container should have. */
+            public: ("enable" | "disable" | "egress-only") | components["schemas"]["StackVariable"];
             /** @description The hostname of the container. This is how it can be referenced by other containers in the same environment. */
-            hostname: string;
+            hostname: string | components["schemas"]["StackVariable"];
             /** @description A list of port mappings on this container. */
-            ports?: string[];
+            ports?: string[] | components["schemas"]["StackVariable"];
         };
         /**
-         * StackContainerConfigDeploy
+         * StackSpecContainerConfigDeploy
          * @description Stack configuration options related to how the container behaves over its lifecycle (startup, shutdown, health checks, etc).
          */
-        StackContainerConfigDeploy: {
+        StackSpecContainerConfigDeploy: {
             /** @description The number of desired instances to deploy. */
-            instances: number;
-            /**
-             * @description The strategy Cycle will apply when deploying instances of this container.
+            instances: number | components["schemas"]["StackVariable"];
+            /** @description The strategy Cycle will apply when deploying instances of this container.
              *     - ** resource-density **: Cycle will distribute instances across servers to maintain balanced resource usage. - ** high-availability **: Cycle will deploy instances over servers with an emphasis on geographic and physical separation - ** first-available **: Cycle will deploy one instance to every node that matches the specified criteria. (default) - ** node **: Cycle will deploy one instance to every node that matches the specified criteria. - ** edge **: Cycle will prioritize geographic distribution of instances. - ** function **: Every ingress request/connection receives its own instance.  - ** manual **: Cycle will not make any decisions on where instances are deployed. Instead, instances must be deployed manually using the portal or API.
-             *
-             * @default first-available
-             * @enum {string|null}
-             */
-            strategy: "resource-density" | "manual" | "high-availability" | "first-available" | "node" | "edge" | "function";
+             *      */
+            strategy?: ("resource-density" | "manual" | "high-availability" | "first-available" | "node" | "edge" | "function") | components["schemas"]["StackVariable"];
             /** @description Configuration options for containers using the 'function' deployment strategy. */
-            function?: {
+            function?: ({
                 /** @description The maximum number of instances that Cycle can pre-allocate (includes auto-scaled instances). */
-                max_pool_size?: number | null;
+                max_pool_size?: (number | null) | components["schemas"]["StackVariable"];
                 /** @description For each shard (scheduler), the maximum number of tasks it can run in parallel. */
-                max_shard_concurrency?: number | null;
+                max_shard_concurrency?: (number | null) | components["schemas"]["StackVariable"];
                 /** @description The maximum amount of time a function instance can run before timing out. */
-                max_runtime?: components["schemas"]["Duration"] | null;
+                max_runtime?: components["schemas"]["Duration"] | components["schemas"]["StackVariable"] | null;
                 /** @description The maximum amount of time Cycle will wait for an instance to be available. */
-                max_queue_time?: components["schemas"]["Duration"] | null;
-            } | null;
+                max_queue_time?: components["schemas"]["Duration"] | components["schemas"]["StackVariable"] | null;
+            } | null) | components["schemas"]["StackVariable"];
             /** @description Configuration options for stateful containers. */
-            stateful?: {
+            stateful?: ({
                 /** @description Stateful container options. */
                 options: {
                     /** @description When enabled, instances will utilize stateless base hostnames instead of being prefixed with a unique ID. */
                     use_base_hostname?: boolean | null;
                 } | null;
-            } | null;
+            } | null) | components["schemas"]["StackVariable"];
             /** @description Configuration options that provide the ability to set restrictions on which nodes instances of this container are able to be deployed to. (i.e. if you have a GPU container, it should only go on nodes with a GPU). */
-            constraints?: {
+            constraints?: ({
                 node?: {
                     /** @description Tags applied to a node. Cycle generates some automatically, but additional, custom tags can be applied on a per-node basis. */
                     tags: {
                         /** @description If a node has at least one of these tags, it is considered a valid deployment target for this container. */
-                        any?: string[];
+                        any?: string[] | components["schemas"]["StackVariable"];
                         /** @description A node must have **ALL** of these tags to be considered a valid deployment target for this container. */
-                        all?: string[];
-                    };
+                        all?: string[] | components["schemas"]["StackVariable"];
+                    } | components["schemas"]["StackVariable"];
                 } | null;
-            } | null;
+            } | null) | components["schemas"]["StackVariable"];
             /** @description Configuration options for how this container behaves during shutdown. */
-            shutdown?: {
+            shutdown?: ({
                 /** @description How long the platform will wait for a container to stop gracefully. */
-                graceful_timeout?: components["schemas"]["Duration"] | null;
-                /** @description Signals that should be sent to the container on shutdown. */
-                signals?: ("SIGTERM" | "SIGINT" | "SIGUSR1" | "SIGUSR2" | "SIGHUB" | "SIGKILL" | "SIGQUIT")[];
-            } | null;
+                graceful_timeout?: components["schemas"]["Duration"] | components["schemas"]["StackVariable"] | null;
+                signals?: ("SIGTERM" | "SIGINT" | "SIGUSR1" | "SIGUSR2" | "SIGHUB" | "SIGKILL" | "SIGQUIT")[] | components["schemas"]["StackVariable"];
+            } | null) | components["schemas"]["StackVariable"];
             /** @description Configuration options for how this container behaves during startup. */
-            startup?: {
+            startup?: ({
                 /** @description How long the platform will wait before sending the start signal to the given container. */
-                delay?: components["schemas"]["Duration"] | null;
-            } | null;
+                delay?: components["schemas"]["Duration"] | components["schemas"]["StackVariable"] | null;
+            } | null) | components["schemas"]["StackVariable"];
             /** @description Configurations for how the container behaves during updates. */
-            update?: {
+            update?: ({
                 /** @description When set, Cycle will pick a random time from `0 - this duration`, and stagger the instances so they all start at different times (up to the time specified here). */
-                stagger?: components["schemas"]["Duration"] | null;
-            } | null;
+                stagger?: components["schemas"]["Duration"] | components["schemas"]["StackVariable"] | null;
+            } | null) | components["schemas"]["StackVariable"];
             /** @description Configuration options for how Cycle should handle restarting this container (i.e. in case the process inside the container dies). */
-            restart?: {
-                /**
-                 * @description Under what circumstances Cycle should try to restart this container.
-                 * @enum {string}
-                 */
-                condition: "always" | "never" | "failure";
+            restart?: ({
+                /** @description Under what circumstances Cycle should try to restart this container. */
+                condition: ("always" | "never" | "failure") | components["schemas"]["StackVariable"];
                 /** @description How long the platform will wait between restart attempts. */
-                delay: components["schemas"]["Duration"];
+                delay: components["schemas"]["Duration"] | components["schemas"]["StackVariable"];
                 /** @description The maximum number of restart attempts Cycle will make. */
-                max_attempts: number;
-            } | null;
+                max_attempts: number | components["schemas"]["StackVariable"];
+            } | null) | components["schemas"]["StackVariable"];
             /** @description Configuration options for automated container health checks. */
-            health_check?: {
-                /**
-                 * @description The command or script to run to verify the health of the container. This script is run inside the container by Cycle.
+            health_check?: ({
+                /** @description The command or script to run to verify the health of the container. This script is run inside the container by Cycle.
                  *     This command accepts two types of entries:
                  *     - The first is a reference to a script that already lives in the container filesystem. This can be defined by giving the full path to the script as the value.   - The second format is an inline script.  If you need the code to execute within a shell, wrap the commands in escaped quotes like this `"\"curl -s -o /dev/console -w \"%{http_code}\" http://localhost:3000/_health | grep '200'  && exit 0 || exit 1\""`.  Do not use the `/bin/sh -c <commands>` format, this will not be accepted.
-                 *
-                 * @example /bin/sh healthcheck.sh
-                 */
-                command: string;
+                 *      */
+                command: string | components["schemas"]["StackVariable"];
                 /** @description The number of times to retry the command before marking an instance unhealthy. */
-                retries: number;
+                retries: number | components["schemas"]["StackVariable"];
                 /** @description How long to wait between running health checks. */
-                interval: components["schemas"]["Duration"];
+                interval: components["schemas"]["Duration"] | components["schemas"]["StackVariable"];
                 /** @description How long before a health check attempt times out. */
-                timeout: components["schemas"]["Duration"];
+                timeout: components["schemas"]["Duration"] | components["schemas"]["StackVariable"];
                 /** @description A boolean where true represents the desire for the container to restart if any instance is unhealthy. */
-                restart: boolean;
+                restart: boolean | components["schemas"]["StackVariable"];
                 /** @description How long to wait after a container start event before running health checks. */
-                delay?: components["schemas"]["Duration"] | null;
-            } | null;
+                delay?: components["schemas"]["Duration"] | components["schemas"]["StackVariable"] | null;
+            } | null) | components["schemas"]["StackVariable"];
             /** @description Configuration options for how the instance telemetry (CPU usage, etc) is handled. */
-            telemetry?: {
+            telemetry?: ({
                 /** @description How long telemetry data should be retained. */
-                retention?: components["schemas"]["Duration"] | null;
+                retention?: components["schemas"]["Duration"] | components["schemas"]["StackVariable"] | null;
                 /** @description The duration between samples. */
-                interval?: components["schemas"]["Duration"] | null;
+                interval?: components["schemas"]["Duration"] | components["schemas"]["StackVariable"] | null;
                 /** @description A URL where Cycle will send telemetry data to. The payload will be an instance resource snapshot. */
-                webhook?: string | null;
+                webhook?: (string | null) | components["schemas"]["StackVariable"];
                 /** @description If true, Cycle will not aggregate telemetry for this container's instances. */
-                disable: boolean;
-            } | null;
+                disable: boolean | components["schemas"]["StackVariable"];
+            } | null) | components["schemas"]["StackVariable"];
         };
         /**
-         * StackContainerScaleThresholdRam
+         * StackSpecContainerScaleThresholdRam
          * @description Describes the RAM threshold at which scaling will occur.
          */
-        StackContainerScaleThresholdRam: {
+        StackSpecContainerScaleThresholdRam: {
             /**
              * @description discriminator enum property added by openapi-typescript
              * @enum {string}
@@ -7191,10 +7400,10 @@ export interface components {
             };
         };
         /**
-         * StackContainerScaleThresholdCpu
+         * StackSpecContainerScaleThresholdCpu
          * @description Describes the CPU threshold at which scaling will occur.
          */
-        StackContainerScaleThresholdCpu: {
+        StackSpecContainerScaleThresholdCpu: {
             /**
              * @description discriminator enum property added by openapi-typescript
              * @enum {string}
@@ -7205,10 +7414,10 @@ export interface components {
             };
         };
         /**
-         * StackContainerScaleThresholdCustom
+         * StackSpecContainerScaleThresholdCustom
          * @description A custom threshold for defining a scaling event.
          */
-        StackContainerScaleThresholdCustom: {
+        StackSpecContainerScaleThresholdCustom: {
             /**
              * @description discriminator enum property added by openapi-typescript
              * @enum {string}
@@ -7219,10 +7428,10 @@ export interface components {
             };
         };
         /**
-         * StackContainerScaleThresholdNetworkConnections
+         * StackSpecContainerScaleThresholdNetworkConnections
          * @description Describes the network connections threshold at which scaling will occur.
          */
-        StackContainerScaleThresholdNetworkConnections: {
+        StackSpecContainerScaleThresholdNetworkConnections: {
             /**
              * @description discriminator enum property added by openapi-typescript
              * @enum {string}
@@ -7233,10 +7442,10 @@ export interface components {
             };
         };
         /**
-         * StackContainerScaleThresholdNetworkRequests
+         * StackSpecContainerScaleThresholdNetworkRequests
          * @description Describes the network requests threshold at which scaling will occur.
          */
-        StackContainerScaleThresholdNetworkRequests: {
+        StackSpecContainerScaleThresholdNetworkRequests: {
             /**
              * @description discriminator enum property added by openapi-typescript
              * @enum {string}
@@ -7247,10 +7456,10 @@ export interface components {
             };
         };
         /**
-         * StackContainerScaleThresholdNetworkThroughput
+         * StackSpecContainerScaleThresholdNetworkThroughput
          * @description Describes the network throughput threshold at which scaling will occur.
          */
-        StackContainerScaleThresholdNetworkThroughput: {
+        StackSpecContainerScaleThresholdNetworkThroughput: {
             /**
              * @description discriminator enum property added by openapi-typescript
              * @enum {string}
@@ -7263,68 +7472,67 @@ export interface components {
             };
         };
         /**
-         * StackContainerScaleThreshold
+         * StackSpecContainerScaleThreshold
          * @description Discriminated union describing the different types of scaling threshold and their respective details
          */
-        StackContainerScaleThreshold: components["schemas"]["StackContainerScaleThresholdRam"] | components["schemas"]["StackContainerScaleThresholdCpu"] | components["schemas"]["StackContainerScaleThresholdNetworkConnections"] | components["schemas"]["StackContainerScaleThresholdNetworkRequests"] | components["schemas"]["StackContainerScaleThresholdNetworkThroughput"];
+        StackSpecContainerScaleThreshold: components["schemas"]["StackSpecContainerScaleThresholdRam"] | components["schemas"]["StackSpecContainerScaleThresholdCpu"] | components["schemas"]["StackSpecContainerScaleThresholdNetworkConnections"] | components["schemas"]["StackSpecContainerScaleThresholdNetworkRequests"] | components["schemas"]["StackSpecContainerScaleThresholdNetworkThroughput"];
         /**
-         * StackContainerConfigScaling
+         * StackSpecContainerConfigScaling
          * @description Stack configuration options for auto-scaling.
          */
-        StackContainerConfigScaling: {
+        StackSpecContainerConfigScaling: {
             /** @description The identifier of the auto-scaling group assigned to this container. The auto-scale group determines which infrastructure this container can spin up if it needs more resources to meet demand. Setting it to `null` will limit auto-scaling to only instances. */
-            autoscale_group: components["schemas"]["Identifier"] | null;
-            /** @description Describes the criteria for deploying new instances when an auto-scale criteria is met. */
+            autoscale_group: components["schemas"]["Identifier"] | components["schemas"]["StackVariable"] | null;
             instances: {
                 /** @description Maximum additional instances the auto-scaler will run at any time. */
-                max: number;
+                max: number | components["schemas"]["StackVariable"];
                 /** @description Minimum number of instances per server. */
-                max_server: number;
+                max_server: number | components["schemas"]["StackVariable"];
                 /** @description Minimum amount of time an instance will live. */
-                min_ttl: components["schemas"]["Duration"];
-            };
+                min_ttl: components["schemas"]["Duration"] | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
             /** @description Duration in which the auto-scaler will watch for changes. */
-            window: components["schemas"]["Duration"];
+            window: components["schemas"]["Duration"] | components["schemas"]["StackVariable"];
             /** @description An array of rules that dictate when a scaling event will be triggered. */
-            thresholds: components["schemas"]["StackContainerScaleThreshold"][];
+            thresholds: components["schemas"]["StackSpecContainerScaleThreshold"][] | components["schemas"]["StackVariable"];
         };
         /**
-         * StackContainerConfigRuntime
+         * StackSpecContainerConfigRuntime
          * @description Configuration options related to how the container behaves while it is running (environment variables, command overrides, kernel capabilities, etc. )
          */
-        StackContainerConfigRuntime: {
+        StackSpecContainerConfigRuntime: {
             /** @description The working directory to execute the command in. */
-            workdir?: string;
+            workdir?: string | components["schemas"]["StackVariable"];
             /** @description The command to execute when this container starts. Will override the default specified in the container. */
             command?: {
-                path?: string;
-                args?: string;
-            };
+                path?: string | components["schemas"]["StackVariable"];
+                args?: string | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
             /** @description A map of environment variables that will be injected into the container. */
             environment_vars?: {
-                [key: string]: string | undefined;
-            };
+                [key: string]: (string | components["schemas"]["StackVariable"]) | undefined;
+            } | components["schemas"]["StackVariable"];
             /** @description Container namespaces to apply. By default, all are applied. Removing/changing this can have security implications. */
-            namespaces?: ("ipc" | "pid" | "uts" | "network" | "mount" | "user" | "cgroup")[];
+            namespaces?: ("ipc" | "pid" | "uts" | "network" | "mount" | "user" | "cgroup")[] | components["schemas"]["StackVariable"];
             /** @description Sysctl options to apply. */
             sysctl?: {
-                [key: string]: string | undefined;
-            };
+                [key: string]: (string | components["schemas"]["StackVariable"]) | undefined;
+            } | components["schemas"]["StackVariable"];
             /** @description RLIMIT options to apply. */
             rlimits?: {
                 [key: string]: {
-                    hard: number;
-                    soft: number;
+                    hard: number | components["schemas"]["StackVariable"];
+                    soft: number | components["schemas"]["StackVariable"];
                 } | undefined;
-            };
+            } | components["schemas"]["StackVariable"];
             /** @description Configuration options for seccomp. Cycle enables seccomp by default. */
             seccomp?: {
-                disable: boolean;
-                rules: {
+                disable: boolean | components["schemas"]["StackVariable"];
+                rules: ({
                     capabilities: {
-                        includes: string;
-                        excludes: string;
-                    };
+                        includes: string | components["schemas"]["StackVariable"];
+                        excludes: string | components["schemas"]["StackVariable"];
+                    } | components["schemas"]["StackVariable"];
                     syscall: {
                         names: string[];
                         /** @enum {string} */
@@ -7337,188 +7545,180 @@ export interface components {
                             /** @enum {string} */
                             op: "SCMP_CMP_NE" | "SCMP_CMP_LT" | "SCMP_CMP_LE" | "SCMP_CMP_EQ" | "SCMP_CMP_GE" | "SCMP_CMP_GT" | "SCMP_CMP_MASKED_EQ";
                         }[];
-                    };
-                }[];
-            };
+                    } | components["schemas"]["StackVariable"];
+                } | components["schemas"]["StackVariable"])[] | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
             /** @description Configuration options regarding the underlying host. */
-            host?: {
+            host?: ({
                 /** @description If true, Cycle will mount the `/proc` directory into the container, giving it access to the host metrics. This is useful if you're running i.e. a monitoring agent. */
-                expose_proc?: boolean | null;
-            } | null;
+                expose_proc?: (boolean | null) | components["schemas"]["StackVariable"];
+            } | null) | components["schemas"]["StackVariable"];
             /** @description If true, the container process will run in fully-privileged mode. **WARNING** This is considered insecure, and should only be done if you know what you're doing. */
-            privileged?: boolean;
+            privileged?: boolean | components["schemas"]["StackVariable"];
             /** @description Additional Linux kernel capabilities to apply to this container process. */
-            capabilities?: ("CAP_CHOWN" | "CAP_FSETID" | "CAP_DAC_OVERRIDE" | "CAP_FOWNER" | "CAP_SETFCAP" | "CAP_SETGID" | "CAP_SETUID" | "CAP_KILL" | "CAP_MKNOD" | "CAP_NET_BIND_SERVICE" | "CAP_NET_RAW" | "CAP_AUDIT_WRITE" | "CAP_SYS_CHROOT" | "CAP_SETPCAP" | "CAP_DAC_READ_SEARCH" | "CAP_NET_ADMIN" | "CAP_NET_BROADCAST" | "CAP_SYS_ADMIN" | "CAP_SYS_MODULE" | "CAP_SYS_NICE" | "CAP_SYS_PACCT" | "CAP_SYS_PTRACE" | "CAP_SYS_RAWIO" | "CAP_SYS_RESOURCE" | "CAP_SYS_BOOT" | "CAP_SYS_TIME" | "CAP_SYS_TTY_CONFIG" | "CAP_SYSLOG" | "CAP_AUDIT_CONTROL" | "CAP_AUDIT_READ" | "CAP_IPC_LOCK" | "CAP_IPC_OWNER" | "CAP_LINUX_IMMUTABLE" | "CAP_MAC_ADMIN" | "CAP_MAC_OVERRIDE" | "CAP_BLOCK_SUSPEND" | "CAP_LEASE" | "CAP_WAKE_ALARM")[];
+            capabilities?: ("CAP_CHOWN" | "CAP_FSETID" | "CAP_DAC_OVERRIDE" | "CAP_FOWNER" | "CAP_SETFCAP" | "CAP_SETGID" | "CAP_SETUID" | "CAP_KILL" | "CAP_MKNOD" | "CAP_NET_BIND_SERVICE" | "CAP_NET_RAW" | "CAP_AUDIT_WRITE" | "CAP_SYS_CHROOT" | "CAP_SETPCAP" | "CAP_DAC_READ_SEARCH" | "CAP_NET_ADMIN" | "CAP_NET_BROADCAST" | "CAP_SYS_ADMIN" | "CAP_SYS_MODULE" | "CAP_SYS_NICE" | "CAP_SYS_PACCT" | "CAP_SYS_PTRACE" | "CAP_SYS_RAWIO" | "CAP_SYS_RESOURCE" | "CAP_SYS_BOOT" | "CAP_SYS_TIME" | "CAP_SYS_TTY_CONFIG" | "CAP_SYSLOG" | "CAP_AUDIT_CONTROL" | "CAP_AUDIT_READ" | "CAP_IPC_LOCK" | "CAP_IPC_OWNER" | "CAP_LINUX_IMMUTABLE" | "CAP_MAC_ADMIN" | "CAP_MAC_OVERRIDE" | "CAP_BLOCK_SUSPEND" | "CAP_LEASE" | "CAP_WAKE_ALARM")[] | components["schemas"]["StackVariable"];
             /** @description Configuration options for the root filesystem. */
             rootfs?: {
                 /** @description If true, the container's filesystem will be read-only. */
-                readonly: boolean;
-            };
+                readonly: boolean | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
         };
         /**
-         * StackContainerConfigResources
+         * StackSpecContainerConfigResources
          * @description Configuration options for container resource limits and reserves.
          */
-        StackContainerConfigResources: {
+        StackSpecContainerConfigResources: {
             cpu: {
                 shares?: {
-                    limit: number;
-                    reserve: number;
-                };
+                    limit: number | components["schemas"]["StackVariable"];
+                    reserve: number | components["schemas"]["StackVariable"];
+                } | components["schemas"]["StackVariable"];
                 cpus?: string;
-            };
+            } | components["schemas"]["StackVariable"];
             ram: {
-                limit?: string;
-                reserve?: string;
-                swappiness?: number;
-            };
+                limit?: string | components["schemas"]["StackVariable"];
+                reserve?: string | components["schemas"]["StackVariable"];
+                swappiness?: number | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
         };
         /**
-         * StackContainerConfigIntegrations
+         * StackSpecContainerConfigIntegrations
          * @description Configuration options for additional integrations/features that Cycle provides.
          */
-        StackContainerConfigIntegrations: {
+        StackSpecContainerConfigIntegrations: {
             /** @description Enable additional webhooks that Cycle will call out to during the course of a container's lifetime. All webhooks send a payload as an object containing the instance, container, server, and environment IDs. */
-            webhooks?: {
+            webhooks?: ({
                 /** @description Webhooks that are triggered during a container event. */
-                events?: {
+                events?: ({
                     /** @description Cycle will call this endpoint when the container is deployed. */
-                    deploy?: string | null;
+                    deploy?: (string | null) | components["schemas"]["StackVariable"];
                     /** @description Cycle will call this endpoint when the container is started. */
-                    start?: string | null;
+                    start?: (string | null) | components["schemas"]["StackVariable"];
                     /** @description Cycle will call this endpoint when the container is stopped. */
-                    stop?: string | null;
-                } | null;
+                    stop?: (string | null) | components["schemas"]["StackVariable"];
+                } | null) | components["schemas"]["StackVariable"];
                 /** @description The webhook to hit when the container's configuration is changed. */
-                config?: string | null;
-            } | null;
+                config?: (string | null) | components["schemas"]["StackVariable"];
+            } | null) | components["schemas"]["StackVariable"];
             /** @description When enabled, this integration will configure Let's Encrypt certificates that will be injected into the container at runtime. The certificates will be managed by the platform and renewed automatically. */
-            lets_encrypt?: {
-                enable: boolean;
-                certificate_path?: string | null;
-                chain_path?: string | null;
-                key_path?: string | null;
-                bundle_path?: string | null;
-                additional_certs_path?: string | null;
-            } | null;
+            lets_encrypt?: ({
+                enable: boolean | components["schemas"]["StackVariable"];
+                certificate_path?: (string | null) | components["schemas"]["StackVariable"];
+                chain_path?: (string | null) | components["schemas"]["StackVariable"];
+                key_path?: (string | null) | components["schemas"]["StackVariable"];
+                bundle_path?: (string | null) | components["schemas"]["StackVariable"];
+                additional_certs_path?: (string | null) | components["schemas"]["StackVariable"];
+            } | null) | components["schemas"]["StackVariable"];
             /** @description When enabled, Cycle will fetch and inject remote files into the container at the specified destination during runtime. */
-            files?: {
-                source: string;
-                destination: string;
-            }[] | null;
+            files?: ({
+                source: components["schemas"]["StackVariable"] | string;
+                destination: string | components["schemas"]["StackVariable"];
+            }[] | null) | components["schemas"]["StackVariable"];
             /** @description When enabled, Cycle will automatically manage backups of this container. This is only available for stateful containers. */
-            backups?: {
+            backups?: ({
                 /** @description An identifier of an integration that supports backups. All backups will be sent to this destination. */
-                integration_id?: components["schemas"]["HybridIdentifier"];
+                integration_id?: components["schemas"]["HybridIdentifier"] | components["schemas"]["StackVariable"];
                 /** @description Configuration options for how the container should be backed up. */
                 backup: {
                     /** @description The command to run to capture a backup. The output sent to `STDOUT` will be captured and sent to the specified integration. */
-                    command: string;
+                    command: string | components["schemas"]["StackVariable"];
                     /** @description How long the backup will attempt to run before timing out. */
-                    timeout: components["schemas"]["Duration"] | null;
+                    timeout: components["schemas"]["Duration"] | components["schemas"]["StackVariable"] | null;
                     /** @description A cron string describing how often to run the backup command. */
-                    cron_string: string | null;
-                };
+                    cron_string: (string | null) | components["schemas"]["StackVariable"];
+                } | components["schemas"]["StackVariable"];
                 /** @description Configuration options for how the backup should be restored. */
-                restore: {
-                    command: string;
+                restore: ({
+                    command: string | components["schemas"]["StackVariable"];
                     /** @description The time in seconds for the restore to attempt to complete before timing out. */
-                    timeout: components["schemas"]["Duration"] | null;
-                } | null;
+                    timeout: components["schemas"]["Duration"] | components["schemas"]["StackVariable"] | null;
+                } | null) | components["schemas"]["StackVariable"];
                 /**
                  * @description How long the platform will keep backups. Default is 1 year.
                  * @default 365d
                  */
-                retention: components["schemas"]["Duration"] | null;
-            } | null;
+                retention: components["schemas"]["Duration"] | components["schemas"]["StackVariable"] | null;
+            } | null) | components["schemas"]["StackVariable"];
             /** @description When enabled, Cycle will mount a shared host directory into this container. The directory will be shared with all other containers that mount it. */
-            shared_file_systems?: {
-                [key: string]: {
-                    writable: boolean;
-                    mount_point: string;
-                } | undefined;
-            } | null;
+            shared_file_systems?: ({
+                [key: string]: ({
+                    writable: boolean | components["schemas"]["StackVariable"];
+                    mount_point: components["schemas"]["StackVariable"] | string;
+                } | components["schemas"]["StackVariable"]) | undefined;
+            } | null) | components["schemas"]["StackVariable"];
             /** @description When enabled, allows more customization to be applied to logging for the container. */
-            logs?: {
+            logs?: ({
                 /** @description A tag used for applying log filters and analytics. */
-                groups?: components["schemas"]["Identifier"][] | null;
-            } | null;
+                groups?: (components["schemas"]["Identifier"][] | null) | components["schemas"]["StackVariable"];
+            } | null) | components["schemas"]["StackVariable"];
         };
         /**
-         * StackContainerVolume
+         * StackSpecContainerVolume
          * @description A container volume configuration.
          */
-        StackContainerVolume: {
+        StackSpecContainerVolume: {
             /** @description Configuration options for local volumes. */
             local?: {
                 /** @description The maximum size this volume can grow to. Container volumes on Cycle are thinly provisioned, meaning this isn't an allocation - the volume will only use the space it needs up to this size. */
-                max_size: string;
+                max_size: string | components["schemas"]["StackVariable"];
                 /** @description A boolean where true signifies using the largest drive over 2TB for the target server. */
-                storage_pool?: boolean;
-            };
+                storage_pool?: boolean | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
             /** @description The path this volume should be mounted at inside the container. */
-            destination: string;
+            destination: string | components["schemas"]["StackVariable"];
             /** @description If true, the container will be unable to write data to the volume. */
-            read_only: boolean;
+            read_only: boolean | components["schemas"]["StackVariable"];
             /** @description Configuration options for setting up remote access to this volume via SFTP. */
             remote_access?: {
                 /** @description If true, this volume will be accessible over SFTP. */
-                enable: boolean;
+                enable: boolean | components["schemas"]["StackVariable"];
                 /** @description A list of IPs that SFTP access will be limited to. */
-                ips?: string[];
+                ips?: string[] | components["schemas"]["StackVariable"];
                 /** @description If set, Cycle will call out to this URL for authentication. Anything other than a 200 response will be considered a validation failure. */
-                webhook?: string;
+                webhook?: string | components["schemas"]["StackVariable"];
                 /** @description The password used for logging in to this volume via SFTP. */
                 password: {
-                    /**
-                     * @description The algorithm the password is encoded with. `raw` means the password is plain-text.
-                     * @enum {string}
-                     */
-                    algorithm: "raw" | "sha512" | "md5";
+                    /** @description The algorithm the password is encoded with. `raw` means the password is plain-text. */
+                    algorithm: ("raw" | "sha512" | "md5") | components["schemas"]["StackVariable"];
                     /** @description The password string. */
-                    data: string;
-                };
-            };
+                    data: string | components["schemas"]["StackVariable"];
+                } | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
         };
         /**
-         * StackContainer
+         * StackSpecContainer
          * @description A container template defined within a stack.
          */
-        StackContainer: {
+        StackSpecContainer: {
             /** @description The human-readable name of this container. */
             name: string;
             /** @description Details about the image used for this container. */
-            image: components["schemas"]["StackSpecContainerImage"];
-            /** @description Additional user-provided meta data about the container. */
-            annotations?: {
+            image: components["schemas"]["StackSpecContainerImage"] | components["schemas"]["StackVariable"];
+            annotations?: ({
                 [key: string]: unknown;
-            } | null;
+            } | null) | components["schemas"]["StackVariable"];
             /** @description Whether or not to mark the container as stateful when deployed. Stateful containers can utilize volumes (stateful data) and are generally used for running databases or other data management applications. */
-            stateful: boolean;
-            /**
-             * StackContainerConfig
-             * @description Configuration options for this container that will be applied when deployed as part of the stack.
-             */
+            stateful: boolean | components["schemas"]["StackVariable"];
             config: {
-                network: components["schemas"]["StackContainerConfigNetwork"];
-                deploy: components["schemas"]["StackContainerConfigDeploy"];
+                network: components["schemas"]["StackSpecContainerConfigNetwork"] | components["schemas"]["StackVariable"];
+                deploy: components["schemas"]["StackSpecContainerConfigDeploy"] | components["schemas"]["StackVariable"];
                 /** @description Configuration options for auto-scaling. */
-                scaling?: components["schemas"]["StackContainerConfigScaling"] | null;
-                runtime?: components["schemas"]["StackContainerConfigRuntime"] | null;
-                resources?: components["schemas"]["StackContainerConfigResources"] | null;
-                integrations?: components["schemas"]["StackContainerConfigIntegrations"] | null;
-            };
+                scaling?: components["schemas"]["StackSpecContainerConfigScaling"] | components["schemas"]["StackVariable"] | null;
+                runtime?: components["schemas"]["StackSpecContainerConfigRuntime"] | components["schemas"]["StackVariable"] | null;
+                resources?: components["schemas"]["StackSpecContainerConfigResources"] | components["schemas"]["StackVariable"] | null;
+                integrations?: components["schemas"]["StackSpecContainerConfigIntegrations"] | components["schemas"]["StackVariable"] | null;
+            } | components["schemas"]["StackVariable"];
             /**
              * @description The role applied to this container. **Not yet implemented**
              * @enum {string|null}
              */
             role?: "conductor" | null;
             /** @description A list of configurations for volumes that will be attached to the container. Only applicable if the container is set to `stateful`. */
-            volumes?: components["schemas"]["StackContainerVolume"][] | null;
+            volumes?: (components["schemas"]["StackSpecContainerVolume"][] | null) | components["schemas"]["StackVariable"];
             /** @description If true, the container is marked as `deprecated`, and cannot be started anymore. Deprecated containers also don't count toward resource utilization. */
-            deprecate?: boolean;
+            deprecate?: boolean | components["schemas"]["StackVariable"];
             /** @description If true, the container is marked as `locked` and cannot be deleted in any way until the lock is lifted. */
-            lock?: boolean;
+            lock?: boolean | components["schemas"]["StackVariable"];
         };
         /**
          * StackService
@@ -7534,35 +7734,434 @@ export interface components {
         };
         /** StackSpecDiscoveryConfig */
         StackSpecDiscoveryConfig: {
-            empty_set_delay?: components["schemas"]["Duration"] | null;
+            empty_set_delay?: components["schemas"]["Duration"] | components["schemas"]["StackVariable"] | null;
             /** @description A custom mapping of hosts - for forced resolution of specific IPs for a domain. */
-            hosts?: {
+            hosts?: ({
                 [key: string]: {
-                    ipv4?: string[] | null;
-                    ipv6?: string[] | null;
+                    ipv4?: (string[] | null) | components["schemas"]["StackVariable"];
+                    ipv6?: (string[] | null) | components["schemas"]["StackVariable"];
                 } | undefined;
-            } | null;
+            } | null) | components["schemas"]["StackVariable"];
+            /** @description A list of custom DNS resolver strings.  Can specifify domains or ips. */
+            custom_resolvers?: string[] | components["schemas"]["StackVariable"] | null;
         };
         /**
          * StackSpecDiscoveryService
          * @description Configuration options for the discovery service.
          */
         StackSpecDiscoveryService: {
-            service?: components["schemas"]["StackService"] | null;
-            config?: components["schemas"]["StackSpecDiscoveryConfig"] | null;
+            service?: components["schemas"]["StackService"] | components["schemas"]["StackVariable"] | null;
+            config?: components["schemas"]["StackSpecDiscoveryConfig"] | components["schemas"]["StackVariable"] | null;
+        };
+        /** StackSpecHAProxyConfigSet */
+        StackSpecHaProxyConfigSet: {
+            frontend: {
+                /** @description The type of traffic expected by the load balancer for this port. Can be either:
+                 *      - tcp: Traffic is forwarded without any parsing or additional manipulation.
+                 *      - http: Traffic is treated as web traffic. If a LINKED record is configured for a container exposing this port, the domain will be parsed and it will be forwarded to the proper container. This allows multiple services to run on port 80 in the same environment. */
+                mode: ("tcp" | "http") | components["schemas"]["StackVariable"];
+                /** @description The number of simultaneous connections that can be processed at a time. */
+                max_connections: (number | null) | components["schemas"]["StackVariable"];
+                /** @description Various options for handling timeouts when communicating with the client. */
+                timeouts: ({
+                    /** @description The number of seconds the load balancer will wait for a response from a client before disconnecting. */
+                    client_secs: (number | null) | components["schemas"]["StackVariable"];
+                    /** @description The number of milliseconds the load balancer will wait for a client to send it data when one direction is already closed. This is particularly useful to avoid keeping connections in a waiting state for too long when clients do not disconnect cleanly. */
+                    client_fin_ms: (number | null) | components["schemas"]["StackVariable"];
+                    /** @description The number of milliseconds the load balancer will wait for a new HTTP request to start coming after a response was set. See the [HAProxy Docs](https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#4.2-timeout%20http-request) for more information. (`http` mode only) */
+                    http_keep_alive_ms: (number | null) | components["schemas"]["StackVariable"];
+                    /** @description The number of milliseconds the load balancer will wait for a complete HTTP request. See the [HAProxy Docs](https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#4.2-timeout%20http-request) for more information. (`http` mode only) */
+                    http_request_ms: (number | null) | components["schemas"]["StackVariable"];
+                } | null) | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
+            backend: {
+                /** @description How connections are balanced across your container instances. Can be one of the following:
+                 *      - `roundrobin`: Each container instance is used in turns.
+                 *      - `static-rr`: Each container instance is used in turns, but is faster than Round Robin at the expense of being less dynamic.
+                 *      - `leastconn`: Routes traffic to the instance with the least number of active connections.
+                 *      - `first`: Routes traffic to the first available instance.
+                 *      - `source`: The same client IP always reaches the same container instance as long as no instance goes down or up. */
+                balance: ("roundrobin" | "static-rr" | "leastconn" | "first" | "source") | components["schemas"]["StackVariable"];
+                /** @description Various options for handling timeouts when communicating with a container instance behind the load balancer. */
+                timeouts: ({
+                    /** @description The number of seconds the load balancer will wait for a response from the container instance. See the [HAProxy Docs](https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#4.2-timeout%20server) for more information. */
+                    server_secs: (number | null) | components["schemas"]["StackVariable"];
+                    /** @description The number of milliseconds the load balancer will wait for the server to send data when one direction is already closed. See the [HAProxy Docs](https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#4-timeout%20server-fin) for more information. */
+                    server_fin_ms: (number | null) | components["schemas"]["StackVariable"];
+                    /** @description The number of milliseconds the load balancer will wait for a successful connection to a container instance. See the [HAProxy Docs](https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#4-timeout%20connect) for more information. */
+                    connect_ms: (number | null) | components["schemas"]["StackVariable"];
+                    /** @description The number of milliseconds the load balancer will hold connections in a queue when the maximum number of connections has been reached. See the [HAProxy Docs](https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#4-timeout%20queue) for more information. */
+                    queue_ms: (number | null) | components["schemas"]["StackVariable"];
+                    /** @description The number of milliseconds the load balancer will allow for inactivity on a bidirectional tunnel. See the [HAProxy Docs](https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#4-timeout%20tunnel) for more information. */
+                    tunnel_secs: (number | null) | components["schemas"]["StackVariable"];
+                } | null) | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
+        };
+        /**
+         * StackSpecHaProxyConfig
+         * @description Describes settings that are passed to HAProxy within the load balancer.
+         */
+        StackSpecHaProxyConfig: {
+            /** @description Settings that are applied to any port that is not overridden in the following ports section. */
+            default: components["schemas"]["StackSpecHaProxyConfigSet"] | components["schemas"]["StackVariable"];
+            /** @description An object that defines how HAProxy will act on a specific port. The key is a custom port, and the value is the same settings object found under `default` above. */
+            ports: {
+                [key: string]: (components["schemas"]["StackSpecHaProxyConfigSet"] | components["schemas"]["StackVariable"]) | undefined;
+            } | components["schemas"]["StackVariable"];
+        };
+        /** StackSpecHaProxyLbType */
+        StackSpecHaProxyLbType: {
+            /** @description Allow / disallow traffic to be routed via IPv4. */
+            ipv4: boolean | components["schemas"]["StackVariable"];
+            /** @description Allow / disallow traffic to be routed via IPv6. */
+            ipv6: boolean | components["schemas"]["StackVariable"];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "haproxy";
+            details: components["schemas"]["StackSpecHaProxyConfig"] | components["schemas"]["StackVariable"] | null;
+            /** @description Binds the load balancer to the host server IP address.
+             *
+             *     **Pros**: This allows for significantly lower cost (utilizing fewer IPv4 addresses), and enables building out a true edge network with lower latency.
+             *     **Cons**: Only 1 environment is allowed on the host. This is because the load balancer is the only ingress point for an environment, and if it is sharing
+             *     the same IP as the host, that host can only operate under that environment.
+             *      */
+            bind_host?: (boolean | null) | components["schemas"]["StackVariable"];
+        };
+        /**
+         * StackSpecWafConfig
+         * @description Additional configuration options for the web application firewall.
+         */
+        StackSpecWafConfig: {
+            rules: ({
+                /** @description Some information about the rule. */
+                description: string | components["schemas"]["StackVariable"];
+                /** @description A boolean that indicates if the rule should be active or skipped. */
+                skip: boolean | components["schemas"]["StackVariable"];
+                /** @description A string that describes if the role should allow or deny traffic based on the conditions. */
+                type: ("allow" | "deny") | components["schemas"]["StackVariable"];
+                /** @description A string that describes if both attributes need to be true (match all) or if only one of the conditions needs to be true (match any). */
+                match?: ("any" | "all") | components["schemas"]["StackVariable"];
+                /** @description An array of the specific conditions for the rule. */
+                conditions: ({
+                    /** @description A string that describes the match type for the condition. */
+                    type: ("ip-match" | "geo-match" | "url-match" | "method-match" | "header-match") | components["schemas"]["StackVariable"];
+                    /** @description A string that indicates the range of values relative to the value property. */
+                    operator: ("==" | "!=" | ">" | "<" | ">=" | "<=") | components["schemas"]["StackVariable"];
+                    /** @description The value corresponding to the condition type. */
+                    value: string | components["schemas"]["StackVariable"];
+                } | components["schemas"]["StackVariable"])[] | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"])[] | components["schemas"]["StackVariable"];
+        };
+        /**
+         * StackSpecTcpTransportConfig
+         * @description Additional configuration options for the TCP transport mode.
+         */
+        StackSpecTcpTransportConfig: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "tcp";
+            details: {
+                connections: {
+                    [key: string]: unknown;
+                } | components["schemas"]["StackVariable"];
+                /** @description Configuration options for how telemetry is handled on the load balancer. */
+                telemetry: {
+                    [key: string]: unknown;
+                } | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
+        };
+        /**
+         * StackSpecHttpTransportConfig
+         * @description Additional configuration options for the HTTP transport mode.
+         */
+        StackSpecHttpTransportConfig: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "http";
+            details: {
+                connections: {
+                    max_idle_conns_per_connection: (number | null) | components["schemas"]["StackVariable"];
+                } | components["schemas"]["StackVariable"];
+                telemetry: {
+                    /** @description Determines how many URLs the load balancer will track at one time. Defaults to 150. */
+                    max_trackable_urls?: (number | null) | components["schemas"]["StackVariable"];
+                    /** @description Whether or not to track invalid requests. An invalid request is a request that came in that no router existed for. Usually this means bot requests. Defaults to false. */
+                    track_invalid_requests?: (boolean | null) | components["schemas"]["StackVariable"];
+                    /** @description An array of paths to exclude from tracking. */
+                    ignore_paths?: (string[] | null) | components["schemas"]["StackVariable"];
+                } | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
+        };
+        /**
+         * StackSpecUdpTransportConfig
+         * @description Additional configuration options for the UDP transport mode.
+         */
+        StackSpecUdpTransportConfig: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "udp";
+            details: {
+                /** @description Configuration options for how telemetry is handled on the load balancer. */
+                telemetry: {
+                    [key: string]: unknown;
+                } | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
+        };
+        /**
+         * StackSpecTcpRouterConfig
+         * @description Additional configuration options for TCP mode routers
+         */
+        StackSpecTcpRouterConfig: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "tcp";
+            details: {
+                [key: string]: unknown;
+            } | components["schemas"]["StackVariable"];
+        };
+        /**
+         * StackSpecUdpRouterConfig
+         * @description Additional configuration options for UDP mode routers
+         */
+        StackSpecUdpRouterConfig: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "udp";
+            details: {
+                [key: string]: unknown;
+            } | components["schemas"]["StackVariable"];
+        };
+        /**
+         * StackSpecHttpRouterConfig
+         * @description Additional configuration options for HTTP mode routers.
+         */
+        StackSpecHttpRouterConfig: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "http";
+            details: {
+                /** @description Defines a built-in redirect for HTTP mode routers */
+                redirect?: ({
+                    /** @description If enabled and a sibling controller exists for port 443, requests will be auto redirected to it. Essentially sets up automatic TLS redirection for this router. */
+                    auto_https_redirect: boolean | components["schemas"]["StackVariable"];
+                    /** @description If true, any request comes in with "www" prefix will be permanently redirected to the same path without www. */
+                    remove_www: boolean | components["schemas"]["StackVariable"];
+                    /** @description The port to redirect traffic to. */
+                    port?: (number | null) | components["schemas"]["StackVariable"];
+                    /** @description The scheme to redirect to. (i.e. `https`) */
+                    scheme?: (string | null) | components["schemas"]["StackVariable"];
+                    /** @description A specific URL to redirect to. */
+                    url?: (string | null) | components["schemas"]["StackVariable"];
+                } | null) | components["schemas"]["StackVariable"];
+                forward?: ({
+                    scheme?: (string | null) | components["schemas"]["StackVariable"];
+                    /** @description Allows the load balancer to modify content before it reaches the user. */
+                    content_mod?: ({
+                        /** @description An array that describes a list of replacement match/value pairs. */
+                        replace?: (({
+                            /** @description String that will be replaced. */
+                            match: string | components["schemas"]["StackVariable"];
+                            /** @description Replacement value. */
+                            value: string | components["schemas"]["StackVariable"];
+                        } | components["schemas"]["StackVariable"])[] | null) | components["schemas"]["StackVariable"];
+                    } | null) | components["schemas"]["StackVariable"];
+                    /** @description The URL to forward the request to.
+                     *
+                     *     Given a path match of `^/example/(.*)$`, a route such as `/example/wow.jpg` would be forwarded as /wow.jpg.
+                     *      */
+                    url?: string | components["schemas"]["StackVariable"];
+                } | null) | components["schemas"]["StackVariable"];
+                proxy?: ({
+                    /** @description The domain that this router will proxy. */
+                    domain?: (string | null) | components["schemas"]["StackVariable"];
+                    /** @description The full URL that this router will proxy. */
+                    url?: string | components["schemas"]["StackVariable"] | null;
+                    /** @description Allows the load balancer to modify content before it reaches the user. */
+                    content_mod?: ({
+                        /** @description An array that describes a list of replacement match/value pairs. */
+                        replace?: (({
+                            /** @description String that will be replaced. */
+                            match: string | components["schemas"]["StackVariable"];
+                            /** @description Replacement value. */
+                            value: string | components["schemas"]["StackVariable"];
+                        } | components["schemas"]["StackVariable"])[] | null) | components["schemas"]["StackVariable"];
+                    } | null) | components["schemas"]["StackVariable"];
+                } | null) | components["schemas"]["StackVariable"];
+                caching?: ({
+                    files?: (({
+                        /** @description Regex string that describes the files to cache. */
+                        match: string | components["schemas"]["StackVariable"];
+                        /** @description Time string that describes the time to live. */
+                        ttl: components["schemas"]["Duration"] | components["schemas"]["StackVariable"];
+                    } | components["schemas"]["StackVariable"])[] | null) | components["schemas"]["StackVariable"];
+                } | null) | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
+        };
+        /**
+         * StackSpecV1LbRouterConfig
+         * @description A specific router configuration that describes how traffic matching the rule is handled.
+         */
+        StackSpecV1LbRouterConfig: {
+            match: {
+                /** @description The specific domains to match against. */
+                domains: (string[] | null) | components["schemas"]["StackVariable"];
+                /** @description The specific ports to match against. */
+                internal_ports: (number[] | null) | components["schemas"]["StackVariable"];
+                path?: (string | null) | components["schemas"]["StackVariable"];
+                /** @description Match traffic destined (or not destined) for a particular container. */
+                containers?: ({
+                    /** @description Match any traffic that would be routed to one of these containers. */
+                    include?: (components["schemas"]["HybridIdentifier"][] | null) | components["schemas"]["StackVariable"];
+                    /** @description Match any traffic that would NOT be routed to one of these containers. */
+                    exclude?: (components["schemas"]["HybridIdentifier"][] | null) | components["schemas"]["StackVariable"];
+                } | null) | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
+            /** @description How to route the traffic to the destination.
+             *     `random`: Pick a valid destination at random.
+             *     `round-robin`: Send each request to the 'next' destination on the list, restarting from the beginning when the last destination is used.
+             *      */
+            mode: ("random" | "round-robin") | components["schemas"]["StackVariable"];
+            config: {
+                /** @description If a request comes in from the same origin, ensure it hits the same destination. */
+                sticky_sessions: boolean | components["schemas"]["StackVariable"];
+                /** @description If a destination is unavailable, retry up to [x] times, instead of immediately failing with a 503/504 error. */
+                destination_retries: number | components["schemas"]["StackVariable"];
+                /** @default null */
+                destination_prioritization: ("latency" | "random") | components["schemas"]["StackVariable"] | null;
+                /** @description TLS termination configuration. If null, the platform will use the default configuration. Port 443 by default has TLS termination enabled. */
+                tls?: ({
+                    /** @description [Advanced] Change the domain the controller listens on.
+                     *      */
+                    server_name?: (string | null) | components["schemas"]["StackVariable"];
+                    /** @description If enabled, accept TLS traffic with an invalid certificate. This is usually done for development/testing, and is not recommended for production use. */
+                    allow_insecure?: (boolean | null) | components["schemas"]["StackVariable"];
+                    /** @description A PEM encoded string of certificates. */
+                    client_cert_auth?: (string | null) | components["schemas"]["StackVariable"];
+                    /** @description Defines how to validate the connecting TLS certificate.
+                     *     `none`: Do not require a TLS certificate to be sent
+                     *     `request`: Asks the client to send a TLS certificate, but does not require nor validate it.
+                     *     `require`: Requires a certificate be sent for the request to be valid, but does not validate the certificate.
+                     *     `require-verify`: Requires both that the client send a certificate, and that the certificate is valid. This is required when using https.
+                     *      */
+                    client_auth?: ("none" | "request" | "require" | "require-verify") | components["schemas"]["StackVariable"] | null;
+                } | null) | components["schemas"]["StackVariable"];
+                /** @description Defines how the length of various sorts of timeouts when communicating with the destination. */
+                timeouts: {
+                    /** @description The duration the load balancer will wait before timing out while attempting to connect to the destination. */
+                    destination_connection: components["schemas"]["Duration"] | components["schemas"]["StackVariable"];
+                } | components["schemas"]["StackVariable"];
+                extension?: null | (components["schemas"]["StackSpecTcpRouterConfig"] | components["schemas"]["StackSpecHttpRouterConfig"] | components["schemas"]["StackSpecUdpRouterConfig"]);
+            } | components["schemas"]["StackVariable"];
+        };
+        /** StackSpecV1LbController */
+        StackSpecV1LbController: {
+            /** @description A human-readable identifier for this controller. It will default to the port, i.e. `port-443`, but can be renamed to anything, such as the service this controller represents. */
+            identifier: string | components["schemas"]["StackVariable"];
+            /** @description The port inbound trafic is accepted on. */
+            port: number | components["schemas"]["StackVariable"];
+            waf?: components["schemas"]["StackSpecWafConfig"] | components["schemas"]["StackVariable"] | null;
+            /**
+             * V1LbControllerTransport
+             * @description Defines how traffic comes in to the load balancer, and how the load balancer handles it.
+             */
+            transport?: ({
+                /** @description When true, this controller is disabled and will not be used. */
+                disable: boolean | components["schemas"]["StackVariable"];
+                /** @description The kind of traffic (http/tcp/udp) that will be sent to the load balancer. */
+                mode: ("tcp" | "udp" | "http") | components["schemas"]["StackVariable"];
+                /** @description Defines how the transport for this controller operates. */
+                config: {
+                    /** @description Enable/disable performance mode. If enabled, some telemetry will be disabled to dedicate full processing to handling requests.
+                     *     You will not see per-request breakdowns or URL logging if performance mode is enabled.
+                     *      */
+                    performance: boolean | components["schemas"]["StackVariable"];
+                    /** @description Defines how traffic gets into the load balancer. */
+                    ingress: {
+                        tls?: ({
+                            /** @description Enables or disables TLS. */
+                            enable: boolean | components["schemas"]["StackVariable"];
+                        } | null) | components["schemas"]["StackVariable"];
+                    } | components["schemas"]["StackVariable"];
+                    /** @description Defines settings for various types of timeouts. */
+                    timeouts: {
+                        /** @description The total amount of time a connection can be idle before being killed. */
+                        idle: components["schemas"]["Duration"] | components["schemas"]["StackVariable"];
+                    } | components["schemas"]["StackVariable"];
+                    /** @description Verbosity describes the level of logging detail for the controller */
+                    verbosity: ("low" | "normal" | "high" | "debug") | components["schemas"]["StackVariable"];
+                    /** @description Extended configurations for the specified transport mode (http/tcp) */
+                    extension?: (components["schemas"]["StackSpecTcpTransportConfig"] | components["schemas"]["StackSpecHttpTransportConfig"] | components["schemas"]["StackSpecUdpTransportConfig"]) | components["schemas"]["StackVariable"];
+                } | components["schemas"]["StackVariable"];
+                /** @description Defines where traffic is sent. Many can be defined per controller. */
+                routers: (components["schemas"]["StackSpecV1LbRouterConfig"] | components["schemas"]["StackVariable"])[] | components["schemas"]["StackVariable"];
+            } | null) | components["schemas"]["StackVariable"];
+        };
+        /** StackSpecV1LbConfig */
+        StackSpecV1LbConfig: {
+            /** @description A configuration for a specific port. */
+            controllers: components["schemas"]["StackSpecV1LbController"][] | components["schemas"]["StackVariable"];
+            controller_template?: components["schemas"]["StackSpecV1LbController"] | components["schemas"]["StackVariable"] | null;
+            waf?: components["schemas"]["StackSpecWafConfig"] | components["schemas"]["StackVariable"] | null;
+        };
+        /** StackSpecV1LbType */
+        StackSpecV1LbType: {
+            /** @description Allow / disallow traffic to be routed via IPv4. */
+            ipv4: boolean | components["schemas"]["StackVariable"];
+            /** @description Allow / disallow traffic to be routed via IPv6. */
+            ipv6: boolean | components["schemas"]["StackVariable"];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "v1";
+            details: components["schemas"]["StackSpecV1LbConfig"] | components["schemas"]["StackVariable"];
+            /** @description Binds the load balancer to the host server IP address.
+             *
+             *     **Pros**: This allows for significantly lower cost (utilizing fewer IPv4 addresses), and enables building out a true edge network with lower latency.
+             *     **Cons**: Only 1 environment is allowed on the host. This is because the load balancer is the only ingress point for an environment, and if it is sharing
+             *     the same IP as the host, that host can only operate under that environment.
+             *      */
+            bind_host?: (boolean | null) | components["schemas"]["StackVariable"];
+        };
+        /** StackSpecDefaultLbType */
+        StackSpecDefaultLbType: {
+            /** @description Allow / disallow traffic to be routed via IPv4. */
+            ipv4: boolean;
+            /** @description Allow / disallow traffic to be routed via IPv6. */
+            ipv6: boolean;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "default";
+            details: components["schemas"]["StackSpecHaProxyConfig"] | components["schemas"]["StackSpecV1LbConfig"] | null;
         };
         /**
          * StackSpecLoadBalancerConfig
          * @description The config object for the loadbalancer service.
          */
-        StackSpecLoadBalancerConfig: components["schemas"]["HaProxyLbType"] | components["schemas"]["V1LbType"] | components["schemas"]["DefaultLbType"];
+        StackSpecLoadBalancerConfig: components["schemas"]["StackSpecHaProxyLbType"] | components["schemas"]["StackSpecV1LbType"] | components["schemas"]["StackSpecDefaultLbType"];
         /**
          * StackSpecLoadBalancerService
          * @description Configuration options for the load balancer service.
          */
         StackSpecLoadBalancerService: {
-            service?: components["schemas"]["StackService"] | null;
-            config?: components["schemas"]["StackSpecLoadBalancerConfig"] | null;
+            service?: components["schemas"]["StackService"] | components["schemas"]["StackVariable"] | null;
+            config?: components["schemas"]["StackSpecLoadBalancerConfig"] | components["schemas"]["StackVariable"] | null;
         };
         /**
          * StackSpecSchedulerAccessKey
@@ -7570,11 +8169,11 @@ export interface components {
          */
         StackSpecSchedulerAccessKey: {
             /** @description The name given to this access key. */
-            name: string;
+            name: string | components["schemas"]["StackVariable"];
             /** @description The access key secret. This should be submitted with requests to a publicly accessible scheduler service. */
-            secret: string;
+            secret: string | components["schemas"]["StackVariable"];
             /** @description Whitelisted IPs that are allowed to make requests to the scheduler service. */
-            ips?: string[];
+            ips?: string[] | components["schemas"]["StackVariable"];
         };
         /**
          * StackSpecSchedulerConfig
@@ -7582,16 +8181,16 @@ export interface components {
          */
         StackSpecSchedulerConfig: {
             /** @description If true, this scheduler will be accessible over the public internet. It will enable a LINKED record to be pointed to the scheduler container, and inbound requests to trigger function containers. */
-            public: boolean;
-            access_keys?: components["schemas"]["StackSpecSchedulerAccessKey"][];
+            public: boolean | components["schemas"]["StackVariable"];
+            access_keys?: components["schemas"]["StackSpecSchedulerAccessKey"][] | components["schemas"]["StackVariable"];
         } | null;
         /**
          * StackSpecSchedulerService
          * @description Configuration options for the scheduler service.
          */
         StackSpecSchedulerService: {
-            service?: components["schemas"]["StackService"] | null;
-            config?: components["schemas"]["StackSpecSchedulerConfig"] | null;
+            service?: components["schemas"]["StackService"] | components["schemas"]["StackVariable"] | null;
+            config?: components["schemas"]["StackSpecSchedulerConfig"] | components["schemas"]["StackVariable"] | null;
         };
         /**
          * StackSpecVpnConfig
@@ -7600,26 +8199,26 @@ export interface components {
         StackSpecVpnConfig: {
             auth: {
                 /** @description The endpoint to hit when attempting to authorize a VPN account. If the endpoint returns a 200 response, access is granted. Otherwise it is denied. */
-                webhook?: string;
+                webhook?: string | components["schemas"]["StackVariable"];
                 /** @description If true, any account with access to this environment on Cycle can use their Cycle credentials to log in to this VPN. */
-                cycle_accounts: boolean;
+                cycle_accounts: boolean | components["schemas"]["StackVariable"];
                 /** @description If true, Cycle will allow custom accounts to be created for logging into this VPN. */
-                vpn_accounts: boolean;
-            };
-            allow_internet: boolean;
+                vpn_accounts: boolean | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
+            allow_internet: boolean | components["schemas"]["StackVariable"];
         };
         /**
          * StackSpecVpnService
          * @description Configuration options for the VPN service.
          */
         StackSpecVpnService: {
-            service?: components["schemas"]["StackService"] | null;
-            config?: components["schemas"]["StackSpecVpnConfig"] | null;
+            service?: components["schemas"]["StackService"] | components["schemas"]["StackVariable"] | null;
+            config?: components["schemas"]["StackSpecVpnConfig"] | components["schemas"]["StackVariable"] | null;
         };
         /**
          * StackSpec
-         * @description A Cycle stack file is an "environment as code". Anything that can be done in an environment on Cycle can be described in a stack file and deployed as a new environment.
-         *     Stack files can list multiple containers and their configurations, load balancer settings, scoped variables, and much more.
+         * @description A Cycle stack file is an "environment as code". This allows an environment to be generated consistently based on a fixed specification.
+         *     Stack files can describe multiple containers and their configurations, environment service settings, scoped variables, and important metadata.
          *
          */
         StackSpec: {
@@ -7628,33 +8227,28 @@ export interface components {
              * @enum {string}
              */
             version: "1.0";
-            /** @description Various properties describing this stack. */
-            about?: {
+            about?: ({
                 /** @description A custom, user-defined version of the stack. */
                 version: string;
                 /** @description Custom, user-defined details about this stack. */
                 description: string;
-            } | null;
+            } | null) | components["schemas"]["StackVariable"];
             /** @description Describes variables that are assigned to one or more containers at runtime. Can be assigned as an environment variable, written as a file inside the container(s), or accessed over the internal API. */
-            scoped_variables?: components["schemas"]["StackSpecScopedVariable"][] | null;
-            /** @description A mapping of containers that will be deployed as a part of this stack. The key is used as the container's identifier. */
+            scoped_variables?: (components["schemas"]["StackSpecScopedVariable"][] | null) | components["schemas"]["StackVariable"];
             containers: {
-                [key: string]: components["schemas"]["StackContainer"] | undefined;
-            };
-            /**
-             * StackSpecServices
-             * @description Settings for any auxillary services deployed as part of the environment, such as load balancer and discovery services.
-             */
-            services?: {
-                discovery?: null | components["schemas"]["StackSpecDiscoveryService"];
-                loadbalancer?: null | components["schemas"]["StackSpecLoadBalancerService"];
-                scheduler?: null | components["schemas"]["StackSpecSchedulerService"];
-                vpn?: null | components["schemas"]["StackSpecVpnService"];
-            } | null;
+                [key: string]: components["schemas"]["StackSpecContainer"] | undefined;
+            } | components["schemas"]["StackVariable"];
+            /** @description Settings for any auxillary services deployed as part of the environment, such as load balancer and discovery services. */
+            services?: ({
+                discovery?: components["schemas"]["StackSpecDiscoveryService"] | components["schemas"]["StackVariable"] | null;
+                loadbalancer?: components["schemas"]["StackSpecLoadBalancerService"] | components["schemas"]["StackVariable"] | null;
+                scheduler?: components["schemas"]["StackSpecSchedulerService"] | components["schemas"]["StackVariable"] | null;
+                vpn?: components["schemas"]["StackSpecVpnService"] | components["schemas"]["StackVariable"] | null;
+            } | null) | components["schemas"]["StackVariable"];
             /** @description Additional meta info about the stack. */
             annotations?: {
                 [key: string]: unknown;
-            };
+            } | components["schemas"]["StackVariable"];
         };
         /**
          * StackGitCommit
@@ -7960,10 +8554,7 @@ export interface components {
                 [key: string]: {
                     /** @description String describing the server mount type. */
                     type: string;
-                    /**
-                     * @description Comma separated string describing the server mount options.
-                     * @example key1=value1,key2=value2
-                     */
+                    /** @description Comma separated string describing the server mount options. */
                     options: string;
                     /** @description String describing the server mount source. */
                     source: string;
@@ -8464,13 +9055,12 @@ export interface components {
         FeaturesSpec: {
             /** @description The type of RAID supported, if any. */
             raid: string | null;
-            /** @description Features specific to AWS. */
-            aws?: {
-                /** @description A boolean where true indicates this is a machine that can support a much higher networking throughput. */
-                ena_support: boolean;
-                /** @description A boolean where true indicates this is a machine that can support higher storage throughput. */
-                ebs_optimized: boolean;
-            };
+            /** @description Indicates if the model supports virtual machines. */
+            hypervisor?: boolean | null;
+            /** @description Provider specific features, allowing for additional, unspecified properties. This is an open map for any key-value pairs, accommodating various types of values. */
+            extra?: {
+                [key: string]: unknown;
+            } | null;
         };
         /**
          * ServerSpecs
@@ -8657,18 +9247,6 @@ export interface components {
             locations?: components["schemas"]["LocationsIncludes"];
             models?: components["schemas"]["ServerModelIncludes"];
             integrations?: components["schemas"]["IntegrationsIncludes"];
-        };
-        /**
-         * InstanceTelemetryPoint
-         * @description A point-in-time snapshot of a count of instances by state.
-         */
-        InstanceTelemetryPoint: {
-            /** @description A timestamp for when the data was collected. */
-            time: components["schemas"]["DateTime"];
-            /** @description Records for instance state and number of instances in that state. */
-            instances: {
-                [key: string]: number | undefined;
-            };
         };
         /**
          * EnvironmentNetworkSummary
@@ -8879,7 +9457,7 @@ export interface components {
              * @description The name of the action to perform. (enum property replaced by openapi-typescript)
              * @enum {string}
              */
-            action: "migrate";
+            action: "migration.start";
             contents: {
                 /** @description The ID of the server being migrated to. */
                 destination_server_id: string;
@@ -8896,13 +9474,29 @@ export interface components {
              * @description The name of the action to perform. (enum property replaced by openapi-typescript)
              * @enum {string}
              */
-            action: "migrate_revert";
+            action: "migration.revert";
+        };
+        /** ExtendVolumeAction */
+        ExtendVolume: {
+            /**
+             * @description The name of the action to perform. (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            action: "volume.extend";
+            contents: {
+                /** @description The ID of the volume that will be extended through this task. */
+                volume_id: string;
+                /** @description The amount of storage to extend the volume by. Container volumes on Cycle are thinly provisioned, meaning this isn't an allocation - the volume will only use the space it needs up to this size. */
+                extend_size: string;
+            };
         };
         /**
          * DeployedVolume
          * @description A deployed volume resource.
          */
         DeployedVolume: {
+            /** @description The ID of the deployed volume. */
+            id: string;
             /** @description The ID of the server the instance is deployed to. */
             server_id: string;
             /** @description The ID of the container the instance was created from. */
@@ -8972,12 +9566,12 @@ export interface components {
          * @description A telemetry snapshot pertaining to CPU usage.
          */
         CPUSnapshot: {
+            /** @description The total number of cores on the originating node the instance is running on. */
+            num_cores: number;
             /** @description Usage statistics. */
             usage: {
                 /** @description Total amount of VPU time since last restart. */
                 total: number;
-                /** @description An array showing CPU core specific usage in nanoseconds since the last restart. */
-                per_core: number[];
                 /** @description The amount of time in nanoseconds used by the kernel since last restart. */
                 kernel: number;
                 /** @description The amount of time in nanoseconds taken up for user processes. */
@@ -9100,8 +9694,8 @@ export interface components {
              */
             action: "trigger";
             contents: {
-                /** @description A custom token used for identifying and managing a claim. Can be any valid string. */
-                token?: string | null;
+                /** @description A custom token used for identifying and managing a claim. Can be any valid string 5 characters or more. */
+                token: string;
                 runtime_variables: components["schemas"]["FunctionRuntimeVariables"];
             };
         };
@@ -9330,7 +9924,9 @@ export interface components {
                 /** @description Whether or not custom user-submitted logs are supported on this tier. */
                 custom: boolean;
             };
-            tracking_interval: components["schemas"]["Duration"];
+            features: {
+                public_ping_monitor: boolean;
+            };
             /** @description The monthly cost (in mills) of enabling this tier on an environment. */
             cost_mills: number;
         };
@@ -9455,10 +10051,7 @@ export interface components {
             file?: {
                 /** @description When true, Cycle will interpret this variable as a base-64 encoded string, and decode it before passing it into the container. */
                 decode: boolean;
-                /**
-                 * @description The path to mount the file to inside the container.
-                 * @example /var/run/cycle/variables/<myVariable>
-                 */
+                /** @description The path to mount the file to inside the container. */
                 path: string | null;
             } | null;
         };
@@ -9527,8 +10120,7 @@ export interface components {
             identifier: components["schemas"]["Identifier"];
             scope: components["schemas"]["ScopedVariableScope"];
             access: components["schemas"]["ScopedVariableAccess"];
-            /** @description The source or value of the scoped variable. */
-            source: (Record<string, never> | null) & (components["schemas"]["URLSource"] | components["schemas"]["RawSource"]);
+            source: null | (components["schemas"]["URLSource"] | components["schemas"]["RawSource"]);
             state: components["schemas"]["ScopedVariableState"];
             /**
              * ScopedVariableEvents
@@ -9621,25 +10213,13 @@ export interface components {
             destinations: {
                 [key: string]: {
                     requests: {
-                        /**
-                         * @description The host name of the URL request.
-                         * @example abc.cycle.io
-                         */
+                        /** @description The host name of the URL request. */
                         host: string;
-                        /**
-                         * @description The HTTP method of the URL request.
-                         * @example GET
-                         */
+                        /** @description The HTTP method of the URL request. */
                         method: string;
-                        /**
-                         * @description The path portion of the inbound URL request.
-                         * @example /pathname
-                         */
+                        /** @description The path portion of the inbound URL request. */
                         path: string;
-                        /**
-                         * @description The number of requests to a this URL.
-                         * @example 11
-                         */
+                        /** @description The number of requests to a this URL. */
                         total: number;
                         /** @description The date of the most recent hit to the URL. */
                         last_hit: components["schemas"]["DateTime"];
@@ -9654,21 +10234,11 @@ export interface components {
                             /** @description Object containing hit count and timing data for redirect responses. */
                             redirect: components["schemas"]["LoadBalancerTelemetryUrlRequestHandler"];
                         };
-                        /**
-                         * @description An object where the key is the response type and the value is the number of hits with that response.
-                         * @example {
-                         *       "http:404": 10
-                         *     }
-                         */
+                        /** @description An object where the key is the response type and the value is the number of hits with that response. */
                         responses?: {
                             [key: string]: number | undefined;
                         };
-                        /**
-                         * @description An object where the key is the error type and the value is the number of hits with that error.
-                         * @example {
-                         *       "i/o timeout": 1
-                         *     }
-                         */
+                        /** @description An object where the key is the error type and the value is the number of hits with that error. */
                         errors?: {
                             [key: string]: number | undefined;
                         };
@@ -10102,7 +10672,7 @@ export interface components {
              * @description The activity event.
              * @enum {string}
              */
-            event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.services.scheduler.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.services.scheduler.task.reconfigure" | "environment.services.vpn.user.create" | "environment.services.vpn.login" | "environment.services.vpn.reset" | "environment.services.vpn.task.reset" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.task.deployments.reconfigure" | "environment.deployments.reconfigure" | "environment.deployments.prune" | "environment.deployment.start" | "environment.deployment.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.role.update" | "hub.role.delete" | "hub.role.create" | "hub.role.task.delete" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "hub.integration.create" | "hub.integration.update" | "hub.integration.delete" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.reconfigure" | "container.reconfigure" | "container.task.volumes.reconfigure" | "container.function.trigger" | "container.function.task.trigger" | "container.volumes.reconfigure" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instances.autoscale.up" | "container.instances.autoscale.down" | "container.instance.healthcheck.restarted" | "container.instance.healthcheck.failed" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migrate_revert" | "container.instance.task.migrate" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "stack.update" | "stack.task.delete" | "stack.create" | "stack.task.prune" | "stack.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.features.reconfigure" | "infrastructure.server.sharedfs.reconfigure" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.features.reconfigure" | "infrastructure.server.task.sharedfs.reconfigure" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "infrastructure.autoscale.group.create" | "infrastructure.autoscale.group.update" | "infrastructure.autoscale.group.task.delete" | "infrastructure.autoscale.group.delete" | "infrastructure.cluster.create" | "infrastructure.cluster.update" | "infrastructure.cluster.delete" | "infrastructure.ips.pool.task.delete" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.run.completed" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create";
+            event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.services.scheduler.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.services.scheduler.task.reconfigure" | "environment.services.vpn.user.create" | "environment.services.vpn.login" | "environment.services.vpn.reset" | "environment.services.vpn.task.reset" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.task.deployments.reconfigure" | "environment.deployments.reconfigure" | "environment.deployments.prune" | "environment.deployment.start" | "environment.deployment.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.role.update" | "hub.role.delete" | "hub.role.create" | "hub.role.task.delete" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "hub.integration.create" | "hub.integration.update" | "hub.integration.delete" | "hub.inactive" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.reconfigure" | "container.reconfigure" | "container.task.volumes.reconfigure" | "container.function.trigger" | "container.function.task.trigger" | "container.volumes.reconfigure" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instances.autoscale.up" | "container.instances.autoscale.down" | "container.instance.healthcheck.restarted" | "container.instance.volume.extend" | "container.instance.task.volume.extend" | "container.instance.healthcheck.failed" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migration.revert" | "container.instance.task.migration.start" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "stack.update" | "stack.task.delete" | "stack.delete" | "stack.create" | "stack.task.prune" | "stack.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.features.reconfigure" | "infrastructure.server.sharedfs.reconfigure" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.features.reconfigure" | "infrastructure.server.task.sharedfs.reconfigure" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "infrastructure.server.evacuation.start" | "infrastructure.server.task.evacuation.start" | "infrastructure.server.evacuation.reset" | "infrastructure.server.task.evacuation.reset" | "infrastructure.autoscale.group.create" | "infrastructure.autoscale.group.update" | "infrastructure.autoscale.group.task.delete" | "infrastructure.autoscale.group.delete" | "infrastructure.cluster.create" | "infrastructure.cluster.update" | "infrastructure.cluster.delete" | "infrastructure.ips.pool.task.delete" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.run.completed" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create";
             /** @description A timestamp for when the activity took place. */
             time: components["schemas"]["DateTime"];
         };
@@ -10269,28 +10839,6 @@ export interface components {
                 updated: components["schemas"]["DateTime"];
                 /** @description The timestamp of when the image was deleted. */
                 deleted: components["schemas"]["DateTime"];
-            };
-        };
-        /**
-         * ImageSourceCreateStep
-         * @description Settings for the image source create step for a pipeline.
-         */
-        ImageSourceCreateStep: {
-            /** @description An identifier for the step. */
-            identifier?: string;
-            options?: {
-                skip?: boolean;
-            };
-            /**
-             * @description The action that the step takes. (enum property replaced by openapi-typescript)
-             * @enum {string}
-             */
-            action: "image.source.create";
-            details: {
-                name: string;
-                type: string;
-                about?: components["schemas"]["ImageSourceAbout"];
-                origin: components["schemas"]["ImageOrigin"];
             };
         };
         /**
@@ -10967,10 +11515,7 @@ export interface components {
                 options?: components["schemas"]["WebhookStepOptions"] | null;
                 /** @description An optional POST body to send with the request. Cannot be used with `from``. */
                 body?: string | null;
-                /**
-                 * @description Takes the output from a previous step and uses it as the body for the POST request. Cannot be used with `body`. String format is <stageIdentifier/stepIdentifier>
-                 * @example init/image-create
-                 */
+                /** @description Takes the output from a previous step and uses it as the body for the POST request. Cannot be used with `body`. String format is <stageIdentifier/stepIdentifier> */
                 from?: string | null;
             };
         };
@@ -11004,7 +11549,7 @@ export interface components {
          * PipelineStep
          * @description A step for a pipeline stage.
          */
-        PipelineSteps: components["schemas"]["ImageSourceCreateStep"] | components["schemas"]["ImageCreateStep"] | components["schemas"]["ImageImportStep"] | components["schemas"]["ImagesPruneStep"] | components["schemas"]["ImageCreateImportStep"] | components["schemas"]["ContainerCreateStep"] | components["schemas"]["ContainerStartStep"] | components["schemas"]["ContainerStopStep"] | components["schemas"]["ContainerDeleteStep"] | components["schemas"]["ContainerReimageStep"] | components["schemas"]["ContainerRestartStep"] | components["schemas"]["ContainerFunctionTriggerStep"] | components["schemas"]["EnvironmentCreateStep"] | components["schemas"]["EnvironmentStartStep"] | components["schemas"]["EnvironmentStopStep"] | components["schemas"]["EnvironmentDeleteStep"] | components["schemas"]["EnvironmentDeploymentStartStep"] | components["schemas"]["EnvironmentDeploymentStopStep"] | components["schemas"]["EnvironmentDeploymentsTagStep"] | components["schemas"]["EnvironmentDeploymentsPruneStep"] | components["schemas"]["EnvironmentDeploymentHealthyWatchStep"] | components["schemas"]["StackBuildCreateStep"] | components["schemas"]["StackBuildGenerateStep"] | components["schemas"]["StackBuildDeployStep"] | components["schemas"]["StackPruneStep"] | components["schemas"]["WebhookPostStep"] | components["schemas"]["WebhookGetStep"] | components["schemas"]["SleepStep"];
+        PipelineSteps: components["schemas"]["ImageCreateStep"] | components["schemas"]["ImageImportStep"] | components["schemas"]["ImagesPruneStep"] | components["schemas"]["ImageCreateImportStep"] | components["schemas"]["ContainerCreateStep"] | components["schemas"]["ContainerStartStep"] | components["schemas"]["ContainerStopStep"] | components["schemas"]["ContainerDeleteStep"] | components["schemas"]["ContainerReimageStep"] | components["schemas"]["ContainerRestartStep"] | components["schemas"]["ContainerFunctionTriggerStep"] | components["schemas"]["EnvironmentCreateStep"] | components["schemas"]["EnvironmentStartStep"] | components["schemas"]["EnvironmentStopStep"] | components["schemas"]["EnvironmentDeleteStep"] | components["schemas"]["EnvironmentDeploymentStartStep"] | components["schemas"]["EnvironmentDeploymentStopStep"] | components["schemas"]["EnvironmentDeploymentsTagStep"] | components["schemas"]["EnvironmentDeploymentsPruneStep"] | components["schemas"]["EnvironmentDeploymentHealthyWatchStep"] | components["schemas"]["StackBuildCreateStep"] | components["schemas"]["StackBuildGenerateStep"] | components["schemas"]["StackBuildDeployStep"] | components["schemas"]["StackPruneStep"] | components["schemas"]["WebhookPostStep"] | components["schemas"]["WebhookGetStep"] | components["schemas"]["SleepStep"];
         /**
          * PipelineStage
          * @description A stage for a given pipeline.
@@ -11177,6 +11722,28 @@ export interface components {
             /** @description The timestamp of when the pipeline run was finished. */
             finished: components["schemas"]["DateTime"];
         };
+        /**
+         * ResourceType
+         * @enum {string}
+         */
+        ResourceType: "account" | "image.source" | "image" | "container" | "container.instance" | "hub" | "hub.api_key" | "hub.membership" | "hub.role" | "sdn.network" | "dns.zone" | "dns.zone.record" | "pipeline" | "pipeline.run" | "stack" | "stack.build" | "infrastructure.provider" | "infrastructure.autoscale.group" | "infrastructure.server" | "infrastructure.cluster" | "infrastructure.ips.pool" | "billing.invoice" | "billing.method" | "environment" | "environment.scoped-variable";
+        /** PipelineRunStep */
+        PipelineRunStep: {
+            identifier: string;
+            /** @enum {string} */
+            action: "environment.create" | "environment.start" | "environment.stop" | "environment.delete" | "environment.deployments.prune" | "environment.deployments.tag" | "environment.deployment.start" | "environment.deployment.stop" | "environment.deployment.healthy.watch" | "image.create" | "image.import" | "images.prune" | "image.create-import" | "container.create" | "container.reimage" | "container.start" | "container.stop" | "container.restart" | "container.delete" | "container.function.trigger" | "stack.build.create" | "stack.build.deploy" | "stack.build.generate" | "stack.prune" | "sleep" | "webhook.post" | "webhook.get";
+            events: components["schemas"]["PipelineRunEvents"];
+            success: boolean;
+            components?: {
+                type: components["schemas"]["ResourceType"];
+                id: string;
+            }[] | null;
+            /** @description An error, if any, that has occurred for this step. */
+            error?: {
+                /** @description Details about the error that has occurred. */
+                message: string;
+            } | null;
+        };
         /** PipelineRunState */
         RunState: {
             /**
@@ -11195,22 +11762,15 @@ export interface components {
             hub_id: components["schemas"]["HubID"];
             /** @description The ID for the pipeline this run belongs to. */
             pipeline_id: string;
+            /** @description Describes the sub queue defined during pipeline trigger, if present. */
+            sub_queue?: string | null;
+            /** @description Describes if a skip lock was defined during pipeline trigger. */
+            skip_locks?: boolean;
             /** @description An array of pipeline stages. */
             stages: {
                 /** @description A stage identifier. */
                 identifier: string;
-                steps: {
-                    identifier: string;
-                    /** @enum {string} */
-                    action: "environment.create" | "environment.start" | "environment.stop" | "environment.delete" | "environment.deployments.prune" | "environment.deployments.tag" | "environment.deployment.start" | "environment.deployment.stop" | "environment.deployment.healthy.watch" | "image.source.create" | "image.create" | "image.import" | "images.prune" | "image.create-import" | "container.create" | "container.reimage" | "container.start" | "container.stop" | "container.restart" | "container.delete" | "container.function.trigger" | "stack.build.create" | "stack.build.deploy" | "stack.build.generate" | "stack.prune" | "sleep" | "webhook.post" | "webhook.get";
-                    events: components["schemas"]["PipelineRunEvents"];
-                    success: boolean;
-                    /** @description An error, if any, that has occurred for this step. */
-                    error?: {
-                        /** @description Details about the error that has occurred. */
-                        message: string;
-                    } | null;
-                }[];
+                steps: components["schemas"]["PipelineRunStep"][];
                 events: components["schemas"]["PipelineRunEvents"];
             }[];
             state: components["schemas"]["RunState"];
@@ -11544,10 +12104,7 @@ export interface components {
                     [key: string]: {
                         /** @description String describing the server mount type. */
                         type: string;
-                        /**
-                         * @description Comma separated string describing the server mount options.
-                         * @example key1=value1,key2=value2
-                         */
+                        /** @description Comma separated string describing the server mount options. */
                         options: string;
                         /** @description String describing the server mount source. */
                         source: string;
@@ -11613,12 +12170,20 @@ export interface components {
              * @description The action to take. (enum property replaced by openapi-typescript)
              * @enum {string}
              */
-            action: "infrastructure.server.evacuate";
+            action: "evacuation.start";
             contents: {
                 destination: {
                     server_id?: components["schemas"]["ID"] | null;
                 };
             };
+        };
+        /** EvacuateServerReset */
+        EvacuateServerReset: {
+            /**
+             * @description The action to take. (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            action: "evacuation.reset";
         };
         /**
          * ServerTags
@@ -11849,7 +12414,7 @@ export interface components {
          * EventType
          * @enum {string}
          */
-        EventType: "api.security_violation" | "console.ssh.login" | "console.ssh.login.failed" | "container.instance.backup.completed" | "container.instance.backup.failed" | "container.instance.delete.failed" | "container.instance.error" | "container.instance.restart.max_restarts" | "container.instance.function.max_runtime" | "container.instance.healthcheck.failed" | "container.instance.healthcheck.recovered" | "container.instance.healthcheck.restarted" | "container.instance.migrate.failed" | "container.instance.migration.completed" | "container.instance.migration.failed" | "container.instance.network.interfaces.create.failed" | "container.instance.restart.failed" | "container.instance.start.failed" | "container.instance.start.privileged" | "container.instance.stop.failed" | "container.instances.autoscale.down" | "container.instances.autoscale.up" | "container.reconfigured.privileged" | "container.volumes.base.create.failed" | "container.volumes.create.failed" | "environment.service.auto_update" | "environment.service.lb.ips.sync.failed" | "environment.service.vpn.login.failed" | "infrastructure.cluster.resources.ram.full" | "infrastructure.server.compute.volumes.base.reconfigured" | "infrastructure.server.compute.full_restart" | "infrastructure.server.compute.sharedfs.mounts.mount" | "infrastructure.server.compute.sharedfs.mounts.mount.failed" | "infrastructure.server.compute.soft_restart" | "infrastructure.server.image.download.failed" | "infrastructure.server.internal_api.throttled" | "infrastructure.server.manifest.sync.failed" | "infrastructure.server.mesh.connect.failed" | "infrastructure.server.neighbor.reachable" | "infrastructure.server.neighbor.rebuild" | "infrastructure.server.neighbor.unreachable" | "infrastructure.server.neighbor.upgraded" | "infrastructure.server.resources.load.high" | "infrastructure.server.resources.ram.full" | "infrastructure.server.resources.storage.volumes.base.full" | "infrastructure.server.resources.storage.cycle_pool.full" | "infrastructure.server.sftp.lockdown" | "infrastructure.server.sftp.login" | "infrastructure.server.sftp.login.failed";
+        EventType: "api.security_violation" | "console.ssh.login" | "console.ssh.login.failed" | "container.instance.backup.completed" | "container.instance.backup.failed" | "container.instance.delete.failed" | "container.instance.error" | "container.instance.restart.max_restarts" | "container.instance.function.max_runtime" | "container.instance.healthcheck.failed" | "container.instance.healthcheck.recovered" | "container.instance.volume.extend.failed" | "container.instance.healthcheck.restarted" | "container.instance.migration.failed" | "container.instance.migration.completed" | "container.instance.migration.failed" | "container.instance.network.interfaces.create.failed" | "container.instance.restart.failed" | "container.instance.start.failed" | "container.instance.start.privileged" | "container.instance.stop.failed" | "container.instances.autoscale.down" | "container.instances.autoscale.up" | "container.reconfigured.privileged" | "container.volumes.base.create.failed" | "container.volumes.create.failed" | "environment.service.auto_update" | "environment.service.lb.ips.sync.failed" | "environment.service.vpn.login.failed" | "infrastructure.cluster.resources.ram.full" | "infrastructure.server.compute.volumes.base.reconfigured" | "infrastructure.server.compute.full_restart" | "infrastructure.server.compute.sharedfs.mounts.mount" | "infrastructure.server.compute.sharedfs.mounts.mount.failed" | "infrastructure.server.compute.soft_restart" | "infrastructure.server.image.download.failed" | "infrastructure.server.internal_api.throttled" | "infrastructure.server.manifest.sync.failed" | "infrastructure.server.mesh.connect.failed" | "infrastructure.server.neighbor.reachable" | "infrastructure.server.neighbor.rebuild" | "infrastructure.server.neighbor.unreachable" | "infrastructure.server.neighbor.upgraded" | "infrastructure.server.resources.load.high" | "infrastructure.server.resources.ram.full" | "infrastructure.server.resources.storage.volumes.base.full" | "infrastructure.server.resources.storage.cycle_pool.full" | "infrastructure.server.sftp.lockdown" | "infrastructure.server.sftp.login" | "infrastructure.server.sftp.login.failed" | "infrastructure.server.evacuation.failed" | "infrastructure.server.evacuation.completed";
         /**
          * Event
          * @description A platform-generated event. Describes something happening on the platform at a specific time. Can be informational, security related, or a notice of something important.
@@ -11899,6 +12464,52 @@ export interface components {
                 /** @description The cluster associated with this event */
                 cluster?: string | null;
             };
+        };
+        /**
+         * LogLine
+         * @description A log line is point in time data output from a container instance.
+         */
+        LogLine: {
+            /** @description The time the log line occurred. */
+            time: components["schemas"]["DateTime"];
+            /** @description The source that generated the log line. */
+            source: string;
+            /** @description The message associated with the log line. */
+            message: string;
+            /** @description The container instance that the log line originated from. */
+            instance_id?: string | null;
+            /** @description A randomly generated ID that is assigned to all lines in the same context window.
+             *     The first line with a specific ID is the log line that matches the query, and the following
+             *     log lines are included due to the the set context window in the aggregate.
+             *      */
+            context_window?: string;
+        };
+        /**
+         * Monitor
+         * @description A monitor used to determine latency between the public internet and a load balancer on Cycle. These monitors are automatically created and managed by the platform. Information about specific monitors is provided for determining the regional latencies for an environment.
+         *
+         */
+        Monitor: {
+            /** @description The ID of the node this monitor is running on. */
+            node_id: string;
+            /** @description The country code of where this monitor is located. */
+            country_short: string;
+            /** @description The full name of the country where this monitor is located. */
+            country: string;
+            /** @description The name of the region (state, province, prefecture, etc.) where this monitor is located. */
+            region: string;
+            /** @description The name of the city where this monitor is located. */
+            city: string;
+            /**
+             * Format: float
+             * @description The latitude where this monitor is located.
+             */
+            latitude: number;
+            /**
+             * Format: float
+             * @description The longitude where this monitor is located.
+             */
+            longitude: number;
         };
         /**
          * PipelineIncludes
@@ -12049,6 +12660,342 @@ export interface components {
                 deployment?: components["schemas"]["Deployment"] | null;
                 update?: components["schemas"]["StackBuildDeploymentUpdates"] | null;
             };
+        };
+        /**
+         * VirtualMachineEnvironmentSummary
+         * @description Represents the environment configuration for a virtual machine, including its network settings and cluster associations.
+         *
+         */
+        VirtualMachineEnvironmentSummary: {
+            id: components["schemas"]["ID"];
+            /** @description The cluster this environment is associated with. */
+            cluster: components["schemas"]["Identifier"];
+            /** @description The subnet associated with this environment. */
+            subnet?: string | null;
+            /** @description The IPv6 network configuration for the environment. */
+            ipv6?: components["schemas"]["IPNet"] | null;
+            /** @description Legacy networking information for backward compatibility with IPv4 networks. */
+            legacy?: components["schemas"]["LegacyNetwork"] | null;
+        };
+        /**
+         * VirtualMachineNetworkConfig
+         * @description Defines the network settings for a virtual machine, including public access mode, hostname, and ports.
+         *
+         */
+        VirtualMachineNetworkConfig: {
+            /**
+             * @description Controls the public network mode for the virtual machine.
+             * @enum {string}
+             */
+            public: "enable" | "disable" | "egress-only";
+            /** @description The hostname assigned to the virtual machine. */
+            hostname: string;
+            /** @description Port configurations for the virtual machine. */
+            ports?: string[] | null;
+        };
+        /**
+         * VirtualMachineDeployTags
+         * @description Tags that define node requirements for the deployment. The `any` tag must match at least one condition, while `all` must match all conditions.
+         *
+         */
+        VirtualMachineDeployTags: {
+            any?: string[] | null;
+            all?: string[] | null;
+        };
+        /**
+         * VirtualMachineNodeConstraints
+         * @description Node-level constraints for the virtual machine deployment, specifying tags that must or must not be present.
+         *
+         */
+        VirtualMachineNodeConstraints: {
+            tags: components["schemas"]["VirtualMachineDeployTags"];
+        };
+        /**
+         * VirtualMachineDeployConstraints
+         * @description Constraints define node-level and resource restrictions for the virtual machine deployment.
+         *
+         */
+        VirtualMachineDeployConstraints: {
+            node?: components["schemas"]["VirtualMachineNodeConstraints"] | null;
+            secrets?: string[] | null;
+            containers?: string[] | null;
+        };
+        /**
+         * VirtualMachineShutdownPolicy
+         * @description The shutdown policy defines how the virtual machine should handle shutdown, including a timeout and signals to be sent during shutdown.
+         *
+         */
+        VirtualMachineShutdownPolicy: {
+            /** @description The timeout period for graceful shutdown. */
+            graceful_timeout?: components["schemas"]["Duration"] | null;
+            /** @description Signals to send during the shutdown process. */
+            signals?: string[] | null;
+        };
+        /**
+         * VirtualMachineStartupPolicy
+         * @description The startup policy defines how the virtual machine should handle startup, including a possible delay before starting the machine.
+         *
+         */
+        VirtualMachineStartupPolicy: {
+            /** @description Delay before startup. */
+            delay?: components["schemas"]["Duration"] | null;
+        };
+        /**
+         * VirtualMachineRestartPolicy
+         * @description The restart policy defines how the virtual machine should handle restarts, including the condition for restarting, delay between attempts, and maximum number of attempts.
+         *
+         */
+        VirtualMachineRestartPolicy: {
+            /**
+             * @description Specifies when to restart the virtual machine.
+             * @enum {string}
+             */
+            condition: "always" | "never" | "failure";
+            /** @description Delay between restart attempts. */
+            delay: components["schemas"]["Duration"];
+            /** @description Maximum number of restart attempts. */
+            max_attempts: number;
+        };
+        /**
+         * VirtualMachineTelemetryConfig
+         * @description The telemetry configuration defines how telemetry data is handled, including retention, interval, and whether telemetry is disabled.
+         *
+         */
+        VirtualMachineTelemetryConfig: {
+            /** @description Data retention duration for telemetry. */
+            retention?: components["schemas"]["Duration"] | null;
+            /** @description Telemetry collection interval. */
+            interval?: components["schemas"]["Duration"] | null;
+            /** @description Whether telemetry collection is disabled. */
+            disable: boolean;
+        };
+        /**
+         * VirtualMachineDeployConfig
+         * @description Represents the deployment configuration for a virtual machine, including constraints, shutdown/startup policies, restart conditions, and telemetry settings.
+         *
+         */
+        VirtualMachineDeployConfig: {
+            constraints?: components["schemas"]["VirtualMachineDeployConstraints"] | null;
+            shutdown?: components["schemas"]["VirtualMachineShutdownPolicy"] | null;
+            startup?: components["schemas"]["VirtualMachineStartupPolicy"] | null;
+            restart?: components["schemas"]["VirtualMachineRestartPolicy"] | null;
+            telemetry?: components["schemas"]["VirtualMachineTelemetryConfig"] | null;
+        };
+        /**
+         * VirtualMachineConfig
+         * @description Defines the network and deployment configurations for a virtual machine.
+         *
+         */
+        VirtualMachineConfig: {
+            network: components["schemas"]["VirtualMachineNetworkConfig"];
+            deploy: components["schemas"]["VirtualMachineDeployConfig"];
+        };
+        /**
+         * VirtualMachineImageSourceUrl
+         * @description A virtual machine image sourced from a URL.
+         */
+        VirtualMachineImageSourceUrl: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "url";
+            details: {
+                /** @description The URL where a custom image is located. */
+                url: string;
+            };
+        };
+        /**
+         * VirtualMachineImageSourceIpxe
+         * @description A virtual machine image sourced from an IPXE script.
+         */
+        VirtualMachineImageSourceIpxe: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "ipxe";
+            details: {
+                /** @description A URL that points to an IPXE script. */
+                chain_url?: string | null;
+                /** @description An inline IPXE script. */
+                script?: string | null;
+            };
+        };
+        /**
+         * VirtualMachineImageSourceBase
+         * @description A virtual machine image sourced from a Cycle base image.
+         */
+        VirtualMachineImageSourceBase: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "base";
+            details: {
+                /** @description The base image identifier. */
+                identifier: string;
+            };
+        };
+        /**
+         * VirtualMachineImage
+         * @description Represents the image used by a virtual machine. It can either reference a URL where the image is located or specify a base image provided by Cycle. The `base` field allows users to specify the name of a desired Cycle-hosted base image, removing the need for a custom image URL.
+         *
+         */
+        VirtualMachineImage: components["schemas"]["VirtualMachineImageSourceUrl"] | components["schemas"]["VirtualMachineImageSourceIpxe"] | components["schemas"]["VirtualMachineImageSourceBase"];
+        /**
+         * VirtualMachineVolumeConfig
+         * @description Represents the configuration for a volume attached to a virtual machine.
+         *
+         */
+        VirtualMachineVolumeConfig: {
+            /** @description Configuration details for a local volume, if applicable. */
+            local?: {
+                /** @description The maximum size allowed for the local volume. */
+                max_size: string;
+                /** @description Indicates if the volume is part of a storage pool. */
+                storage_pool?: boolean | null;
+            } | null;
+            identifier: components["schemas"]["Identifier"];
+            /** @description Specifies if the volume is mounted as read-only. */
+            read_only: boolean;
+        };
+        /**
+         * VirtualMachineVolume
+         * @description Represents a storage volume attached to a virtual machine.
+         *
+         */
+        VirtualMachineVolume: {
+            id: components["schemas"]["ID"];
+            /** @description A unique hash identifying the volume for the virtual machine. */
+            hash: string;
+            /** @description The configuration details for the virtual machine's volume. */
+            config: components["schemas"]["VirtualMachineVolumeConfig"];
+        };
+        /** VirtualMachineState */
+        VirtualMachineState: {
+            /**
+             * @description The current state of the virtual machine.
+             * @enum {string}
+             */
+            current: "new" | "starting" | "running" | "stopping" | "stopped" | "deleting" | "deleted";
+        } & components["schemas"]["State"];
+        /**
+         * VirtualMachineMeta
+         * @description Fields that can be included on a per-virtual machine basis, specific to that virtual machine.
+         */
+        VirtualMachineMeta: {
+            domains?: {
+                /** @description The fully qualified domain name. */
+                fqdn: string;
+                record?: components["schemas"]["Record"] | null;
+            }[] | null;
+            /** @description An array of IP addresses associated with this virtual machine. */
+            ips?: components["schemas"]["Ip"][] | null;
+        };
+        /**
+         * VirtualMachine
+         * @description Describes a virtual machine running on the Cycle Platform.
+         *
+         */
+        VirtualMachine: {
+            id: components["schemas"]["ID"];
+            /** @description A user-defined name for the virtual machine. */
+            name: string;
+            identifier: components["schemas"]["Identifier"];
+            creator: components["schemas"]["CreatorScope"];
+            environment: components["schemas"]["VirtualMachineEnvironmentSummary"];
+            hub_id: components["schemas"]["HubID"];
+            config: components["schemas"]["VirtualMachineConfig"];
+            image: components["schemas"]["VirtualMachineImage"];
+            container_id?: components["schemas"]["ID"];
+            volumes?: components["schemas"]["VirtualMachineVolume"][] | null;
+            /** @description Metadata annotations for the virtual machine. */
+            annotations?: {
+                [key: string]: unknown;
+            } | null;
+            state: components["schemas"]["VirtualMachineState"];
+            /**
+             * VirtualMachineEvents
+             * @description A collection of timestamps for each event in the virtual machine's lifetime.
+             */
+            events: {
+                /** @description The timestamp of when the virtual machine was created. */
+                created: components["schemas"]["DateTime"];
+                /** @description The timestamp of when the virtual machine was updated. */
+                updated: components["schemas"]["DateTime"];
+                /** @description The timestamp of when the virtual machine was deleted. */
+                deleted: components["schemas"]["DateTime"];
+                /** @description The timestamp of when the virtual machine was started. */
+                started: components["schemas"]["DateTime"];
+            };
+            /** @description A boolean flag indicating if this virtual machine is deprecated. */
+            deprecate: boolean;
+            /** @description Prevents this virtual machine from being deleted when true. */
+            lock: boolean;
+            meta?: components["schemas"]["VirtualMachineMeta"] | null;
+        };
+        /**
+         * VirtualMachineIncludes
+         * @description All includable resources linkable to the given virtual machine.
+         */
+        VirtualMachineIncludes: {
+            creators?: components["schemas"]["CreatorInclude"];
+            environments?: {
+                [key: string]: components["schemas"]["Environment"] | undefined;
+            };
+            "environments:identifiers"?: {
+                [key: string]: components["schemas"]["ID"] | undefined;
+            };
+            clusters?: {
+                [key: string]: components["schemas"]["Cluster"] | undefined;
+            };
+        };
+        /** VirtualMachineStartTask */
+        VirtualMachineStartTask: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "start";
+        };
+        /** VirtualMachineStopTask */
+        VirtualMachineStopTask: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            action: "stop";
+        };
+        /**
+         * VirtualMachineBaseImage
+         * @description Represents a virtual machine base OS image provided by Cycle.
+         *
+         */
+        VirtualMachineBaseImage: {
+            /** @description The name of the base image (e.g., "Alpine Linux"). */
+            title: string;
+            /** @description A detailed description of the base image. */
+            description: string;
+            /**
+             * Format: uri
+             * @description The official homepage for the base image.
+             */
+            homepage: string;
+            /** @description A list of available versions for the base image, including details like version number and disk image URL. */
+            versions: {
+                /** @description A unique identifier for the version. */
+                identifier: string;
+                /** @description The version number of the base image. */
+                version: string;
+                /**
+                 * Format: uri
+                 * @description The URL where the disk image can be downloaded.
+                 */
+                disk_image_url: string;
+                /** @description A flag indicating whether the version is currently supported. */
+                supported: boolean;
+            }[];
         };
     };
     responses: {
@@ -12744,7 +13691,7 @@ export interface operations {
                     /** @description A boolean where true represents a billing method being primary. */
                     primary: boolean;
                     address: components["schemas"]["Address"];
-                    credit_card: {
+                    credit_card?: {
                         name: string;
                         number: string;
                         cvv: string;
@@ -12752,12 +13699,25 @@ export interface operations {
                             month: number;
                             year: number;
                         };
-                    };
+                    } | null;
+                    us_bank_acct?: {
+                        /** @description The name of the account holder. */
+                        account_holder_name: string;
+                        /**
+                         * @description Whether this account is owned by a business or an individual.
+                         * @enum {string}
+                         */
+                        account_holder_type: "individual" | "company";
+                        /** @description The routing number of the bank where the account lives. */
+                        routing_number: string;
+                        /** @description The number of the bank account. */
+                        account_number: string;
+                    } | null;
                 };
             };
         };
         responses: {
-            /** @description Returns a Billing Method resource. */
+            /** @description Returns a billing method. */
             201: {
                 headers: {
                     [name: string]: unknown;
@@ -12840,8 +13800,6 @@ export interface operations {
                     name?: string;
                     /** @description A boolean where true represents a billing method being primary. */
                     primary?: boolean;
-                    address?: components["schemas"]["Address"];
-                    credit_card?: components["schemas"]["CreditCard"];
                 };
             };
         };
@@ -12854,6 +13812,45 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["Method"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    createBillingMethodJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the method. */
+                methodId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description The name of the action to perform.
+                     * @enum {string}
+                     */
+                    action: "verify";
+                    contents: {
+                        micro_deposits: number[];
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Returns a job descriptor. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["JobDescriptor"];
                     };
                 };
             };
@@ -13573,42 +14570,6 @@ export interface operations {
             default: components["responses"]["DefaultError"];
         };
     };
-    getContainerInstancesTelemetry: {
-        parameters: {
-            query?: {
-                /** @description ## Filter Field
-                 *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
-                filter?: {
-                    /** @description The start date from when to pull instance telemetry data */
-                    "range-start"?: components["schemas"]["DateTime"];
-                    /** @description The end date from when to pull instance telemetry data */
-                    "range-end"?: components["schemas"]["DateTime"];
-                };
-            };
-            header?: never;
-            path: {
-                /** @description The ID of the desired Container */
-                containerId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Returns a list of telemetry data points. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        data: components["schemas"]["InstanceTelemetryPoint"][];
-                    };
-                };
-            };
-            default: components["responses"]["DefaultError"];
-        };
-    };
     getInstances: {
         parameters: {
             query?: {
@@ -13857,7 +14818,7 @@ export interface operations {
         /** @description Parameters for creating a new container instance job. */
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["RevertMigration"] | components["schemas"]["Migrate"];
+                "application/json": components["schemas"]["Migrate"] | components["schemas"]["RevertMigration"] | components["schemas"]["ExtendVolume"];
             };
         };
         responses: {
@@ -15001,42 +15962,6 @@ export interface operations {
             default: components["responses"]["DefaultError"];
         };
     };
-    getEnvironmentInstancesTelemetry: {
-        parameters: {
-            query?: {
-                /** @description ## Filter Field
-                 *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
-                filter?: {
-                    /** @description The start date from when to pull instance telemetry data */
-                    "range-start"?: components["schemas"]["DateTime"];
-                    /** @description The end date from when to pull instance telemetry data */
-                    "range-end"?: components["schemas"]["DateTime"];
-                };
-            };
-            header?: never;
-            path: {
-                /** @description The ID of the desired Environment */
-                environmentId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Returns a list of telemetry data points. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        data: components["schemas"]["InstanceTelemetryPoint"][];
-                    };
-                };
-            };
-            default: components["responses"]["DefaultError"];
-        };
-    };
     getEnvironmentDeployments: {
         parameters: {
             query?: never;
@@ -15067,6 +15992,49 @@ export interface operations {
                                 } | undefined;
                             };
                         };
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    exportStack: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the target environment. */
+                environmentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /** @description Defines which deployment containers to include in the stack export. By default, no containers tagged in a deployment are exported.
+                     *     This option includes all containers with the specific, comma separated deployment tags in the final output in addition to the
+                     *     containers that are not part of any deployment.
+                     *      */
+                    deployment_tags?: string[];
+                    /**
+                     * @description When set to true, Cycle will resolve image origins and inline them into the stack, essentially making this stack portable outside the hub it's currently used in.
+                     *     By default, this is set to false, and the export will just reference existing image sources used by this stack in your hub by ID.
+                     *
+                     * @default false
+                     */
+                    resolve_origins?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Returns a stack spec file. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["StackSpec"];
                     };
                 };
             };
@@ -15358,7 +16326,7 @@ export interface operations {
                         high_availability?: boolean | null;
                         /** @description A boolean representing if this service container is set to autoupdate or not */
                         auto_update?: boolean | null;
-                        config?: components["schemas"]["LoadBalancerConfig"];
+                        config?: components["schemas"]["LoadBalancerConfig"] | null;
                     };
                 };
             };
@@ -15939,7 +16907,7 @@ export interface operations {
                     /** @description `filter[server]=ID` server filtering by ID. Submit the ID of the server you wish to filter for and the return will be any activity from that server.
                      *      */
                     server?: string;
-                    /** @description `filter[events]=value` filter by event names. Example: `filter[events]=environment.services.vpn.login`
+                    /** @description `filter[events]=value` filter by event names.
                      *      */
                     events?: string;
                     /** @description `filter[verbosity]=integer` filter the activity return by verbosity. The verbosity can be:
@@ -16960,7 +17928,7 @@ export interface operations {
                     /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Image's current state.
                      *      */
                     state?: string;
-                    /** @description `filter[source_type]=value` filter images by the Image source's type.  Can be: `direct` or `stack_build`
+                    /** @description `filter[source_type]=value` filter images by the Image source's type.  Can be: `direct`, `stack-build`, or `bucket`
                      *      */
                     source_type?: string;
                     /** @description `filter[source_id]=ID` Image filtering by source ID.  Submit the ID of the Image source you wish to filter for and the return will be any Images created from that source.
@@ -18272,7 +19240,7 @@ export interface operations {
         /** @description Parameters for creating the new Server Job. */
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["ReconfigureSharedFs"] | components["schemas"]["ReconfigureServer"] | components["schemas"]["RestartServer"] | components["schemas"]["RestartCompute"] | components["schemas"]["RestartComputeSpawner"] | components["schemas"]["EvacuateServer"];
+                "application/json": components["schemas"]["ReconfigureSharedFs"] | components["schemas"]["ReconfigureServer"] | components["schemas"]["RestartServer"] | components["schemas"]["RestartCompute"] | components["schemas"]["RestartComputeSpawner"] | components["schemas"]["EvacuateServer"] | components["schemas"]["EvacuateServerReset"];
             };
         };
         responses: {
@@ -18802,6 +19770,94 @@ export interface operations {
             default: components["responses"]["DefaultError"];
         };
     };
+    aggregateLogs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Parameters for aggregating logs. */
+        requestBody?: {
+            content: {
+                "application/json": {
+                    scope: {
+                        /**
+                         * @description The type of resource used to narrow log aggregation.
+                         * @enum {string}
+                         */
+                        type: "container" | "instance" | "environment";
+                        /** @description The ID or IDs used to narrow log aggregation. */
+                        ids?: components["schemas"]["ID"][] | null;
+                        /** @description The date range used to narrow log aggregation. */
+                        date_range?: null | {
+                            /** @description The start date from when to fetch logs. */
+                            start?: components["schemas"]["DateTime"];
+                            /** @description The end date from when to fetch logs. */
+                            end?: components["schemas"]["DateTime"];
+                        };
+                        /**
+                         * @description Context window indicates how many log lines after a match to return in the response.
+                         *     This allows greater context around the matched lines.
+                         *
+                         * @default 5
+                         */
+                        context_window?: number;
+                    };
+                    search?: {
+                        /**
+                         * @description The input type used to query logs. When set to regexp, a regex expression will be used to find a log line with a message matching the expression.  When set to 'raw', the aggregate will look for an exact string match.
+                         * @enum {string}
+                         */
+                        type: "raw" | "regexp";
+                        /** @description The search input is a string input that is used to in the aggregate to narrow the log line results. */
+                        match: string;
+                    }[];
+                    /** @description Indicates that only locally cached log lines should be queried.  If true, logs in object storage will not be returned. */
+                    local?: boolean | null;
+                    /** @description Describes the maximum number of log lines the query will return. */
+                    limit?: number | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Returns an array of log lines. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LogLine"][];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    getMonitoringMonitors: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns and array of monitor location information. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["Monitor"][];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
     getPipelines: {
         parameters: {
             query?: {
@@ -19049,6 +20105,40 @@ export interface operations {
             default: components["responses"]["DefaultError"];
         };
     };
+    getPipelineRun: {
+        parameters: {
+            query?: {
+                /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
+                include?: "creators"[];
+            };
+            header?: never;
+            path: {
+                /** @description The ID of the Pipeline. */
+                pipelineId: string;
+                /** @description The ID for the pipeline run. */
+                runId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns a Pipeline Run. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["PipelineRun"];
+                        includes?: {
+                            creators?: components["schemas"]["CreatorInclude"];
+                        };
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
     createPipelineJob: {
         parameters: {
             query?: never;
@@ -19095,6 +20185,52 @@ export interface operations {
                     name: string;
                     identifier: components["schemas"]["Identifier"];
                     pipeline_id: components["schemas"]["ID"];
+                };
+            };
+        };
+        responses: {
+            /** @description Returns a Pipeline. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["Pipeline"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    triggerPipeline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the Pipeline. */
+                pipelineId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Parameters for triggering a pipeline. */
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /** @description The trigger key secret. */
+                    secret: string;
+                    /** @description A map of variables to pass into the pipeline when it runs. */
+                    variables: {
+                        [key: string]: string | undefined;
+                    };
+                    advanced?: {
+                        /** @description Sub queue allows multiple concurrent pipeline runs. */
+                        sub_queue?: string | null;
+                        /** @description To enable skip locks, pass the current UNIX timestamp. Must be accurate within 10 minutes of the current UTC time.
+                         *     This will skip lock checks when running a pipeline - the user takes all risk of ensuring two pipeline runs won't make conflicting changes.
+                         *      */
+                        skip_locks?: number | null;
+                    };
                 };
             };
         };
@@ -20003,6 +21139,297 @@ export interface operations {
             default: components["responses"]["DefaultError"];
         };
     };
+    getVirtualMachines: {
+        parameters: {
+            query?: {
+                /** @description A comma-separated list of meta values. Meta values will show up under a resource's `meta` field.
+                 *     In the case of applying a meta to a collection of resources, each resource will have its own relevant meta data.
+                 *     In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled.
+                 *      */
+                meta?: ("domains" | "ips")[];
+                /** @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
+                 *     In the case of applying an include to a collection of resources, if multiple resources share the same include, it will only appear once in the return.
+                 *      */
+                include?: ("creators" | "environments" | "clusters")[];
+                /** @description ## Filter Field
+                 *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
+                 *      */
+                filter?: {
+                    /** @description `filter[identifier]=value` List only those virtual machines matching this identifier. May return multiple results.
+                     *      */
+                    identifier?: string;
+                    /** @description `filter[search]=value` Search virtual machines for a value associated with a field.
+                     *      */
+                    search?: string;
+                    /** @description `filter[creator]=account-ID` Filter for virtual machines matching a particular creator, such as `account-<ID>` or `environment-<ID>`.
+                     *      */
+                    creator?: string;
+                    /** @description `filter[environment]=ID` Filter virtual machines by environment ID. Submit the ID of the environment you wish to filter for.
+                     *      */
+                    environment?: string;
+                    /**
+                     * @description `filter[state]=value` Filter virtual machines by their current state.
+                     *
+                     * @enum {string}
+                     */
+                    state?: "new" | "starting" | "running" | "stopping" | "stopped" | "deleting" | "deleted";
+                    /** @description The start date from when to pull the virtual machines. */
+                    "range-start"?: components["schemas"]["DateTime"];
+                    /** @description The end date from when to pull the virtual machines. */
+                    "range-end"?: components["schemas"]["DateTime"];
+                    /** @description `filter[tags]=value` Filter virtual machines by their tags.
+                     *      */
+                    tags?: string;
+                    /**
+                     * @description `filter[public_network]=value` Filter virtual machines by their public network status.
+                     *
+                     * @enum {string}
+                     */
+                    public_network?: "enabled" | "disabled";
+                };
+                /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
+                sort?: components["parameters"]["SortParam"];
+                /** @description In a list return, the data associated with the page number and size returned. 20 results per page, page 2 would be `page[size]=20&page[number]=2` */
+                page?: components["parameters"]["PageParam"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns a list of virtual machines. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["VirtualMachine"][];
+                        includes?: components["schemas"]["VirtualMachineIncludes"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    createVirtualMachine: {
+        parameters: {
+            query?: {
+                /** @description A comma-separated list of meta values. Meta values will show up under a resource's `meta` field.
+                 *     In the case of applying a meta to a collection of resources, each resource will have its own relevant meta data.
+                 *     In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled.
+                 *      */
+                meta?: ("domains" | "ips")[];
+                /** @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
+                 *     In the case of applying an include to a collection of resources, if multiple resources share the same include, it will only appear once in the return.
+                 *      */
+                include?: ("creators" | "environments" | "clusters")[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Parameters for creating a new virtual machine. */
+        requestBody?: {
+            content: {
+                "application/json": {
+                    identifier?: components["schemas"]["Identifier"];
+                    /** @description A user-defined name for the virtual machine. */
+                    name: string;
+                    /** @description The ID of the environment this virtual machine will be deployed to. */
+                    environment_id: string;
+                    image: components["schemas"]["VirtualMachineImage"];
+                    config: components["schemas"]["VirtualMachineConfig"];
+                    /** @description Prevents this virtual machine from being deleted when true. */
+                    lock: boolean;
+                    volumes?: components["schemas"]["VirtualMachineVolumeConfig"][] | null;
+                    /** @description Custom meta data. Not utilized by Cycle. */
+                    annotations?: {
+                        [key: string]: unknown;
+                    } | null;
+                };
+            };
+        };
+        responses: {
+            /** @description Returns the newly created virtual machine. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["VirtualMachine"];
+                        includes?: components["schemas"]["VirtualMachineIncludes"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    getVirtualMachine: {
+        parameters: {
+            query?: {
+                /** @description A comma-separated list of meta values. Meta values will show up under a resource's `meta` field.
+                 *     In the case of applying a meta to a collection of resources, each resource will have its own relevant meta data.
+                 *     In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled.
+                 *      */
+                meta?: ("domains" | "ips")[];
+                /** @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
+                 *     In the case of applying an include to a collection of resources, if multiple resources share the same include, it will only appear once in the return.
+                 *      */
+                include?: ("creators" | "environments" | "clusters")[];
+            };
+            header?: never;
+            path: {
+                /** @description The ID of the virtual machine. */
+                vmId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns the requested virtual machine. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["VirtualMachine"];
+                        includes?: components["schemas"]["VirtualMachineIncludes"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    deleteVirtualMachine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the virtual machine to delete. */
+                vmId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns a job descriptor. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["JobDescriptor"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    updateVirtualMachine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the virtual machine. */
+                vmId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Parameters for updating the virtual machine. */
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /** @description The name of the virtual machine. */
+                    name?: string;
+                    /** @description The identifier of the virtual machine. */
+                    identifier?: string;
+                    /** @description A boolean flag indicating if this virtual machine is deprecated. */
+                    deprecate?: boolean;
+                    /** @description Prevents this virtual machine from being deleted when true. */
+                    lock?: boolean;
+                    /** @description Metadata annotations for the virtual machine. */
+                    annotation?: {
+                        [key: string]: string | undefined;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Returns the updated virtual machine. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["VirtualMachine"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    createVirtualMachineJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the virtual machine. */
+                vmId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Parameters for creating a new virtual machine job. */
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["VirtualMachineStartTask"] | components["schemas"]["VirtualMachineStopTask"];
+            };
+        };
+        responses: {
+            /** @description Returns a job descriptor. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["JobDescriptor"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    getVirtualMachineBaseImages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A map of virtual machine base images provided by Cycle keyed by an identifier. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            [key: string]: components["schemas"]["VirtualMachineBaseImage"] | undefined;
+                        };
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
     lookupIdentifier: {
         parameters: {
             query: {
@@ -20048,8 +21475,7 @@ export interface operations {
             content: {
                 "application/json": {
                     components: {
-                        /** @enum {string} */
-                        type: "account" | "image.source" | "image" | "container" | "container.instance" | "hub" | "hub.api_key" | "hub.membership" | "hub.role" | "sdn.network" | "dns.zone" | "dns.zone.record" | "pipeline" | "pipeline.run" | "stack" | "stack.build" | "infrastructure.provider" | "infrastructure.autoscale.group" | "infrastructure.server" | "infrastructure.cluster" | "infrastructure.ips.pool" | "billing.invoice" | "billing.method" | "environment" | "environment.scoped-variable";
+                        type: components["schemas"]["ResourceType"];
                         id: string;
                     }[];
                 };
