@@ -1635,6 +1635,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/environments/{environmentId}/services/gateway/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Gateway Service Job
+         * @description Creates a task that will update the gateway service's configuration.
+         */
+        post: operations["createGatewayServiceJob"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/environments/{environmentId}/services/lb": {
         parameters: {
             query?: never;
@@ -2038,7 +2058,7 @@ export interface paths {
         };
         /**
          * Get Integration
-         * @description Retrieves details of a single Integration associated with the current hub.
+         * @description Retrieves details of a single integration associated with the current hub.
          *
          *     Requires the `hubs-integrations-view` capability.
          *
@@ -2048,14 +2068,14 @@ export interface paths {
         post?: never;
         /**
          * Delete an Integration
-         * @description Deletes the specified Integration from the current hub, marking it as deleted and returning the updated Integration.
+         * @description Deletes the specified integration from the current hub, marking it as deleted and returning the updated integration.
          */
         delete: operations["deleteIntegration"];
         options?: never;
         head?: never;
         /**
          * Update Integration
-         * @description Updates the specified Integration within the current hub. If the Integration definition specifies that it requires verification, then you must submit a verify task to enable it.
+         * @description Updates the specified integration within the current hub. If the integration definition specifies that it requires verification, then you must submit a verify task to enable it.
          */
         patch: operations["updateIntegration"];
         trace?: never;
@@ -2078,7 +2098,7 @@ export interface paths {
         put?: never;
         /**
          * Create Integration
-         * @description Create an Integration resource within a hub. If the Integration definition specifies that it requires verification, then you must submit a verify task to enable it.
+         * @description Create an integration resource within a hub. If the integration definition specifies that it requires verification, then you must submit a verify task to enable it.
          */
         post: operations["createIntegration"];
         delete?: never;
@@ -3737,6 +3757,34 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/stacks/{stackId}/builds/{buildId}/build-log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Stack Build Log
+         * @description Requests the log generated during a stack build.
+         *     The response log includes log entries for the stack build process,
+         *     but individual image build logs must be fetched from the
+         *     generated image. When a stack build fails due to an invalid spec,
+         *     the incorrect spec, with populated variables,
+         *     will be included in the log.
+         *
+         *     Requires the `stacks-view` capability.
+         *
+         */
+        get: operations["getStackBuildLog"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/stacks/{stackId}/builds/{buildId}/tasks": {
         parameters: {
             query?: never;
@@ -3953,6 +4001,35 @@ export interface paths {
         patch: operations["updateVirtualMachineSshKey"];
         trace?: never;
     };
+    "/v1/virtual-machines/{virtualMachineId}/available-ips": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Available IP Addresses
+         * @description Lists IP addresses that can be assigned to the specified virtual machine.
+         *
+         *     For an IP address to be assignable to a virtual machine, it must follow these rules:
+         *
+         *     1. The IP address must be assigned to the same location as the virtual machine.
+         *     2. The IP address must be from a server that supports the `gateway` service.
+         *     3. The IP address must be in the `available` state.
+         *
+         *     Requires the `virtual-machines-view` capability.
+         *
+         */
+        get: operations["getAvailableIps"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/utils/resource/lookup": {
         parameters: {
             query?: never;
@@ -3985,7 +4062,9 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Look up a component. */
+        /** Look up Cycle components (resources such as containers, servers, etc) based on their ID.
+         *     Useful when the IDs are known ahead of time - all relevant items can be fetched in a single request.
+         *      */
         post: operations["lookupComponents"];
         delete?: never;
         options?: never;
@@ -4017,7 +4096,7 @@ export interface components {
              * @description A Cycle standard error code.
              * @enum {string}
              */
-            code?: "400.invalid-syntax" | "401.auth-invalid" | "401.auth-expired" | "401.no-cookie" | "401.unauthorized-application" | "403.mismatch" | "403.wrong-hub" | "403.not-ready" | "403.expired" | "403.restricted-portal" | "403.permissions" | "403.invalid-ip" | "403.invalid-state" | "403.not-approved" | "403.not-allowed" | "403.platform-disabled" | "403.2fa-required" | "403.2fa-failed" | "403.new-application-capabilities" | "403.tier-restricted" | "404.hub" | "404.hub.invitation" | "404.hub.integration" | "404.hub.role" | "404.sdn.network" | "404.environment" | "404.environment.scoped-variable" | "404.hub.api-key" | "404.uri" | "404.provider" | "404.stack" | "404.community.thread" | "404.community.thread.reply" | "404.survey" | "404.survey-response" | "404.notification" | "404.stack-build" | "404.image" | "404.image.source" | "404.image.build-log" | "404.job" | "404.billing.order" | "404.billing.service" | "404.billing.credit" | "404.billing.invoice" | "404.billing.tier" | "404.billing.support" | "404.billing.payment-method" | "404.billing.promo-code" | "404.node" | "404.infrastructure.location" | "404.infrastructure.ips.pool" | "404.infrastructure.provider" | "404.infrastructure.server" | "404.infrastructure.cluster" | "404.infrastructure.autoscale.group" | "404.infrastructure.model" | "404.monitoring.logs.analytics.rule" | "404.account" | "404.container" | "404.container.backup" | "404.vpn.account" | "404.instance" | "404.pipeline" | "404.pipeline.run" | "404.pipeline.key" | "404.dns.zone" | "404.dns.record" | "404.cluster" | "404.platform-build" | "404.cycleos-build" | "404.email-verification" | "404.hub.membership" | "404.announcement" | "404.ha-service.session" | "404.virtual-machine" | "404.virtual-machine.ssh-key" | "404.sales.lead" | "409.duplicate-found" | "415.invalid-content-type" | "422.missing-argument" | "422.invalid-argument" | "422.invalid-input" | "422.max-exceeded" | "422.not-compatible" | "422.already-exists" | "429.rate-limiting" | "500.database" | "500.database-insert" | "500.database-update" | "500.database-remove" | "500.jobd" | "500.unknown" | "500.dev" | "500.email" | "503.not-ready" | "503.not-enabled" | "503.dependency-not-enabled" | "504.not-available";
+            code?: "400.invalid-syntax" | "401.auth-invalid" | "401.auth-expired" | "401.no-cookie" | "401.unauthorized-application" | "403.mismatch" | "403.wrong-hub" | "403.not-ready" | "403.expired" | "403.restricted-portal" | "403.permissions" | "403.invalid-ip" | "403.invalid-state" | "403.not-approved" | "403.not-allowed" | "403.platform-disabled" | "403.2fa-required" | "403.2fa-failed" | "403.new-application-capabilities" | "403.tier-restricted" | "404.hub" | "404.hub.invitation" | "404.hub.integration" | "404.hub.role" | "404.sdn.network" | "404.environment" | "404.environment.scoped-variable" | "404.hub.api-key" | "404.uri" | "404.provider" | "404.stack" | "404.community.thread" | "404.community.thread.reply" | "404.survey" | "404.survey-response" | "404.notification" | "404.stack-build" | "404.image" | "404.image.source" | "404.image.build-log" | "404.job" | "404.billing.order" | "404.billing.service" | "404.billing.credit" | "404.billing.invoice" | "404.billing.tier" | "404.billing.support" | "404.billing.payment-method" | "404.billing.promo-code" | "404.node" | "404.infrastructure.location" | "404.infrastructure.ips.pool" | "404.infrastructure.provider" | "404.infrastructure.server" | "404.infrastructure.cluster" | "404.infrastructure.autoscale.group" | "404.infrastructure.model" | "404.monitoring.logs.analytics.rule" | "404.account" | "404.container" | "404.container.backup" | "404.vpn.account" | "404.instance" | "404.pipeline" | "404.pipeline.run" | "404.pipeline.key" | "404.dns.zone" | "404.dns.record" | "404.cluster" | "404.platform-build" | "404.cycleos-build" | "404.email-verification" | "404.hub.membership" | "404.announcement" | "404.ha-service.session" | "404.virtual-machine" | "404.virtual-machine.ssh-key" | "404.sales.lead" | "404.stack.build-log" | "409.duplicate-found" | "415.invalid-content-type" | "422.missing-argument" | "422.invalid-argument" | "422.invalid-input" | "422.max-exceeded" | "422.not-compatible" | "422.already-exists" | "429.rate-limiting" | "500.database" | "500.database-insert" | "500.database-update" | "500.database-remove" | "500.jobd" | "500.unknown" | "500.dev" | "500.email" | "503.not-ready" | "503.not-enabled" | "503.dependency-not-enabled" | "504.not-available";
             /** @description The main text describing the error. */
             title?: string;
             /** @description A more detailed description of the error. */
@@ -4534,6 +4613,31 @@ export interface components {
                 deleted: components["schemas"]["DateTime"];
             };
             meta?: components["schemas"]["RoleMeta"];
+        };
+        /**
+         * AccountMembershipsIncludes
+         * @description A resource that is associated with an account's membership.
+         */
+        AccountMembershipIncludes: {
+            /** @description A record with an ID mapped to a public account for the account that sent this memberships initial invite. */
+            senders?: {
+                /** @description A record with an ID mapped to a public account. */
+                accounts?: {
+                    [key: string]: components["schemas"]["PublicAccount"] | undefined;
+                };
+            };
+            /** @description A record with an ID mapped to a hub resource. */
+            hubs?: {
+                [key: string]: components["schemas"]["Hub"] | undefined;
+            };
+            /** @description A map of Roles relevant to this Hub Membership, keyed by the Role ID. */
+            roles?: {
+                [key: string]: components["schemas"]["Role"] | undefined;
+            };
+            /** @description A map of Roles relevant to this Hub Membership, keyed by the Role ID. */
+            "roles:identifiers"?: {
+                [key: string]: components["schemas"]["ID"] | undefined;
+            };
         };
         /**
          * HubMembershipsIncludes
@@ -5230,6 +5334,7 @@ export interface components {
                 deployments: boolean;
                 autoscale: boolean;
                 geodns: boolean;
+                provider_multi_account: boolean;
             };
             max_daily_api_requests: number | null;
             ram: components["schemas"]["BillingRam"];
@@ -5547,7 +5652,7 @@ export interface components {
              */
             type: "network-connections";
             details: {
-                connections_total: number;
+                connections: number;
             };
         };
         /**
@@ -5561,7 +5666,7 @@ export interface components {
              */
             type: "network-requests";
             details: {
-                requests_total: number;
+                requests: number;
             };
         };
         /**
@@ -5738,8 +5843,6 @@ export interface components {
             }[];
             /** @description Configuration settings to embed a TLS certificate in the container. */
             lets_encrypt?: {
-                /** @description A boolean where true represents the desire for a container to have its corresponding TLS certificate(s) injected into the configured path(s). */
-                enable: boolean;
                 /** @description Path where the `certificate.cert` will be saved. */
                 certificate_path?: string;
                 /** @description Path where the `certificate.chain` will be saved. */
@@ -5750,7 +5853,7 @@ export interface components {
                 bundle_path?: string;
                 /** @description File path where any remaining certificate files will be stored. */
                 additional_certs_path?: string;
-            };
+            } | null;
             /** @description Automated backups configuration for the given container. */
             backups?: {
                 integration_id?: components["schemas"]["HybridIdentifier"];
@@ -5784,8 +5887,11 @@ export interface components {
             } | null;
             /** @description When enabled, allows more customization to be applied to logging for the container. */
             logs?: {
-                /** @description A tag used for applying log filters and analytics. */
-                groups?: components["schemas"]["Identifier"][] | null;
+                /** @description When enabled, log drain allows logs to be exported to a third party service. */
+                drain?: {
+                    /** @description The URL to the third party logging service where logs will be sent. */
+                    url: string;
+                } | null;
             } | null;
         };
         /**
@@ -6538,7 +6644,7 @@ export interface components {
              * V1LbControllerTransport
              * @description Defines how traffic comes in to the load balancer, and how the load balancer handles it.
              */
-            transport?: {
+            transport?: null | {
                 /** @description When true, this controller is disabled and will not be used. */
                 disable: boolean;
                 /**
@@ -6574,7 +6680,7 @@ export interface components {
                 };
                 /** @description Defines where traffic is sent. Many can be defined per controller. */
                 routers: components["schemas"]["V1LbConfigRouter"][];
-            } | null;
+            };
         };
         /** V1LbConfig */
         V1LbConfig: {
@@ -6734,6 +6840,20 @@ export interface components {
             config?: components["schemas"]["SchedulerConfig"] | null;
         };
         /**
+         * GatewayEnvironmentService
+         * @description Information about the environments gateway service(s).
+         */
+        GatewayEnvironmentService: {
+            /** @description Whether or not the gateway service is enabled. */
+            enable: boolean;
+            /** @description The ID of the gateway service container */
+            container_id: string;
+            /** @description A boolean representing if this service container is set to high availability mode or not. */
+            high_availability: boolean;
+            /** @description A boolean where `true` represents the desire to automatically update the environment gateway service. */
+            auto_update?: boolean;
+        };
+        /**
          * EnvironmentServices
          * @description Service containers run by this environment and their configurations.
          */
@@ -6742,6 +6862,7 @@ export interface components {
             discovery?: components["schemas"]["DiscoveryEnvironmentService"] | null;
             vpn?: components["schemas"]["VpnEnvironmentService"] | null;
             scheduler?: components["schemas"]["SchedulerEnvironmentService"] | null;
+            gateway?: components["schemas"]["GatewayEnvironmentService"] | null;
         };
         /**
          * ACL
@@ -7801,7 +7922,6 @@ export interface components {
             } | null) | components["schemas"]["StackVariable"];
             /** @description When enabled, this integration will configure Let's Encrypt certificates that will be injected into the container at runtime. The certificates will be managed by the platform and renewed automatically. */
             lets_encrypt?: ({
-                enable: boolean | components["schemas"]["StackVariable"];
                 certificate_path?: (string | null) | components["schemas"]["StackVariable"];
                 chain_path?: (string | null) | components["schemas"]["StackVariable"];
                 key_path?: (string | null) | components["schemas"]["StackVariable"];
@@ -7846,10 +7966,13 @@ export interface components {
                 } | components["schemas"]["StackVariable"]) | undefined;
             } | null) | components["schemas"]["StackVariable"];
             /** @description When enabled, allows more customization to be applied to logging for the container. */
-            logs?: ({
-                /** @description A tag used for applying log filters and analytics. */
-                groups?: (components["schemas"]["Identifier"][] | null) | components["schemas"]["StackVariable"];
-            } | null) | components["schemas"]["StackVariable"];
+            logs?: {
+                /** @description When enabled, log drain allows logs to be exported to a third party service. */
+                drain?: {
+                    /** @description The URL to the third party logging service where logs will be sent. */
+                    url: string | components["schemas"]["StackVariable"];
+                } | null | components["schemas"]["StackVariable"];
+            } | null | components["schemas"]["StackVariable"];
         };
         /**
          * StackSpecContainerVolume
@@ -8774,8 +8897,11 @@ export interface components {
         ServerProvider: {
             /** @description The vendor for the provider this server is deployed from. */
             vendor: string;
+            integration_id: components["schemas"]["ID"];
             /** @description The model of the server that is deployed. */
             model: string;
+            /** @description The zone of the server that is deployed, if defined. */
+            zone?: string | null;
             /** @description A location where the server is deployed. */
             location: string;
             /** @description A provider specific identifier for the server. */
@@ -8788,7 +8914,8 @@ export interface components {
                 [key: string]: unknown;
             };
             provision_options?: {
-                attachesd_storage_size?: number;
+                encrypt_storage?: boolean;
+                storage_size?: number;
                 reservation_id?: string;
             };
         };
@@ -8801,6 +8928,14 @@ export interface components {
             sftp: boolean;
             /** @description The size of the base volume (where Cycle stores container images on this server). */
             base_volume_gb?: number | null;
+            /** @description Configuration options for running gateway services on this server. */
+            gateway?: {
+                /**
+                 * @description The type of gateway service that can be run on this server.
+                 * @enum {string}
+                 */
+                type: "bgp" | "static";
+            } | null;
         };
         /**
          * ServerConstraints
@@ -9175,6 +9310,39 @@ export interface components {
         LocationsIncludes: {
             [key: string]: components["schemas"]["ProviderLocation"] | undefined;
         };
+        /** ClusterState */
+        ClusterState: {
+            /**
+             * @description The current state of the cluster.
+             * @enum {string}
+             */
+            current: "live" | "deleting" | "deleted";
+        } & components["schemas"]["State"];
+        /**
+         * Cluster
+         * @description Clusters are groups of servers that allow physical separation of resources.
+         */
+        Cluster: {
+            id: string;
+            /** @description A human readable slugged identifier for this cluster. */
+            identifier: components["schemas"]["Identifier"];
+            creator: components["schemas"]["CreatorScope"];
+            hub_id: components["schemas"]["HubID"];
+            acl?: components["schemas"]["ACL"] | null;
+            state: components["schemas"]["ClusterState"];
+            /**
+             * ClusterEvents
+             * @description A collection of timestamps for each event in the cluster's lifetime.
+             */
+            events: {
+                /** @description The timestamp of when the cluster was created. */
+                created: components["schemas"]["DateTime"];
+                /** @description The timestamp of when the cluster was updated. */
+                updated: components["schemas"]["DateTime"];
+                /** @description The timestamp of when the cluster was deleted. */
+                deleted: components["schemas"]["DateTime"];
+            };
+        };
         /**
          * CPUServerSpec
          * @description Information about the CPU for a given server.
@@ -9362,6 +9530,39 @@ export interface components {
              */
             current: "new" | "verifying" | "live" | "deleting" | "deleted";
         } & components["schemas"]["State"];
+        /** IntegrationAdvancedOptionBoolean */
+        IntegrationAdvancedOptionBoolean: {
+            title: string;
+            key: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "bool";
+            default?: boolean | null;
+        };
+        /** IntegrationAdvancedOptionInt */
+        IntegrationAdvancedOptionInt: {
+            title: string;
+            key: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "int";
+            default?: number | null;
+        };
+        /** IntegrationAdvancedOptionString */
+        IntegrationAdvancedOptionString: {
+            title: string;
+            key: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "string";
+            default?: string | null;
+        };
         /**
          * IntegrationDefinition
          * @description Describes an integration for a Cycle Hub that can be enabled by the Hub owner.
@@ -9377,11 +9578,7 @@ export interface components {
             extends?: string[] | null;
             /** @description Additional configuration options that are available when using this Integration. These describe additional functionality that Cycle may utilize. */
             extended_configuration?: {
-                options?: {
-                    title?: string;
-                    key?: string;
-                    type?: string;
-                }[] | null;
+                options?: (components["schemas"]["IntegrationAdvancedOptionBoolean"] | components["schemas"]["IntegrationAdvancedOptionInt"] | components["schemas"]["IntegrationAdvancedOptionString"])[] | null;
             } | null;
             fields?: {
                 extra?: {
@@ -9417,31 +9614,31 @@ export interface components {
         /** Integration */
         Integration: {
             id: components["schemas"]["ID"];
-            /** @description Name of the Integration. */
-            name?: string | null;
-            /** @description Which vendor this Integration is associated with. */
+            /** @description Name of the integration. */
+            name: string;
+            /** @description Which vendor this integration is associated with. */
             vendor: string;
             identifier: components["schemas"]["Identifier"];
-            /** @description Authentication information for the Integration, can be null. */
+            /** @description Authentication information for the integration, can be null. */
             auth?: components["schemas"]["IntegrationAuth"] | null;
-            /** @description Additional key-value pairs associated with the Integration. */
+            /** @description Additional key-value pairs associated with the integration. */
             extra?: {
                 [key: string]: string | undefined;
             } | null;
             creator: components["schemas"]["CreatorScope"];
-            /** @description Identifier of the hub associated with the Integration. */
+            /** @description Identifier of the hub associated with the integration. */
             hub_id: components["schemas"]["ID"];
             state: components["schemas"]["IntegrationState"];
             /**
              * IntegrationEvents
-             * @description A collection of timestamps for each event in the Integration's lifetime.
+             * @description A collection of timestamps for each event in the integration's lifetime.
              */
             events: {
-                /** @description The timestamp of when the Integration was created. */
+                /** @description The timestamp of when the integration was created. */
                 created: components["schemas"]["DateTime"];
-                /** @description The timestamp of when the Integration was updated. */
+                /** @description The timestamp of when the integration was updated. */
                 updated: components["schemas"]["DateTime"];
-                /** @description The timestamp of when the Integration was deleted. */
+                /** @description The timestamp of when the integration was deleted. */
                 deleted: components["schemas"]["DateTime"];
             };
             meta?: components["schemas"]["IntegrationMeta"] | null;
@@ -9459,6 +9656,9 @@ export interface components {
          */
         ServerIncludes: {
             locations?: components["schemas"]["LocationsIncludes"];
+            clusters?: {
+                [key: string]: components["schemas"]["Cluster"] | undefined;
+            };
             models?: components["schemas"]["ServerModelIncludes"];
             integrations?: components["schemas"]["IntegrationsIncludes"];
         };
@@ -10227,6 +10427,7 @@ export interface components {
                 discovery?: components["schemas"]["EnvironmentServiceContainerSummary"] | null;
                 vpn?: components["schemas"]["EnvironmentServiceContainerSummary"] | null;
                 scheduler?: components["schemas"]["EnvironmentServiceContainerSummary"] | null;
+                gateway?: components["schemas"]["EnvironmentServiceContainerSummary"] | null;
             };
             /**
              * EnvironmentSummaryStats
@@ -12229,7 +12430,7 @@ export interface components {
          * ResourceType
          * @enum {string}
          */
-        ResourceType: "account" | "image.source" | "image" | "container" | "container.instance" | "hub" | "hub.api_key" | "hub.membership" | "hub.role" | "sdn.network" | "dns.zone" | "dns.zone.record" | "pipeline" | "pipeline.run" | "stack" | "stack.build" | "infrastructure.provider" | "infrastructure.autoscale.group" | "infrastructure.server" | "infrastructure.cluster" | "infrastructure.ips.pool" | "billing.invoice" | "billing.method" | "environment" | "environment.scoped-variable";
+        ResourceType: "account" | "image.source" | "image" | "container" | "container.instance" | "virtual-machine" | "virtual-machine.ssh-key" | "hub" | "hub.api_key" | "hub.membership" | "hub.role" | "sdn.network" | "dns.certificate" | "dns.zone" | "dns.zone.record" | "pipeline" | "pipeline.run" | "stack" | "stack.build" | "infrastructure.provider" | "infrastructure.autoscale.group" | "infrastructure.server" | "infrastructure.cluster" | "infrastructure.ips.pool" | "billing.invoice" | "billing.method" | "environment" | "environment.scoped-variable";
         /** PipelineRunStep */
         PipelineRunStep: {
             identifier: string;
@@ -12354,6 +12555,45 @@ export interface components {
                 [key: string]: components["schemas"]["Role"] | undefined;
             };
             /** @description A map of roles relevant to this API key, keyed by the role ID. */
+            "roles:identifiers"?: {
+                [key: string]: components["schemas"]["ID"] | undefined;
+            };
+        };
+        /**
+         * HubMembershipIncludes
+         * @description All includable resources for hub memberships.
+         */
+        "HubMembershipIncludes-2": {
+            /** @description A record with an ID mapped to a public account. */
+            accounts?: {
+                [key: string]: components["schemas"]["PublicAccount"] | undefined;
+            };
+            /** @description A map of roles relevant to this hub membership, keyed by the Role ID. */
+            roles?: {
+                [key: string]: components["schemas"]["Role"] | undefined;
+            };
+            /** @description A map of roles relevant to this hub membership, keyed by the role ID. */
+            "roles:identifiers"?: {
+                [key: string]: components["schemas"]["ID"] | undefined;
+            };
+        };
+        /**
+         * HubInviteIncludes
+         * @description All includable resources for invites.
+         */
+        HubInviteIncludes: {
+            /** @description A record with an ID mapped to a public account for the account that sent this memberships initial invite. */
+            senders?: {
+                /** @description A record with an ID mapped to a public account. */
+                accounts?: {
+                    [key: string]: components["schemas"]["PublicAccount"] | undefined;
+                };
+            };
+            /** @description A map of roles relevant to this hub membership, keyed by the Role ID. */
+            roles?: {
+                [key: string]: components["schemas"]["Role"] | undefined;
+            };
+            /** @description A map of roles relevant to this hub membership, keyed by the role ID. */
             "roles:identifiers"?: {
                 [key: string]: components["schemas"]["ID"] | undefined;
             };
@@ -12534,39 +12774,6 @@ export interface components {
             integrations?: components["schemas"]["IntegrationsIncludes"];
             models?: components["schemas"]["ServerModelsIncludes"];
             locations?: components["schemas"]["LocationsIncludes"];
-        };
-        /** ClusterState */
-        ClusterState: {
-            /**
-             * @description The current state of the cluster.
-             * @enum {string}
-             */
-            current: "live" | "deleting" | "deleted";
-        } & components["schemas"]["State"];
-        /**
-         * Cluster
-         * @description Clusters are groups of servers that allow physical separation of resources.
-         */
-        Cluster: {
-            id: string;
-            /** @description A human readable slugged identifier for this cluster. */
-            identifier: components["schemas"]["Identifier"];
-            creator: components["schemas"]["CreatorScope"];
-            hub_id: components["schemas"]["HubID"];
-            acl?: components["schemas"]["ACL"] | null;
-            state: components["schemas"]["ClusterState"];
-            /**
-             * ClusterEvents
-             * @description A collection of timestamps for each event in the cluster's lifetime.
-             */
-            events: {
-                /** @description The timestamp of when the cluster was created. */
-                created: components["schemas"]["DateTime"];
-                /** @description The timestamp of when the cluster was updated. */
-                updated: components["schemas"]["DateTime"];
-                /** @description The timestamp of when the cluster was deleted. */
-                deleted: components["schemas"]["DateTime"];
-            };
         };
         /** ServerStatsCpuUsageTelemetry */
         ServerStatsCpuUsageTelemetry: {
@@ -13205,6 +13412,32 @@ export interface components {
             description: string;
             git_commit?: components["schemas"]["StackGitCommit"];
         };
+        /**
+         * StackBuildLog
+         * @description A build log for a given stack build.
+         */
+        StackBuildLog: {
+            id: components["schemas"]["ID"];
+            hub_id: components["schemas"]["HubID"];
+            /** @description The ID of stack the build log pertains to. */
+            stack_id: string;
+            /** @description The ID of stack build the build log pertains to. */
+            build_id: string;
+            /** @description The log itself. */
+            log: string;
+            /**
+             * BuildLogEvents
+             * @description A collection of timestamps for each event in the build log's lifetime.
+             */
+            events: {
+                /** @description The timestamp of when the build log was created. */
+                created: components["schemas"]["DateTime"];
+                /** @description The timestamp of when the build log was updated. */
+                updated: components["schemas"]["DateTime"];
+                /** @description The timestamp of when the build log was deleted. */
+                deleted: components["schemas"]["DateTime"];
+            };
+        };
         /** GenerateStackBuild */
         GenerateStackBuildAction: {
             /**
@@ -13412,12 +13645,8 @@ export interface components {
             /** @description The number of resources returned per page. */
             size?: number;
         };
-        MembershipIncludeParam: ("senders" | "hubs" | "accounts" | "roles")[];
+        MembershipIncludeParam: ("senders" | "hubs" | "roles")[];
         OrderIncludeParam: "promo_codes"[];
-        /** @description The option field is a key-value object, where the key is the option, and the value is a boolean. For example, `?option[force]=true` */
-        OptionParam: {
-            [key: string]: string | undefined;
-        };
     };
     requestBodies: never;
     headers: never;
@@ -13629,7 +13858,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["HubMembership"][];
-                        includes?: components["schemas"]["HubMembershipIncludes"];
+                        includes?: components["schemas"]["AccountMembershipIncludes"];
                     };
                 };
             };
@@ -13667,7 +13896,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["HubMembership"];
-                        includes?: components["schemas"]["HubMembershipIncludes"];
+                        includes?: components["schemas"]["AccountMembershipIncludes"];
                     };
                 };
             };
@@ -16802,7 +17031,48 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Returns a Job Descriptor. */
+            /** @description Returns a job descriptor. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["JobDescriptor"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    createGatewayServiceJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the environment where this gateway service resides. */
+                environmentId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Parameters for reconfiguring a gateway service. */
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description The name of the action to perform.
+                     * @enum {string}
+                     */
+                    action: "reconfigure";
+                    contents: {
+                        /** @description A boolean where `true` represents the desire to automatically update the environment gateway service. */
+                        auto_update?: boolean | null;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Returns a job descriptor. */
             202: {
                 headers: {
                     [name: string]: unknown;
@@ -16841,7 +17111,7 @@ export interface operations {
                             /** @enum {string} */
                             default_type: "haproxy" | "v1";
                             /** @enum {string} */
-                            current_type?: "haproxy" | "v1";
+                            current_type: "haproxy" | "v1";
                             base_configs?: {
                                 haproxy: components["schemas"]["HaProxyConfig"];
                                 v1: components["schemas"]["V1LbConfig"];
@@ -17327,7 +17597,17 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        /** @description Parameters for deleting a Server. */
+        requestBody?: {
+            content: {
+                "application/json": {
+                    options?: {
+                        /** @description If force is set to true, this will force delete the hub, even if there are servers running on it. */
+                        force?: boolean;
+                    };
+                };
+            };
+        };
         responses: {
             /** @description Returns a task descriptor. */
             202: {
@@ -17665,14 +17945,14 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The ID of the Integration to retrieve. */
+                /** @description The ID of the integration to retrieve. */
                 integrationId: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Details of the specified Integration */
+            /** @description Details of the specified integration. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -17691,7 +17971,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The ID of the Integration to delete. */
+                /** @description The ID of the integration to delete. */
                 integrationId: string;
             };
             cookie?: never;
@@ -17720,7 +18000,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The ID of the Integration to update. */
+                /** @description The ID of the integration to update. */
                 integrationId: string;
             };
             cookie?: never;
@@ -17728,11 +18008,12 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": {
-                    /** @description A new name for the Integration. */
+                    /** @description A new name for the integration. */
                     name?: string | null;
+                    /** @description The identifier of the integration. Must be unique for every integration. */
                     identifier?: components["schemas"]["Identifier"];
                     auth?: components["schemas"]["IntegrationAuth"] | null;
-                    /** @description Updated key-value pairs associated with the Integration. */
+                    /** @description Updated key-value pairs associated with the integration. */
                     extra?: {
                         [key: string]: string | undefined;
                     } | null;
@@ -17740,7 +18021,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Returns the updated Integration. */
+            /** @description Returns the updated integration. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -17759,6 +18040,8 @@ export interface operations {
             query?: {
                 /** @description In a list return, the data associated with the page number and size returned. 20 results per page, page 2 would be `page[size]=20&page[number]=2` */
                 page?: components["parameters"]["PageParam"];
+                /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
+                sort?: components["parameters"]["SortParam"];
                 /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
                 meta?: "definition"[];
                 /** @description ## Filter Field
@@ -17771,9 +18054,6 @@ export interface operations {
                     /** @description `filter[search]=value` Performs a text search across relevant fields of the integrations. For example, `filter[search]=example` would return integrations that have "example" in any of the searchable fields
                      *      */
                     search?: string;
-                    /** @description `filter[identifier]=value` Filters integrations by their identifier. For example, `filter[identifier]=abstraction` would return only integrations with the abstraction identifier.
-                     *      */
-                    identifier?: string;
                     /** @description `filter[category]=value` Filters integrations by their category. For example, `filter[category]=infrastructure-provider` would return only integrations that are capable of provisioning infrastructure.
                      *      */
                     category?: string;
@@ -17809,35 +18089,36 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        /** @description Parameters for creating an Integration. */
+        /** @description Parameters for creating an integration. */
         requestBody: {
             content: {
                 "application/json": {
-                    /** @description A name for the Integration. */
-                    name?: string | null;
-                    /** @description Unique vendor for the Integration, subject to validation. */
+                    /** @description A name for the integration. */
+                    name: string;
+                    /** @description Unique vendor for the integration, subject to validation. */
                     vendor: string;
-                    identifier?: components["schemas"]["Identifier"];
-                    /** @description Authentication information for the Integration. */
+                    /** @description The identifier of the integration. Must be unique for every integration. */
+                    identifier: components["schemas"]["Identifier"];
+                    /** @description Authentication information for the integration. */
                     auth?: {
-                        /** @description The region associated with the Integration. */
+                        /** @description The region associated with the integration. */
                         region?: string | null;
-                        /** @description The namespace associated with the Integration. */
+                        /** @description The namespace associated with the integration. */
                         namespace?: string | null;
-                        /** @description API key for accessing the Integration. */
+                        /** @description API key for accessing the integration. */
                         api_key?: string | null;
-                        /** @description Key ID for accessing the Integration. */
+                        /** @description Key ID for accessing the integration. */
                         key_id?: string | null;
-                        /** @description Secret for accessing the Integration. */
+                        /** @description Secret for accessing the integration. */
                         secret?: string | null;
-                        /** @description Subscription ID for the Integration. */
+                        /** @description Subscription ID for the integration. */
                         subscription_id?: string | null;
-                        /** @description Client ID for the Integration. */
+                        /** @description Client ID for the integration. */
                         client_id?: string | null;
-                        /** @description Base64 encoded configuration for the Integration. */
+                        /** @description Base64 encoded configuration for the integration. */
                         base64_config?: string | null;
                     };
-                    /** @description Additional key-value pairs associated with the Integration. */
+                    /** @description Additional key-value pairs associated with the integration. */
                     extra?: {
                         [key: string]: string | undefined;
                     };
@@ -17845,7 +18126,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Returns the new Integration. */
+            /** @description Returns the new integration. */
             201: {
                 headers: {
                     [name: string]: unknown;
@@ -17929,7 +18210,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-                include?: ("senders" | "hubs" | "accounts" | "roles")[];
+                include?: ("accounts" | "roles")[];
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
                 sort?: components["parameters"]["SortParam"];
                 filter?: components["parameters"]["FilterParam"];
@@ -17950,7 +18231,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["HubMembership"][];
-                        includes?: components["schemas"]["HubMembershipIncludes"];
+                        includes?: components["schemas"]["HubMembershipIncludes-2"];
                     };
                 };
             };
@@ -17961,7 +18242,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-                include?: ("senders" | "hubs" | "accounts" | "roles")[];
+                include?: ("accounts" | "roles")[];
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
                 sort?: components["parameters"]["SortParam"];
                 filter?: components["parameters"]["FilterParam"];
@@ -17982,7 +18263,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["HubMembership"];
-                        includes?: components["schemas"]["HubMembershipIncludes"];
+                        includes?: components["schemas"]["HubMembershipIncludes-2"];
                     };
                 };
             };
@@ -17993,7 +18274,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-                include?: ("senders" | "hubs" | "accounts" | "roles")[];
+                include?: ("accounts" | "roles")[];
             };
             header?: never;
             path: {
@@ -18012,7 +18293,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["HubMembership"];
-                        includes?: components["schemas"]["HubMembershipIncludes"];
+                        includes?: components["schemas"]["HubMembershipIncludes-2"];
                     };
                 };
             };
@@ -18086,7 +18367,7 @@ export interface operations {
                 /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
                 meta?: "capabilities"[];
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-                include?: ("senders" | "hubs" | "accounts" | "roles")[];
+                include?: ("accounts" | "roles")[];
             };
             header?: never;
             path: {
@@ -18105,7 +18386,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["HubMembership"];
-                        includes?: components["schemas"]["HubMembershipIncludes"];
+                        includes?: components["schemas"]["HubMembershipIncludes-2"];
                     };
                 };
             };
@@ -18118,7 +18399,7 @@ export interface operations {
                 /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
                 meta?: "capabilities"[];
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-                include?: ("senders" | "hubs" | "accounts")[];
+                include?: ("senders" | "roles")[];
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
                 sort?: components["parameters"]["SortParam"];
                 filter?: components["parameters"]["FilterParam"];
@@ -18139,7 +18420,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["HubMembership"][];
-                        includes?: components["schemas"]["HubMembershipIncludes"];
+                        includes?: components["schemas"]["HubInviteIncludes"];
                     };
                 };
             };
@@ -19502,7 +19783,7 @@ export interface operations {
                 /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
                 meta?: ("node" | "instances_count")[];
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-                include?: ("locations" | "models" | "integrations")[];
+                include?: ("locations" | "models" | "integrations" | "clusters")[];
                 /** @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
                  *      */
@@ -19606,7 +19887,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-                include?: ("locations" | "models" | "integrations")[];
+                include?: ("locations" | "models" | "integrations" | "clusters")[];
                 /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
                 meta?: ("node" | "instances_count" | "allocations")[];
             };
@@ -19636,10 +19917,7 @@ export interface operations {
     };
     deleteServer: {
         parameters: {
-            query?: {
-                /** @description The option field is a key-value object, where the key is the option, and the value is a boolean. For example, `?option[force]=true` */
-                options?: components["parameters"]["OptionParam"];
-            };
+            query?: never;
             header?: never;
             path: {
                 /** @description The ID of the Server. */
@@ -19647,7 +19925,17 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        /** @description Parameters for deleting a Server. */
+        requestBody?: {
+            content: {
+                "application/json": {
+                    options?: {
+                        /** @description If force is set to true, this will force delete the hub, even if there are servers running on it. */
+                        force?: boolean;
+                    };
+                };
+            };
+        };
         responses: {
             /** @description Returns a Job Descriptor. */
             200: {
@@ -21664,6 +21952,34 @@ export interface operations {
             default: components["responses"]["DefaultError"];
         };
     };
+    getStackBuildLog: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the stack. */
+                stackId: string;
+                /** @description The ID of the stack build. */
+                buildId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns the stack build's log. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["StackBuildLog"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
     createStackBuildJob: {
         parameters: {
             query?: never;
@@ -22248,6 +22564,32 @@ export interface operations {
             default: components["responses"]["DefaultError"];
         };
     };
+    getAvailableIps: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the virtual machine. */
+                virtualMachineId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns a list of IP addresses. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["Ip"][];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
     lookupIdentifier: {
         parameters: {
             query: {
@@ -22288,7 +22630,9 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        /** @description ABC */
+        /** @description Accepts an array of component lookup objects. Consists of the type of resource to look up,
+         *     and the ID.
+         *      */
         requestBody?: {
             content: {
                 "application/json": {
@@ -22300,7 +22644,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Returns an array of components requested. */
+            /** @description Returns an array of the components requested. */
             200: {
                 headers: {
                     [name: string]: unknown;
