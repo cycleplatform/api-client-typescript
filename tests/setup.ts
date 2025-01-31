@@ -1,6 +1,7 @@
 import { afterAll, afterEach, beforeAll } from "vitest";
 import { setupServer } from "msw/node";
 import { HttpResponse, http } from "msw";
+import { getMockJob } from "./jobs/job.mock";
 
 export const restHandlers = [
     http.get("https://api.dev.cycle.io/v1/environments", ({ request }) => {
@@ -21,9 +22,13 @@ export const restHandlers = [
             },
         });
     }),
+
+    http.get("https://api.cycle.io/v1/jobs/:jobId", ({ }) => {
+        return HttpResponse.json({data: getMockJob()});
+    }),
 ];
 
-const server = setupServer(...restHandlers);
+export const server = setupServer(...restHandlers);
 
 // Start server before all tests
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));

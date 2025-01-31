@@ -4393,7 +4393,7 @@ export interface components {
          * @description Describes the date and time at which certain events occurred in the lifetime of this resource.
          */
         Events: {
-            [key: string]: components["schemas"]["DateTime"] | undefined;
+            [key: string]: components["schemas"]["DateTime"];
         };
         /**
          * PublicAccount
@@ -4423,6 +4423,10 @@ export interface components {
              * @description Id information for an account
              */
             id: string;
+            two_factor_auth: {
+                /** @description Indicates if the user account has two factor authentication enabled for log in. */
+                verified: boolean;
+            };
             events?: components["schemas"]["Events"] & {
                 last_login?: components["schemas"]["DateTime"];
             };
@@ -4511,6 +4515,18 @@ export interface components {
             renew: ("once" | "monthly" | "yearly") | null;
         };
         /**
+         * HubBillingContact
+         * @description The contact to whom invoices are billed.
+         */
+        HubBillingContact: {
+            /** @description The name of the billing contact. */
+            name: string;
+            /** @description The legal business name of the billing contact. */
+            legal_business_name: string;
+            /** @description The legal tax ID of the billing contact, if applicable. */
+            tax_id: string;
+        };
+        /**
          * HubBillingProfile
          * @description A billing profile for a given hub.
          */
@@ -4531,6 +4547,7 @@ export interface components {
             };
             /** @description An array of email addresses to whom the billing invoices will be sent to. If left empty, they will be sent to the owner of this hub. */
             emails: string[] | null;
+            contact?: components["schemas"]["HubBillingContact"];
         };
         /**
          * HubsMeta
@@ -4590,7 +4607,7 @@ export interface components {
             };
             /** @description Custom user-defined properties for storing extra information on the Role. Not utilized by Cycle. */
             extra?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
             hub_id: components["schemas"]["HubID"];
             state: {
@@ -4623,20 +4640,20 @@ export interface components {
             senders?: {
                 /** @description A record with an ID mapped to a public account. */
                 accounts?: {
-                    [key: string]: components["schemas"]["PublicAccount"] | undefined;
+                    [key: string]: components["schemas"]["PublicAccount"];
                 };
             };
             /** @description A record with an ID mapped to a hub resource. */
             hubs?: {
-                [key: string]: components["schemas"]["Hub"] | undefined;
+                [key: string]: components["schemas"]["Hub"];
             };
             /** @description A map of Roles relevant to this Hub Membership, keyed by the Role ID. */
             roles?: {
-                [key: string]: components["schemas"]["Role"] | undefined;
+                [key: string]: components["schemas"]["Role"];
             };
             /** @description A map of Roles relevant to this Hub Membership, keyed by the Role ID. */
             "roles:identifiers"?: {
-                [key: string]: components["schemas"]["ID"] | undefined;
+                [key: string]: components["schemas"]["ID"];
             };
         };
         /**
@@ -4648,24 +4665,24 @@ export interface components {
             senders?: {
                 /** @description A record with an ID mapped to a public account. */
                 accounts?: {
-                    [key: string]: components["schemas"]["PublicAccount"] | undefined;
+                    [key: string]: components["schemas"]["PublicAccount"];
                 };
             };
             /** @description A record with an ID mapped to a public account. */
             accounts?: {
-                [key: string]: components["schemas"]["PublicAccount"] | undefined;
+                [key: string]: components["schemas"]["PublicAccount"];
             };
             /** @description A record with an ID mapped to a hub resource. */
             hubs?: {
-                [key: string]: components["schemas"]["Hub"] | undefined;
+                [key: string]: components["schemas"]["Hub"];
             };
             /** @description A map of Roles relevant to this Hub Membership, keyed by the Role ID. */
             roles?: {
-                [key: string]: components["schemas"]["Role"] | undefined;
+                [key: string]: components["schemas"]["Role"];
             };
             /** @description A map of Roles relevant to this Hub Membership, keyed by the Role ID. */
             "roles:identifiers"?: {
-                [key: string]: components["schemas"]["ID"] | undefined;
+                [key: string]: components["schemas"]["ID"];
             };
         };
         /** TwoFactorAuthSetup */
@@ -4898,6 +4915,7 @@ export interface components {
         Invoice: {
             id: components["schemas"]["ID"];
             hub_id: components["schemas"]["HubID"];
+            billing_contact?: components["schemas"]["HubBillingContact"] | null;
             /** @description A boolean where true represents the invoice is approved for collection. */
             approved: boolean;
             services?: components["schemas"]["BillingSummary"][] | null;
@@ -5164,7 +5182,7 @@ export interface components {
          * @description A resource that is associated with a promo code.
          */
         PromoCodeInclude: {
-            [key: string]: components["schemas"]["PromoCode"] | undefined;
+            [key: string]: components["schemas"]["PromoCode"];
         };
         /** BillingOrderIncludes */
         BillingOrderIncludes: {
@@ -5452,7 +5470,7 @@ export interface components {
          * @description Identifier of a service Container within an Environment.
          * @enum {string}
          */
-        ServiceContainerIdentifier: "discovery" | "vpn" | "loadbalancer" | "scheduler";
+        ServiceContainerIdentifier: "discovery" | "vpn" | "loadbalancer" | "scheduler" | "gateway";
         /**
          * ContainerImageSummary
          * @description A summary of the image this container was created from.
@@ -5749,7 +5767,7 @@ export interface components {
             namespaces?: ("ipc" | "pid" | "uts" | "network" | "mount" | "user" | "cgroup")[];
             /** @description A record of environment variables for the given container. */
             environment_vars?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
             /** @description Selecting this option will give this container full permissions on the server. This is not recommended and increases the likelihood of your server being compromised. */
             privileged: boolean;
@@ -5759,7 +5777,7 @@ export interface components {
             workdir?: string;
             /** @description A record of sysctl fields and values for a given container. */
             sysctl?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
             /** @description A record of rlimits and their values. */
             rlimits?: {
@@ -5768,7 +5786,7 @@ export interface components {
                     hard?: number;
                     /** @description The soft limit for the rlimit. */
                     soft?: number;
-                } | undefined;
+                };
             };
             seccomp?: {
                 disable?: boolean;
@@ -5883,7 +5901,7 @@ export interface components {
                 [key: string]: {
                     writable: boolean;
                     mount_point: string;
-                } | undefined;
+                };
             } | null;
             /** @description When enabled, allows more customization to be applied to logging for the container. */
             logs?: {
@@ -5891,6 +5909,8 @@ export interface components {
                 drain?: {
                     /** @description The URL to the third party logging service where logs will be sent. */
                     url: string;
+                    /** @description The format Cycle will use to send the logs. */
+                    format?: ("ndjson-headers" | "ndjson-raw") | null;
                 } | null;
             } | null;
         };
@@ -6007,7 +6027,7 @@ export interface components {
              * @description A count of this resource, grouped by state.
              */
             state: {
-                [key: string]: number | undefined;
+                [key: string]: number;
             };
             /** @description The total number of this resource */
             total: number;
@@ -6353,7 +6373,7 @@ export interface components {
             default: components["schemas"]["HaProxyConfigSet"];
             /** @description An object that defines how HAProxy will act on a specific port. The key is a custom port, and the value is the same settings object found under `default` above. */
             ports: {
-                [key: string]: components["schemas"]["HaProxyConfigSet"] | undefined;
+                [key: string]: components["schemas"]["HaProxyConfigSet"];
             };
         };
         /** HaProxyLbType */
@@ -6755,7 +6775,7 @@ export interface components {
                     ipv4?: string[] | null;
                     /** @description The IPv6 address the discovery server should return to any container instance requesting this hostname. */
                     ipv6?: string[] | null;
-                } | undefined;
+                };
             } | null;
             /** @description A list of custom DNS resolver strings.  Can specifify domains or ips. */
             custom_resolvers?: string[];
@@ -6877,7 +6897,7 @@ export interface components {
                     modify: boolean;
                     /** @description Can the user delete / update ACLs for this resource? */
                     manage: boolean;
-                } | undefined;
+                };
             };
         };
         /** PrivateNetwork */
@@ -6899,7 +6919,7 @@ export interface components {
          *
          */
         EnvironmentDeploymentTags: {
-            [key: string]: components["schemas"]["Version"] | undefined;
+            [key: string]: components["schemas"]["Version"];
         };
         /**
          * ContainerImageSummary
@@ -7012,23 +7032,23 @@ export interface components {
         CreatorInclude: {
             /** @description Included creators that are public accounts, keyed by ID. */
             accounts?: {
-                [key: string]: components["schemas"]["PublicAccount"] | undefined;
+                [key: string]: components["schemas"]["PublicAccount"];
             };
             /** @description Included creators that are employees of Cycle, keyed by ID. */
             employees?: {
-                [key: string]: components["schemas"]["PublicAccount"] | undefined;
+                [key: string]: components["schemas"]["PublicAccount"];
             };
             /** @description Included creators that are not Cycle accounts, keyed by ID. */
             visitors?: {
-                [key: string]: components["schemas"]["PublicAccount"] | undefined;
+                [key: string]: components["schemas"]["PublicAccount"];
             };
             /** @description Included creators that are Cycle environments (usually automatically created resources), keyed by ID. */
             environments?: {
-                [key: string]: components["schemas"]["Environment"] | undefined;
+                [key: string]: components["schemas"]["Environment"];
             };
             /** @description Included creators that are Cycle API Keys, keyed by ID. */
             api_keys?: {
-                [key: string]: components["schemas"]["ApiKeyCreator"] | undefined;
+                [key: string]: components["schemas"]["ApiKeyCreator"];
             };
         };
         /**
@@ -7401,7 +7421,7 @@ export interface components {
             build?: {
                 /** @description Arguments to pass to the builder during a build of this image. */
                 args?: {
-                    [key: string]: string | undefined;
+                    [key: string]: string;
                 };
             } | null;
             /** @description Configuration options regarding the builder used to create/import this Image. */
@@ -7422,11 +7442,11 @@ export interface components {
                 }[];
                 /** @description Image defined environment variables for the image. */
                 env: {
-                    [key: string]: string | undefined;
+                    [key: string]: string;
                 };
                 /** @description Image labels. */
                 labels: {
-                    [key: string]: string | undefined;
+                    [key: string]: string;
                 };
                 /** @description The CMD array used to start the container. */
                 command: string[];
@@ -7478,7 +7498,7 @@ export interface components {
          * @description A resource associated with an image.
          */
         ImagesIncludes: {
-            [key: string]: components["schemas"]["Image"] | undefined;
+            [key: string]: components["schemas"]["Image"];
         };
         /**
          * StackVariable
@@ -7579,7 +7599,7 @@ export interface components {
             build?: ({
                 /** @description A map of build arguments applied to the image at build time. */
                 args: {
-                    [key: string]: string | undefined;
+                    [key: string]: string;
                 } | components["schemas"]["StackVariable"];
             } | null) | components["schemas"]["StackVariable"];
             /** @description A specific builder to use. By default, Cycle uses its factory service and a standard build command to build images, but this can be enhanced by using an image builder integration. */
@@ -7830,20 +7850,20 @@ export interface components {
             } | components["schemas"]["StackVariable"];
             /** @description A map of environment variables that will be injected into the container. */
             environment_vars?: {
-                [key: string]: (string | components["schemas"]["StackVariable"]) | undefined;
+                [key: string]: string | components["schemas"]["StackVariable"];
             } | components["schemas"]["StackVariable"];
             /** @description Container namespaces to apply. By default, all are applied. Removing/changing this can have security implications. */
             namespaces?: ("ipc" | "pid" | "uts" | "network" | "mount" | "user" | "cgroup")[] | components["schemas"]["StackVariable"];
             /** @description Sysctl options to apply. */
             sysctl?: {
-                [key: string]: (string | components["schemas"]["StackVariable"]) | undefined;
+                [key: string]: string | components["schemas"]["StackVariable"];
             } | components["schemas"]["StackVariable"];
             /** @description RLIMIT options to apply. */
             rlimits?: {
                 [key: string]: {
                     hard: number | components["schemas"]["StackVariable"];
                     soft: number | components["schemas"]["StackVariable"];
-                } | undefined;
+                };
             } | components["schemas"]["StackVariable"];
             /** @description Configuration options for seccomp. Cycle enables seccomp by default. */
             seccomp?: {
@@ -7960,10 +7980,10 @@ export interface components {
             } | null) | components["schemas"]["StackVariable"];
             /** @description When enabled, Cycle will mount a shared host directory into this container. The directory will be shared with all other containers that mount it. */
             shared_file_systems?: ({
-                [key: string]: ({
+                [key: string]: {
                     writable: boolean | components["schemas"]["StackVariable"];
                     mount_point: components["schemas"]["StackVariable"] | string;
-                } | components["schemas"]["StackVariable"]) | undefined;
+                } | components["schemas"]["StackVariable"];
             } | null) | components["schemas"]["StackVariable"];
             /** @description When enabled, allows more customization to be applied to logging for the container. */
             logs?: {
@@ -7971,6 +7991,8 @@ export interface components {
                 drain?: {
                     /** @description The URL to the third party logging service where logs will be sent. */
                     url: string | components["schemas"]["StackVariable"];
+                    /** @description The format Cycle will use to send the logs. */
+                    format?: ("ndjson-headers" | "ndjson-raw") | null | components["schemas"]["StackVariable"];
                 } | null | components["schemas"]["StackVariable"];
             } | null | components["schemas"]["StackVariable"];
         };
@@ -8065,7 +8087,7 @@ export interface components {
                 [key: string]: {
                     ipv4?: (string[] | null) | components["schemas"]["StackVariable"];
                     ipv6?: (string[] | null) | components["schemas"]["StackVariable"];
-                } | undefined;
+                };
             } | null) | components["schemas"]["StackVariable"];
             /** @description A list of custom DNS resolver strings.  Can specifify domains or ips. */
             custom_resolvers?: string[] | components["schemas"]["StackVariable"] | null;
@@ -8131,7 +8153,7 @@ export interface components {
             default: components["schemas"]["StackSpecHaProxyConfigSet"] | components["schemas"]["StackVariable"];
             /** @description An object that defines how HAProxy will act on a specific port. The key is a custom port, and the value is the same settings object found under `default` above. */
             ports: {
-                [key: string]: (components["schemas"]["StackSpecHaProxyConfigSet"] | components["schemas"]["StackVariable"]) | undefined;
+                [key: string]: components["schemas"]["StackSpecHaProxyConfigSet"] | components["schemas"]["StackVariable"];
             } | components["schemas"]["StackVariable"];
         };
         /** StackSpecHaProxyLbType */
@@ -8561,7 +8583,7 @@ export interface components {
             /** @description Describes variables that are assigned to one or more containers at runtime. Can be assigned as an environment variable, written as a file inside the container(s), or accessed over the internal API. */
             scoped_variables?: (components["schemas"]["StackSpecScopedVariable"][] | null) | components["schemas"]["StackVariable"];
             containers: {
-                [key: string]: components["schemas"]["StackSpecContainer"] | undefined;
+                [key: string]: components["schemas"]["StackSpecContainer"];
             } | components["schemas"]["StackVariable"];
             /** @description Settings for any auxillary services deployed as part of the environment, such as load balancer and discovery services. */
             services?: ({
@@ -8611,7 +8633,7 @@ export interface components {
             };
             /** @description Custom variables applied to the stack during build. Any place in the stack where a `{{variable}}` is used is replaced with the value of the variable supplied in this map. */
             variables?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
         };
         /** StackBuildState */
@@ -8668,7 +8690,7 @@ export interface components {
          * @description A resource that is associated with a stack build.
          */
         StackBuildIncludes: {
-            [key: string]: components["schemas"]["StackBuild"] | undefined;
+            [key: string]: components["schemas"]["StackBuild"];
         };
         /**
          * StackRepoSource
@@ -8747,7 +8769,7 @@ export interface components {
             state: components["schemas"]["StackState"];
             /** @description A map of default variable values used when building this stack. A variable can be added anywhere in a stack using the format `{{var}}` where `var` would be a key in this map. */
             variables?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
             acl?: components["schemas"]["ACL"] | null;
             /**
@@ -8771,21 +8793,21 @@ export interface components {
          * @description A resource associated with a stack.
          */
         StackIncludes: {
-            [key: string]: components["schemas"]["Stack"] | undefined;
+            [key: string]: components["schemas"]["Stack"];
         };
         /**
          * IdentifierIncludes
          * @description A map of identifiers to an array of resource IDs that are associated with it. All IDs point to the same type of resource.
          */
         IdentifierIncludes: {
-            [key: string]: components["schemas"]["ID"][] | undefined;
+            [key: string]: components["schemas"]["ID"][];
         };
         /**
          * EnvironmentInclude
          * @description An identity that is associated with an environment.
          */
         EnvironmentIncludes: {
-            [key: string]: components["schemas"]["Environment"] | undefined;
+            [key: string]: components["schemas"]["Environment"];
         };
         /**
          * ContainerIncludes
@@ -8883,7 +8905,7 @@ export interface components {
                     options: string;
                     /** @description String describing the server mount source. */
                     source: string;
-                } | undefined;
+                };
             } | null;
             /** @description An object describing directory identifiers with value {}. */
             directories?: {
@@ -8989,7 +9011,7 @@ export interface components {
                     mac_addr?: string;
                     /** @description An array of IP addresses associated with the interface. */
                     addrs?: string[] | null;
-                } | undefined;
+                };
             };
             /** @description The public IPv4 address used to connect to this server. */
             external_ipv4: string;
@@ -9096,9 +9118,9 @@ export interface components {
                             meta_percent: number;
                             /** @description The name of the volume pool this volume is associated with. */
                             pool: string;
-                        } | undefined;
+                        };
                     };
-                } | undefined;
+                };
             };
             /** @description Records that show information about mounted filesystems where the key is the path to the mount. */
             mounts: {
@@ -9115,7 +9137,7 @@ export interface components {
                     free: number;
                     /** @description The amount of storage being used in KB. */
                     used: number;
-                } | undefined;
+                };
             };
         };
         /**
@@ -9137,7 +9159,7 @@ export interface components {
         ServerStatsVersions: {
             /** @description A list of records about Cycle services. */
             services: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
         };
         /**
@@ -9308,7 +9330,7 @@ export interface components {
          * @description A resource that is associated with a provider location.
          */
         LocationsIncludes: {
-            [key: string]: components["schemas"]["ProviderLocation"] | undefined;
+            [key: string]: components["schemas"]["ProviderLocation"];
         };
         /** ClusterState */
         ClusterState: {
@@ -9360,7 +9382,7 @@ export interface components {
             shared?: boolean;
             /** @description Extra information about the CPU if there is any. */
             extra?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
         };
         /**
@@ -9380,7 +9402,7 @@ export interface components {
             shared?: boolean;
             /** @description Extra information about the GPU if there is any. */
             extra?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
         };
         /**
@@ -9394,7 +9416,7 @@ export interface components {
             type: string;
             /** @description Extra inforamtion about the memory resources. */
             extra: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
         };
         /**
@@ -9410,7 +9432,7 @@ export interface components {
             type: string;
             /** @description Extra information about the storage resources for a given server. */
             extra: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
         };
         /**
@@ -9473,7 +9495,7 @@ export interface components {
             /** @description A list of location ID's this server is available. */
             locations: string[];
             availability_zones?: {
-                [key: string]: string[] | undefined;
+                [key: string]: string[];
             };
         };
         /**
@@ -9501,7 +9523,7 @@ export interface components {
          * @description A resources that assocaited with a provider server.
          */
         ServerModelIncludes: {
-            [key: string]: components["schemas"]["ProviderServerModel"] | undefined;
+            [key: string]: components["schemas"]["ProviderServerModel"];
         };
         /** IntegrationAuth */
         IntegrationAuth: {
@@ -9586,14 +9608,14 @@ export interface components {
                         regex?: string | null;
                         required: boolean;
                         description: string;
-                    } | undefined;
+                    };
                 } | null;
                 auth?: {
                     [key: string]: {
                         regex?: string | null;
                         required: boolean;
                         description: string;
-                    } | undefined;
+                    };
                 } | null;
             };
             /** Format: uri */
@@ -9623,7 +9645,7 @@ export interface components {
             auth?: components["schemas"]["IntegrationAuth"] | null;
             /** @description Additional key-value pairs associated with the integration. */
             extra?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             } | null;
             creator: components["schemas"]["CreatorScope"];
             /** @description Identifier of the hub associated with the integration. */
@@ -9648,7 +9670,7 @@ export interface components {
          * @description A resource that is associated with an integration.
          */
         IntegrationsIncludes: {
-            [key: string]: components["schemas"]["Integration"] | undefined;
+            [key: string]: components["schemas"]["Integration"];
         };
         /**
          * ServerIncludes
@@ -9657,7 +9679,7 @@ export interface components {
         ServerIncludes: {
             locations?: components["schemas"]["LocationsIncludes"];
             clusters?: {
-                [key: string]: components["schemas"]["Cluster"] | undefined;
+                [key: string]: components["schemas"]["Cluster"];
             };
             models?: components["schemas"]["ServerModelIncludes"];
             integrations?: components["schemas"]["IntegrationsIncludes"];
@@ -9804,14 +9826,14 @@ export interface components {
          * @description A resource that is associated with a server.
          */
         ServersIncludes: {
-            [key: string]: components["schemas"]["Server"] | undefined;
+            [key: string]: components["schemas"]["Server"];
         };
         /**
          * ContainersIncludes
          * @description A resource that is associated with a container.
          */
         ContainersIncludes: {
-            [key: string]: components["schemas"]["Container"] | undefined;
+            [key: string]: components["schemas"]["Container"];
         };
         /**
          * InstanceIncludes
@@ -10098,7 +10120,7 @@ export interface components {
         FunctionRuntimeVariables: {
             /** @description Environment variables to inject into the container. */
             environment_variables?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             } | null;
         };
         /** TriggerAction */
@@ -10436,6 +10458,10 @@ export interface components {
             stats: {
                 containers: components["schemas"]["StateCountSummary"];
                 instances: components["schemas"]["StateCountSummary"];
+                /** @description A summary of instance counts, keyed by the host server ID. */
+                servers?: {
+                    [key: string]: components["schemas"]["StateCountSummary"];
+                };
             };
         };
         /**
@@ -10602,7 +10628,7 @@ export interface components {
                         success: number;
                         unavailable: number;
                         errors?: {
-                            [key: string]: number | undefined;
+                            [key: string]: number;
                         };
                         bytes_transmitted?: number;
                         bytes_received?: number;
@@ -10610,16 +10636,16 @@ export interface components {
                     requests: {
                         total: number;
                         responses?: {
-                            [key: string]: number | undefined;
+                            [key: string]: number;
                         };
                         errors?: {
-                            [key: string]: number | undefined;
+                            [key: string]: number;
                         };
                     } | null;
                     latency_ms?: number[];
                     instance_id: string;
                     container_id: string;
-                } | undefined;
+                };
             };
         };
         /** LoadBalancerTelemetryUrlRequestHandler */
@@ -10657,14 +10683,14 @@ export interface components {
                         };
                         /** @description An object where the key is the response type and the value is the number of hits with that response. */
                         responses?: {
-                            [key: string]: number | undefined;
+                            [key: string]: number;
                         };
                         /** @description An object where the key is the error type and the value is the number of hits with that error. */
                         errors?: {
-                            [key: string]: number | undefined;
+                            [key: string]: number;
                         };
                     } | null;
-                } | undefined;
+                };
             };
         };
         /** LoadBalancerTelemetrySnapshot */
@@ -10812,7 +10838,7 @@ export interface components {
          * @description A resource associated with an image source.
          */
         ImageSourceIncludes: {
-            [key: string]: components["schemas"]["ImageSource"] | undefined;
+            [key: string]: components["schemas"]["ImageSource"];
         };
         /**
          * LoadBalancerLatestControllersIncludes
@@ -11095,7 +11121,7 @@ export interface components {
              * @description The activity event.
              * @enum {string}
              */
-            event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.services.scheduler.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.services.scheduler.task.reconfigure" | "environment.services.vpn.user.create" | "environment.services.vpn.login" | "environment.services.vpn.reset" | "environment.services.vpn.task.reset" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.task.deployments.reconfigure" | "environment.deployments.reconfigure" | "environment.deployments.prune" | "environment.deployment.start" | "environment.deployment.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.role.update" | "hub.role.delete" | "hub.role.create" | "hub.role.task.delete" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "hub.integration.create" | "hub.integration.update" | "hub.integration.delete" | "hub.inactive" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.reconfigure" | "container.reconfigure" | "container.task.volumes.reconfigure" | "container.function.trigger" | "container.function.task.trigger" | "container.volumes.reconfigure" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instances.autoscale.up" | "container.instances.autoscale.down" | "container.instance.healthcheck.restarted" | "container.instance.volume.extend" | "container.instance.task.volume.extend" | "container.instance.healthcheck.failed" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migration.revert" | "container.instance.task.migration.start" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "dns.certificate.associate" | "dns.certificate.deprecate" | "dns.certificate.create" | "dns.certificate.task.deprecate" | "stack.update" | "stack.task.delete" | "stack.delete" | "stack.create" | "stack.task.prune" | "stack.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.features.reconfigure" | "infrastructure.server.sharedfs.reconfigure" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.features.reconfigure" | "infrastructure.server.task.sharedfs.reconfigure" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "infrastructure.server.evacuation.start" | "infrastructure.server.task.evacuation.start" | "infrastructure.server.evacuation.reset" | "infrastructure.server.task.evacuation.reset" | "infrastructure.autoscale.group.create" | "infrastructure.autoscale.group.update" | "infrastructure.autoscale.group.task.delete" | "infrastructure.autoscale.group.delete" | "infrastructure.cluster.create" | "infrastructure.cluster.update" | "infrastructure.cluster.delete" | "infrastructure.ips.pool.task.delete" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.run.completed" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create" | "virtual-machine.create" | "virtual-machine.initialize" | "virtual-machine.task.start" | "virtual-machine.start" | "virtual-machine.task.stop" | "virtual-machine.stop" | "virtual-machine.reconfigure" | "virtual-machine.update" | "virtual-machine.task.delete" | "virtual-machine.delete" | "virtual-machine.sos.login" | "virtual-machine.ssh-key.create" | "virtual-machine.ssh-key.update" | "virtual-machine.ssh-key.task.delete" | "virtual-machine.ssh-key.delete" | "virtual-machine.ip.allocate" | "virtual-machine.task.ip.allocate" | "virtual-machine.ip.unallocate" | "virtual-machine.task.ip.unallocate";
+            event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.services.scheduler.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.services.scheduler.task.reconfigure" | "environment.services.vpn.user.create" | "environment.services.vpn.login" | "environment.services.vpn.reset" | "environment.services.vpn.task.reset" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.task.deployments.reconfigure" | "environment.deployments.reconfigure" | "environment.deployments.prune" | "environment.deployment.start" | "environment.deployment.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.role.update" | "hub.role.delete" | "hub.role.create" | "hub.role.task.delete" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "hub.integration.create" | "hub.integration.update" | "hub.integration.delete" | "hub.inactive" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.reconfigure" | "container.reconfigure" | "container.task.volumes.reconfigure" | "container.function.trigger" | "container.function.task.trigger" | "container.volumes.reconfigure" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instances.autoscale.up" | "container.instances.autoscale.down" | "container.instance.healthcheck.restarted" | "container.instance.volume.extend" | "container.instance.task.volume.extend" | "container.instance.healthcheck.failed" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migration.revert" | "container.instance.task.migration.start" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "dns.certificate.associate" | "dns.certificate.deprecate" | "dns.certificate.create" | "dns.certificate.task.deprecate" | "stack.update" | "stack.task.delete" | "stack.delete" | "stack.create" | "stack.task.prune" | "stack.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.features.reconfigure" | "infrastructure.server.sharedfs.reconfigure" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.features.reconfigure" | "infrastructure.server.task.sharedfs.reconfigure" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "infrastructure.server.evacuation.start" | "infrastructure.server.task.evacuation.start" | "infrastructure.server.evacuation.reset" | "infrastructure.server.task.evacuation.reset" | "infrastructure.autoscale.group.create" | "infrastructure.autoscale.group.update" | "infrastructure.autoscale.group.task.delete" | "infrastructure.autoscale.group.delete" | "infrastructure.cluster.create" | "infrastructure.cluster.update" | "infrastructure.cluster.delete" | "infrastructure.ips.pool.task.delete" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.run.completed" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create" | "virtual-machine.create" | "virtual-machine.initialize" | "virtual-machine.task.start" | "virtual-machine.start" | "virtual-machine.task.stop" | "virtual-machine.stop" | "virtual-machine.reconfigure" | "virtual-machine.task.reconfigure" | "virtual-machine.update" | "virtual-machine.task.delete" | "virtual-machine.delete" | "virtual-machine.sos.login" | "virtual-machine.ssh-key.create" | "virtual-machine.ssh-key.update" | "virtual-machine.ssh-key.task.delete" | "virtual-machine.ssh-key.delete" | "virtual-machine.ip.allocate" | "virtual-machine.task.ip.allocate" | "virtual-machine.ip.unallocate" | "virtual-machine.task.ip.unallocate";
             /** @description A timestamp for when the activity took place. */
             time: components["schemas"]["DateTime"];
         };
@@ -11590,7 +11616,7 @@ export interface components {
                 build?: {
                     /** @description Build args passed into the container image build process during pipeline run. */
                     args?: {
-                        [key: string]: string | undefined;
+                        [key: string]: string;
                     } | null;
                 };
                 /** @description An override object to be used for a single image create request. */
@@ -11662,7 +11688,7 @@ export interface components {
                 build?: {
                     /** @description Build args passed into the container image build process during pipeline run. */
                     args?: {
-                        [key: string]: string | undefined;
+                        [key: string]: string;
                     } | null;
                 };
                 /** @description An override object to be used for a single image create request. */
@@ -12060,7 +12086,7 @@ export interface components {
                     };
                     /** @description Custom variables applied to the stack during build. Any place in the stack where a `{{variable}}` is used is replaced with the value of the variable supplied in this map. */
                     variables?: {
-                        [key: string]: string | undefined;
+                        [key: string]: string;
                     };
                 } | null;
                 /** @description Information about the stack build. */
@@ -12108,7 +12134,7 @@ export interface components {
         StackBuildDeploymentUpdates: {
             /** @description A map of the container names to update within the environment. */
             containers: {
-                [key: string]: components["schemas"]["StackDeployContainersObject"] | undefined;
+                [key: string]: components["schemas"]["StackDeployContainersObject"];
             };
             /** @description An object that describes configuration options for scoped variables on stack build. If null, scoped variables will be ignored during deployment events. */
             scoped_variables: {
@@ -12226,7 +12252,7 @@ export interface components {
                 url: string;
                 /** @description An optional map of headers to send with the request. */
                 headers?: {
-                    [key: string]: string | undefined;
+                    [key: string]: string;
                 } | null;
                 options?: components["schemas"]["WebhookStepOptions"] | null;
                 /** @description An optional POST body to send with the request. Cannot be used with `from``. */
@@ -12256,7 +12282,7 @@ export interface components {
                 url: string;
                 /** @description An optional map of headers to send with the request. */
                 headers?: {
-                    [key: string]: string | undefined;
+                    [key: string]: string;
                 } | null;
                 options?: components["schemas"]["WebhookStepOptions"] | null;
             };
@@ -12505,7 +12531,7 @@ export interface components {
             events: components["schemas"]["PipelineRunEvents"];
             /** @description A map of variable values used during pipeline run. */
             variables?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
         };
         /**
@@ -12535,7 +12561,7 @@ export interface components {
          * @description A resource that is associated with activity.
          */
         ComponentsIncludes: {
-            [key: string]: (components["schemas"]["Container"] | components["schemas"]["VirtualMachine"] | components["schemas"]["Instance"] | components["schemas"]["Environment"] | components["schemas"]["Image"] | components["schemas"]["ImageSource"] | components["schemas"]["Server"] | components["schemas"]["Pool"] | components["schemas"]["Integration"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["Zone"] | components["schemas"]["Record"] | components["schemas"]["TlsCertificate"] | components["schemas"]["ApiKey"] | components["schemas"]["Network"] | components["schemas"]["HubMembership"] | components["schemas"]["Pipeline"] | components["schemas"]["TriggerKey"] | components["schemas"]["ScopedVariable"] | components["schemas"]["Hub"] | components["schemas"]["Invoice"] | components["schemas"]["Method"] | components["schemas"]["AutoScaleGroup"] | components["schemas"]["PipelineRun"] | components["schemas"]["Role"] | components["schemas"]["PublicAccount"] | components["schemas"]["VirtualMachineSshKey"]) | undefined;
+            [key: string]: components["schemas"]["Container"] | components["schemas"]["VirtualMachine"] | components["schemas"]["Instance"] | components["schemas"]["Environment"] | components["schemas"]["Image"] | components["schemas"]["ImageSource"] | components["schemas"]["Server"] | components["schemas"]["Pool"] | components["schemas"]["Integration"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["Zone"] | components["schemas"]["Record"] | components["schemas"]["TlsCertificate"] | components["schemas"]["ApiKey"] | components["schemas"]["Network"] | components["schemas"]["HubMembership"] | components["schemas"]["Pipeline"] | components["schemas"]["TriggerKey"] | components["schemas"]["ScopedVariable"] | components["schemas"]["Hub"] | components["schemas"]["Invoice"] | components["schemas"]["Method"] | components["schemas"]["AutoScaleGroup"] | components["schemas"]["PipelineRun"] | components["schemas"]["Role"] | components["schemas"]["PublicAccount"] | components["schemas"]["VirtualMachineSshKey"];
         };
         /**
          * ActivityIncludes
@@ -12552,11 +12578,11 @@ export interface components {
         ApiKeyIncludes: {
             /** @description A map of roles relevant to this API key, keyed by the role ID. */
             roles?: {
-                [key: string]: components["schemas"]["Role"] | undefined;
+                [key: string]: components["schemas"]["Role"];
             };
             /** @description A map of roles relevant to this API key, keyed by the role ID. */
             "roles:identifiers"?: {
-                [key: string]: components["schemas"]["ID"] | undefined;
+                [key: string]: components["schemas"]["ID"];
             };
         };
         /**
@@ -12566,15 +12592,15 @@ export interface components {
         "HubMembershipIncludes-2": {
             /** @description A record with an ID mapped to a public account. */
             accounts?: {
-                [key: string]: components["schemas"]["PublicAccount"] | undefined;
+                [key: string]: components["schemas"]["PublicAccount"];
             };
             /** @description A map of roles relevant to this hub membership, keyed by the Role ID. */
             roles?: {
-                [key: string]: components["schemas"]["Role"] | undefined;
+                [key: string]: components["schemas"]["Role"];
             };
             /** @description A map of roles relevant to this hub membership, keyed by the role ID. */
             "roles:identifiers"?: {
-                [key: string]: components["schemas"]["ID"] | undefined;
+                [key: string]: components["schemas"]["ID"];
             };
         };
         /**
@@ -12586,16 +12612,16 @@ export interface components {
             senders?: {
                 /** @description A record with an ID mapped to a public account. */
                 accounts?: {
-                    [key: string]: components["schemas"]["PublicAccount"] | undefined;
+                    [key: string]: components["schemas"]["PublicAccount"];
                 };
             };
             /** @description A map of roles relevant to this hub membership, keyed by the Role ID. */
             roles?: {
-                [key: string]: components["schemas"]["Role"] | undefined;
+                [key: string]: components["schemas"]["Role"];
             };
             /** @description A map of roles relevant to this hub membership, keyed by the role ID. */
             "roles:identifiers"?: {
-                [key: string]: components["schemas"]["ID"] | undefined;
+                [key: string]: components["schemas"]["ID"];
             };
         };
         /**
@@ -12682,16 +12708,16 @@ export interface components {
          */
         ClusterVersionServerCount: {
             agent: {
-                [key: string]: number | undefined;
+                [key: string]: number;
             };
             "agent-spawner": {
-                [key: string]: number | undefined;
+                [key: string]: number;
             };
             compute: {
-                [key: string]: number | undefined;
+                [key: string]: number;
             };
             "compute-spawner": {
-                [key: string]: number | undefined;
+                [key: string]: number;
             };
         };
         /**
@@ -12731,18 +12757,18 @@ export interface components {
                             [key: string]: {
                                 count: number;
                                 locations?: {
-                                    [key: string]: number | undefined;
+                                    [key: string]: number;
                                 } | null;
                                 models?: {
-                                    [key: string]: number | undefined;
+                                    [key: string]: number;
                                 } | null;
                                 resources?: components["schemas"]["InfrastructureResourceSummary"];
-                            } | undefined;
+                            };
                         };
                         /** @description IDs of all servers in this cluster. */
                         server_ids?: components["schemas"]["ID"][];
                     };
-                } | undefined;
+                };
             };
             /** @description A timestamp of when the infrastructure was last updated. */
             updated: components["schemas"]["DateTime"];
@@ -12764,7 +12790,7 @@ export interface components {
          * @description A resource associated with a server models.
          */
         ServerModelsIncludes: {
-            [key: string]: components["schemas"]["ProviderServerModel"] | undefined;
+            [key: string]: components["schemas"]["ProviderServerModel"];
         };
         /**
          * AutoScaleGroupIncludes
@@ -12864,7 +12890,7 @@ export interface components {
                         options: string;
                         /** @description String describing the server mount source. */
                         source: string;
-                    } | undefined;
+                    };
                 } | null;
                 /** @description An object describing directory identifiers with value {}. */
                 directories?: {
@@ -13019,7 +13045,7 @@ export interface components {
             };
             /** @description Output informaiton used for the job tasks. */
             output: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             } | null;
             /** @description An error object describing issues with the job. */
             error: {
@@ -13090,7 +13116,7 @@ export interface components {
             time: components["schemas"]["DateTime"];
             /** @description Additional key-values that can be used for querying in an aggregation pipeline. Often useful for filtering. */
             labels?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
             /** @description Additional tags associated with the metric. */
             tags?: string[];
@@ -13188,7 +13214,7 @@ export interface components {
             time: components["schemas"]["DateTime"];
             /** @description Additional key-values that can be used for querying in an aggregation pipeline. Often useful for filtering. */
             labels?: {
-                [key: string]: string | undefined;
+                [key: string]: string;
             };
             /** @description Additional tags associated with the event. */
             tags?: string[];
@@ -13285,7 +13311,7 @@ export interface components {
             name?: string;
             /** @description A record of resources that can be associated with the pipeline. */
             components?: {
-                [key: string]: (components["schemas"]["Container"] | components["schemas"]["Environment"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["Image"] | components["schemas"]["ImageSource"]) | undefined;
+                [key: string]: components["schemas"]["Container"] | components["schemas"]["Environment"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["Image"] | components["schemas"]["ImageSource"];
             };
             "components:identifiers"?: components["schemas"]["IdentifierIncludes"];
         };
@@ -13299,7 +13325,7 @@ export interface components {
             contents?: {
                 /** @description A map of variables to pass into the pipeline when it runs. */
                 variables?: {
-                    [key: string]: string | undefined;
+                    [key: string]: string;
                 };
             };
         };
@@ -13370,28 +13396,28 @@ export interface components {
             /** @description Id describing the Hub */
             hub_id: string;
             containers: {
-                [key: string]: components["schemas"]["Component"] | undefined;
+                [key: string]: components["schemas"]["Component"];
             };
             environments: {
-                [key: string]: components["schemas"]["Component"] | undefined;
+                [key: string]: components["schemas"]["Component"];
             };
             image_sources: {
-                [key: string]: components["schemas"]["Component"] | undefined;
+                [key: string]: components["schemas"]["Component"];
             };
             dns_zones: {
-                [key: string]: components["schemas"]["Component"] | undefined;
+                [key: string]: components["schemas"]["Component"];
             };
             stacks: {
-                [key: string]: components["schemas"]["Component"] | undefined;
+                [key: string]: components["schemas"]["Component"];
             };
             servers: {
-                [key: string]: components["schemas"]["Component"] | undefined;
+                [key: string]: components["schemas"]["Component"];
             };
             pipelines: {
-                [key: string]: components["schemas"]["Component"] | undefined;
+                [key: string]: components["schemas"]["Component"];
             };
             virtual_machines: {
-                [key: string]: components["schemas"]["Component"] | undefined;
+                [key: string]: components["schemas"]["Component"];
             };
         };
         /**
@@ -13468,16 +13494,16 @@ export interface components {
         VirtualMachineIncludes: {
             creators?: components["schemas"]["CreatorInclude"];
             environments?: {
-                [key: string]: components["schemas"]["Environment"] | undefined;
+                [key: string]: components["schemas"]["Environment"];
             };
             "environments:identifiers"?: {
-                [key: string]: components["schemas"]["ID"] | undefined;
+                [key: string]: components["schemas"]["ID"];
             };
             clusters?: {
-                [key: string]: components["schemas"]["Cluster"] | undefined;
+                [key: string]: components["schemas"]["Cluster"];
             };
             containers?: {
-                [key: string]: components["schemas"]["Container"] | undefined;
+                [key: string]: components["schemas"]["Container"];
             };
         };
         /** VirtualMachineStartTask */
@@ -13616,10 +13642,10 @@ export interface components {
         VirtualMachineSshIncludes: {
             creators?: components["schemas"]["CreatorInclude"];
             environments?: {
-                [key: string]: components["schemas"]["Environment"] | undefined;
+                [key: string]: components["schemas"]["Environment"];
             };
             "environments:identifiers"?: {
-                [key: string]: components["schemas"]["ID"] | undefined;
+                [key: string]: components["schemas"]["ID"];
             };
         };
     };
@@ -15009,7 +15035,7 @@ export interface operations {
                     lock?: boolean;
                     /** @description User meta data for the Container. */
                     annotation?: {
-                        [key: string]: string | undefined;
+                        [key: string]: string;
                     };
                 };
             };
@@ -16541,7 +16567,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: {
-                            [key: string]: components["schemas"]["MonitoringTierDetails"] | undefined;
+                            [key: string]: components["schemas"]["MonitoringTierDetails"];
                         };
                     };
                 };
@@ -16767,7 +16793,7 @@ export interface operations {
                                     tags: components["schemas"]["Identifier"][];
                                     /** @description The number of containers utilizing this version of this deployment. */
                                     containers: number;
-                                } | undefined;
+                                };
                             };
                         };
                     };
@@ -17638,6 +17664,12 @@ export interface operations {
                     name?: string;
                     webhooks?: components["schemas"]["HubWebhooks"];
                     security?: components["schemas"]["HubSecurity"];
+                    identifier?: string;
+                    billing_contact?: {
+                        name?: string | null;
+                        legal_business_name?: string | null;
+                        tax_id?: string | null;
+                    } | null;
                 };
             };
         };
@@ -17676,7 +17708,7 @@ export interface operations {
                         meta: {
                             /** @description Human-readable captions keyed by the platform level capability it describes. */
                             captions: {
-                                [key: string]: string | undefined;
+                                [key: string]: string;
                             };
                         };
                     };
@@ -18015,7 +18047,7 @@ export interface operations {
                     auth?: components["schemas"]["IntegrationAuth"] | null;
                     /** @description Updated key-value pairs associated with the integration. */
                     extra?: {
-                        [key: string]: string | undefined;
+                        [key: string]: string;
                     } | null;
                 };
             };
@@ -18120,7 +18152,7 @@ export interface operations {
                     };
                     /** @description Additional key-value pairs associated with the integration. */
                     extra?: {
-                        [key: string]: string | undefined;
+                        [key: string]: string;
                     };
                 };
             };
@@ -18592,7 +18624,7 @@ export interface operations {
                     rank: number;
                     /** @description Custom user-defined properties for storing extra information on the Role. Not utilized by Cycle. */
                     extra?: {
-                        [key: string]: string | undefined;
+                        [key: string]: string;
                     } | null;
                 };
             };
@@ -18692,7 +18724,7 @@ export interface operations {
                     rank: number;
                     /** @description Custom user-defined properties for storing extra information on the Role. Not utilized by Cycle. */
                     extra?: {
-                        [key: string]: string | undefined;
+                        [key: string]: string;
                     } | null;
                 };
             };
@@ -18817,7 +18849,7 @@ export interface operations {
                     build?: {
                         /** @description An object holding key value build time arguments needed for the Image during build time. */
                         args?: {
-                            [key: string]: string | undefined;
+                            [key: string]: string;
                         };
                     };
                     /** @description An override object to be used for a single Image create request. */
@@ -20440,6 +20472,7 @@ export interface operations {
                     "range-start"?: components["schemas"]["DateTime"];
                     /** @description The end date from when to pull metrics. Providing 'time' in the post-body criteria field will override this filter. */
                     "range-end"?: components["schemas"]["DateTime"];
+                } & {
                     [key: string]: unknown;
                 };
             };
@@ -20544,6 +20577,7 @@ export interface operations {
                     "range-start"?: components["schemas"]["DateTime"];
                     /** @description The end date from when to pull events. Providing 'time' in the post-body criteria field will override this filter. */
                     "range-end"?: components["schemas"]["DateTime"];
+                } & {
                     [key: string]: unknown;
                 };
             };
@@ -21067,7 +21101,7 @@ export interface operations {
                     secret: string;
                     /** @description A map of variables to pass into the pipeline when it runs. */
                     variables: {
-                        [key: string]: string | undefined;
+                        [key: string]: string;
                     };
                     advanced?: {
                         /** @description Sub queue allows multiple concurrent pipeline runs. */
@@ -21610,7 +21644,7 @@ export interface operations {
                     acl?: components["schemas"]["ACL"] | null;
                     /** @description A map of default variable values used when building this Stack. A variable can be added anywhere in a Stack using the format `{{var}}` where `var` would be a key in this map. */
                     variables?: {
-                        [key: string]: string | undefined;
+                        [key: string]: string;
                     };
                     source: components["schemas"]["StackSource"];
                 };
@@ -21701,7 +21735,7 @@ export interface operations {
                     name?: string;
                     /** @description A map of default variable values used when building this Stack. A variable can be added anywhere in a Stack using the format `{{var}}` where `var` would be a key in this map. */
                     variables?: {
-                        [key: string]: string | undefined;
+                        [key: string]: string;
                     };
                     source?: components["schemas"]["StackSource"];
                 };
@@ -22232,7 +22266,7 @@ export interface operations {
                     lock?: boolean;
                     /** @description Metadata annotations for the virtual machine. */
                     annotations?: {
-                        [key: string]: string | undefined;
+                        [key: string]: string;
                     };
                     /** @description An array of SSH key IDs that should be applied to this virtual machine. */
                     ssh_keys?: components["schemas"]["ID"][];
@@ -22302,7 +22336,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: {
-                            [key: string]: components["schemas"]["VirtualMachineBaseImage"] | undefined;
+                            [key: string]: components["schemas"]["VirtualMachineBaseImage"];
                         };
                     };
                 };
