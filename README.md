@@ -46,7 +46,7 @@ In some cases it may be necessary to override the default URL of `https://api.cy
 ```ts
 import { client } from "@cycleplatform/api-client-typescript";
 
-const baseUrl = "https://api.my-company.cycle.io";
+const baseUrl = "https://api.cycle.io";
 
 const client = getClient({
     baseUrl,
