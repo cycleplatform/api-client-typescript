@@ -3,6 +3,8 @@ import type { paths, components, operations } from "./generated/types";
 
 export { paths, components, operations };
 
+export { trackJob, getJobProgress } from "./jobs";
+
 export function getClient({
     apiKey,
     baseUrl = "https://api.cycle.io",
@@ -20,7 +22,7 @@ export function getClient({
     });
 
     const authMiddleware: Middleware = {
-        async onRequest({request}) {
+        async onRequest({ request }) {
             request.headers.set("Authorization", `Bearer ${apiKey}`);
             request.headers.set("X-Hub-Id", hubId);
             return request;
