@@ -29,7 +29,7 @@ describe("trackJob", () => {
 
     it("should fail if the job errors out", async () => {
         server.use(
-            http.get("https://api.cycle.io/v1/jobs/:jobId", ({ request }) => {
+            http.get("https://api.cycle.io/v1/jobs/:jobId", ({  }) => {
                 return HttpResponse.json({
                     data: {
                         ...getMockJob(),
