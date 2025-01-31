@@ -65,6 +65,44 @@ const resp = await client.GET("/v1/containers/{containerId}", {
 console.log(resp.data, resp.error);
 ```
 
+### Tracking a Job
+
+Cycle utilizes an asynchronous job system for handling background tasks. Often it is useful to keep tabs on the
+progress of these jobs, or to wait for a job to complete (or fail) before continuing. This API client includes
+a job tracking utility function to simplify this process.
+
+```ts
+import { client, trackJob } from "@cycleplatform/api-client-typescript";
+
+const baseUrl = "https://api.my-company.cycle.io";
+
+const client = getClient({
+    baseUrl,
+    apiKey: "<your-api-key>",
+    hubId: "<your-hub-id>",
+});
+
+const tracker = trackJob(client, "<job-id>");
+
+// It's possible to listen for progress updates on a job as it executes
+tracker.addEventListener("progress", (event) => {
+    console.log((event as CustomEvent).detail);
+    // {
+    //     total: number;
+    //     completed: number;
+    //     failed: number;
+    //     percent: number;
+    //     state: components["schemas"]["JobState"]["current"];
+    // }
+});
+
+// Wait for job to complete
+const job = await tracker.promise;
+console.log(job.state.current); // "completed"
+
+// throws on job failure
+```
+
 ## Development
 
 ### Cloning submodules

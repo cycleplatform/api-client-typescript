@@ -1,11 +1,11 @@
 import { getClient } from ".";
 import { type components } from "./generated/types";
 
-type TrackJobSettings = {
+export type TrackJobSettings = {
     pollingInterval?: number;
 };
 
-type JobProgressEvent = ReturnType<typeof getJobProgress> & {
+export type JobProgressEvent = ReturnType<typeof getJobProgress> & {
     state: components["schemas"]["JobState"]["current"];
 };
 

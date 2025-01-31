@@ -3,7 +3,7 @@ import type { paths, components, operations } from "./generated/types";
 
 export { paths, components, operations };
 
-export { trackJob, getJobProgress } from "./jobs";
+export * from "./jobs";
 
 export function getClient({
     apiKey,

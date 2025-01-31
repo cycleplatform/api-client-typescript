@@ -3,7 +3,7 @@ import { expect, describe, it, vi, afterEach } from "vitest";
 import { server } from "./setup";
 import { http, HttpResponse } from "msw";
 import { getMockJob, resetMockedJob } from "./jobs/job.mock";
-import { trackJob } from "../src/jobs";
+import { JobProgressEvent, trackJob } from "../src/jobs";
 
 describe("trackJob", () => {
     afterEach(() => {
@@ -53,7 +53,7 @@ describe("trackJob", () => {
 
         const progressUpdates: any[] = [];
         tracker.addEventListener("progress", (event) => {
-            progressUpdates.push((event as CustomEvent).detail);
+            progressUpdates.push((event as CustomEvent<JobProgressEvent>).detail);
         });
 
         await tracker.promise;
