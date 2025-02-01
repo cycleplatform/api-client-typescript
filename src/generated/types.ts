@@ -4719,6 +4719,7 @@ export interface components {
             description: string;
             updates: components["schemas"]["AnnouncementUpdate"][];
             affected_integrations?: string[];
+            affected_services?: string[];
             creator: components["schemas"]["CreatorScope"];
             state: {
                 /**
