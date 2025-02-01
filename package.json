@@ -17,6 +17,7 @@
             }
         }
     },
+    "types": "./src/index.ts",
     "scripts": {
         "test": "vitest",
         "test:ts": "tsc --noEmit",
