@@ -21037,7 +21037,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Returns a Job Descriptor. */
+            /** @description Returns a job descriptor. */
             202: {
                 headers: {
                     [name: string]: unknown;
@@ -21116,14 +21116,14 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Returns a Pipeline. */
-            201: {
+            /** @description Returns a job descriptor. */
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        data: components["schemas"]["Pipeline"];
+                        data: components["schemas"]["JobDescriptor"];
                     };
                 };
             };
