@@ -12487,7 +12487,7 @@ export interface components {
              * @description The current state of the pipeline run.
              * @enum {string}
              */
-            current: "new" | "queued" | "running" | "deleting" | "deleted";
+            current: "queued" | "acquiring" | "running" | "complete" | "deleting" | "deleted";
         } & components["schemas"]["State"];
         /**
          * PipelineRunEvents
