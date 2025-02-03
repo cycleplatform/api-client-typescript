@@ -13328,6 +13328,14 @@ export interface components {
                 variables?: {
                     [key: string]: string;
                 };
+                advanced?: {
+                    /** @description Sub queue allows multiple concurrent pipeline runs. */
+                    sub_queue?: string | null;
+                    /** @description To enable skip locks, pass the current UNIX timestamp. Must be accurate within 10 minutes of the current UTC time.
+                     *     This will skip lock checks when running a pipeline - the user takes all risk of ensuring two pipeline runs won't make conflicting changes.
+                     *      */
+                    skip_locks?: number | null;
+                };
             };
         };
         /** RerunPipelineAction */
