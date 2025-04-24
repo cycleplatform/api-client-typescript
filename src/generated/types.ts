@@ -709,6 +709,7 @@ export interface paths {
          *     Requires the following capabilities based on the task:
          *     `start`: `containers-manage`
          *     `stop`: `containers-manage`
+         *     `restart`: `containers-manage`
          *     `reconfigure`: `containers-manage`
          *     `volumes.reconfigure`: `containers-volumes-manage`
          *     `reimage`: `containers-manage`
@@ -2754,6 +2755,107 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/infrastructure/virtual-providers/{integrationId}/isos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get ISOs for a virtual provider
+         * @description Get ISOs for a virtual provider.
+         *
+         *     Requires the `servers-manage` capability.
+         *
+         */
+        get: operations["getVirtualProviderIsos"];
+        put?: never;
+        /**
+         * Create Virtual Provider Iso
+         * @description Create an ISO for a virtual provider.
+         *
+         *     Requires the `servers-manage` capability.
+         *
+         */
+        post: operations["createVirtualProviderIso"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/infrastructure/virtual-providers/{integrationId}/isos/{isoId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get ISO
+         * @description Requires the `servers-manage` capability.
+         */
+        get: operations["getVirtualProviderIso"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete ISO
+         * @description Requires the `servers-manage` capability.
+         */
+        delete: operations["deleteVirtualProviderIso"];
+        options?: never;
+        head?: never;
+        /**
+         * Update ISO
+         * @description Requires the `servers-manage` capability.
+         */
+        patch: operations["updateVirtualProviderIso"];
+        trace?: never;
+    };
+    "/v1/infrastructure/virtual-providers/{integrationId}/isos/{isoId}/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Virtual Provider Iso Job
+         * @description Create a job for a virtual provider iso.
+         *
+         *     Requires the `servers-manage` capability.
+         *
+         */
+        post: operations["createVirtualProviderIsoJob"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/infrastructure/virtual-providers/{integrationId}/isos/{isoId}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Delete ISO
+         * @description Requires the `servers-manage` capability.
+         */
+        get: operations["getVirtualProviderIsoDownloadUrl"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/infrastructure/clusters": {
         parameters: {
             query?: never;
@@ -3015,11 +3117,18 @@ export interface paths {
         };
         /**
          * List IP Pools
-         * @description Requires the `infrastructure-ips-manage` capability.
+         * @description Requires the `ips-manage` capability.
          */
-        get: operations["getInfrastructureIPPools"];
+        get: operations["getIpPools"];
         put?: never;
-        post?: never;
+        /**
+         * Create IP Pool
+         * @description Create an infrastructure IP Pool
+         *
+         *     Requires the 'ips-manage' capability.
+         *
+         */
+        post: operations["createIpPool"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3035,14 +3144,14 @@ export interface paths {
         };
         /**
          * Get IP Pool
-         * @description Requires the `infrastructure-ips-manage` capability.
+         * @description Requires the `ips-manage` capability.
          */
         get: operations["getIPPool"];
         put?: never;
         post?: never;
         /**
          * Delete IP Pool
-         * @description Requires the `infrastructure-ips-manage` capability.
+         * @description Requires the `ips-manage` capability.
          */
         delete: operations["deleteIPPool"];
         options?: never;
@@ -4556,6 +4665,8 @@ export interface components {
             term: components["schemas"]["Term"];
             /** @description A boolean where true represents this account being approved to use a prepaid card for billing transactions. */
             allow_prepaid?: boolean;
+            /** @description When true, this hub is allowed to create 'direct' payment methods. */
+            allow_direct_payments?: boolean;
             /** @description A boolean where true represents invoices have been paused on this hub for one reason or another. */
             pause_invoices: boolean;
             /** @description A boolean where true means this billing is disabled on this hub. */
@@ -4859,7 +4970,7 @@ export interface components {
              * @description The status of a payment.
              * @enum {string}
              */
-            status: "success" | "processing" | "cancelled" | "error";
+            status: "success" | "awaiting-direct-payment" | "processing" | "cancelled" | "error";
             /** @description A description of the error that took place when processing the payment. */
             error: string;
         };
@@ -5031,10 +5142,30 @@ export interface components {
             };
         };
         /**
+         * DirectPayment
+         * @description A payment method that must be enabled by Cycle staff, solely for telling us they're going to send us checks, wires, ach, outside of Cycle.
+         */
+        DirectPayment: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "direct-payment";
+            details: {
+                /**
+                 * @description The preference for how the payment will be sent.
+                 * @enum {string}
+                 */
+                preference: "check" | "wire" | "ach";
+                /** @description Any additional instructions for an organization's billing dept., etc. that should be known about this payment method. */
+                instructions: string;
+            };
+        };
+        /**
          * MethodSource
          * @description The underlying source (credit card, bank account, etc) used by a payment method.
          */
-        MethodSource: components["schemas"]["StripeCreditCard"] | components["schemas"]["StripeUsBankAcct"];
+        MethodSource: components["schemas"]["StripeCreditCard"] | components["schemas"]["StripeUsBankAcct"] | components["schemas"]["DirectPayment"];
         /**
          * Mandate
          * @description Information about the creator of a payment method for compliance purposes.
@@ -5534,7 +5665,7 @@ export interface components {
          * DeploymentStrategyName
          * @enum {string}
          */
-        DeploymentStrategyName: "resource-density" | "high-availability" | "first-available" | "node" | "edge" | "manual" | "function";
+        DeploymentStrategyName: "resource-density" | "high-availability" | "distributed" | "first-available" | "manual" | "node" | "edge" | "function";
         /**
          * Duration
          * @description A string signifying a duration of time. Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h", "d", "w", "y".
@@ -5822,7 +5953,12 @@ export interface components {
                 rules?: components["schemas"]["SeccompRule"][];
             } | null;
             host?: {
+                /** @description If true, Cycle will mount the `/proc` directory into the container, giving it access to the host metrics. This is useful if you're running i.e. a monitoring agent. */
                 expose_proc?: boolean | null;
+                /** @description If true, Cycle will mount the host's `/sys/fs/cgroups` directory into the container at `/var/run/cycle/host/cgroups`. */
+                expose_cgroups?: boolean | null;
+                /** @description If true, Cycle will give the container instances access via internal api to power off or reboot the host server. */
+                power_management?: boolean | null;
             } | null;
             rootfs?: {
                 /** @description Enabling this option will set the containers filesystem to readonly. Volumes associated with the container will not be affected by this. */
@@ -6215,6 +6351,14 @@ export interface components {
             state: components["schemas"]["DnsRecordState"];
             events: components["schemas"]["Events"];
         };
+        /**
+         * Cidr
+         * Format: cidr
+         * @description A CIDR (Classless Inter-Domain Routing) string is a notation used to represent an IP address and its associated network prefix.
+         *     It combines an IP address with a suffix that indicates how many bits are fixed for routing.
+         *
+         */
+        Cidr: string;
         /** IpState */
         IpState: {
             /**
@@ -6251,6 +6395,7 @@ export interface components {
             address: string;
             /** @description The IP gateway. */
             gateway: string;
+            network?: components["schemas"]["Cidr"] | null;
             /** @description The CIDR for the IP. */
             cidr: string;
             state: components["schemas"]["IpState"];
@@ -6430,13 +6575,6 @@ export interface components {
              */
             type: "haproxy";
             details: components["schemas"]["HaProxyConfig"] | null;
-            /** @description Binds the load balancer to the host server IP address.
-             *
-             *     **Pros**: This allows for significantly lower cost (utilizing fewer IPv4 addresses), and enables building out a true edge network with lower latency.
-             *     **Cons**: Only 1 environment is allowed on the host. This is because the load balancer is the only ingress point for an environment, and if it is sharing
-             *     the same IP as the host, that host can only operate under that environment.
-             *      */
-            bind_host?: boolean | null;
         };
         /**
          * WafConfig
@@ -6453,6 +6591,8 @@ export interface components {
                  * @enum {string}
                  */
                 type: "allow" | "deny";
+                /** @description The expiration date of the WAF config, if present. */
+                expires?: components["schemas"]["DateTime"] | null;
                 /**
                  * @description A string that describes if both attributes need to be true (match all) or if only one of the conditions needs to be true (match any).
                  * @enum {string}
@@ -6659,10 +6799,11 @@ export interface components {
              * @description How to route the traffic to the destination.
              *     `random`: Pick a valid destination at random.
              *     `round-robin`: Send each request to the 'next' destination on the list, restarting from the beginning when the last destination is used.
+             *     `source-ip`: Utilizes a hash function to ensure traffic from an IP will always hit the same destination instance.
              *
              * @enum {string}
              */
-            mode: "random" | "round-robin";
+            mode: "random" | "round-robin" | "source-ip";
             config: {
                 /** @description If a request comes in from the same origin, ensure it hits the same destination. */
                 sticky_sessions: boolean;
@@ -6762,13 +6903,6 @@ export interface components {
              */
             type: "v1";
             details: components["schemas"]["V1LbConfig"];
-            /** @description Binds the load balancer to the host server IP address.
-             *
-             *     **Pros**: This allows for significantly lower cost (utilizing fewer IPv4 addresses), and enables building out a true edge network with lower latency.
-             *     **Cons**: Only 1 environment is allowed on the host. This is because the load balancer is the only ingress point for an environment, and if it is sharing
-             *     the same IP as the host, that host can only operate under that environment.
-             *      */
-            bind_host?: boolean | null;
         };
         /** DefaultLbType */
         DefaultLbType: {
@@ -7623,6 +7757,12 @@ export interface components {
                     decode: boolean | components["schemas"]["StackVariable"];
                     /** @description The absolute path to write the variable to (including file name). If `null`, it will be written to `/var/run/cycle/variables/{variable-identifier}`. */
                     path: (string | null) | components["schemas"]["StackVariable"];
+                    /** @description A linux file mode that will be set on the injected file. */
+                    permissions?: (string | null) | components["schemas"]["StackVariable"];
+                    /** @description The linux UID to set on the file. */
+                    uid?: (number | null) | components["schemas"]["StackVariable"];
+                    /** @description The linux GID to set on the file. */
+                    gid?: (number | null) | components["schemas"]["StackVariable"];
                 } | null) | components["schemas"]["StackVariable"];
             } | components["schemas"]["StackVariable"];
             source?: (components["schemas"]["StackSpecScopedVariableUrlSource"] | components["schemas"]["StackSpecScopedVariableRawSource"]) | components["schemas"]["StackVariable"] | null;
@@ -7673,9 +7813,10 @@ export interface components {
             /** @description The strategy Cycle will apply when deploying instances of this container.
              *
              *     - ** resource-density **: Cycle will distribute instances across servers to maintain balanced resource usage.
-             *     - ** high-availability **: Cycle will deploy instances over servers with an emphasis on geographic and physical separation
-             *     - ** first-available **: Cycle will deploy one instance to every node that matches the specified criteria. (default)
-             *     - ** node **: Cycle will deploy one instance to every node that matches the specified criteria.
+             *     - ** high-availability **: Cycle will deploy instances across servers with an emphasis on geographic and physical separation. Requires multiple locations.
+             *     - ** distributed **: Cycle will deploy instances across servers with an emphasis on physical separation. Does not require multiple locations.
+             *     - ** first-available **: Cycle will deploy one instance to every server that matches the specified criteria. (default)
+             *     - ** node **: Cycle will deploy one instance to every server that matches the specified criteria.
              *     - ** edge **: Cycle will prioritize geographic distribution of instances.
              *     - ** function **: Every ingress request/connection receives its own instance.
              *     - ** manual **: Cycle will not make any decisions on where instances are deployed. Instead, instances must be deployed manually using the portal or API.
@@ -7935,6 +8076,10 @@ export interface components {
             host?: ({
                 /** @description If true, Cycle will mount the `/proc` directory into the container, giving it access to the host metrics. This is useful if you're running i.e. a monitoring agent. */
                 expose_proc?: (boolean | null) | components["schemas"]["StackVariable"];
+                /** @description If true, Cycle will mount the host's `/sys/fs/cgroups` directory into the container at `/var/run/cycle/host/cgroups`. */
+                expose_cgroups?: (boolean | null) | components["schemas"]["StackVariable"];
+                /** @description If true, Cycle will give the container instances access via internal api to power off or reboot the host server. */
+                power_management?: (boolean | null) | components["schemas"]["StackVariable"];
             } | null) | components["schemas"]["StackVariable"];
             /** @description If true, the container process will run in fully-privileged mode. **WARNING** This is considered insecure, and should only be done if you know what you're doing. */
             privileged?: boolean | components["schemas"]["StackVariable"];
@@ -8213,13 +8358,6 @@ export interface components {
              */
             type: "haproxy";
             details: components["schemas"]["StackSpecHaProxyConfig"] | components["schemas"]["StackVariable"] | null;
-            /** @description Binds the load balancer to the host server IP address.
-             *
-             *     **Pros**: This allows for significantly lower cost (utilizing fewer IPv4 addresses), and enables building out a true edge network with lower latency.
-             *     **Cons**: Only 1 environment is allowed on the host. This is because the load balancer is the only ingress point for an environment, and if it is sharing
-             *     the same IP as the host, that host can only operate under that environment.
-             *      */
-            bind_host?: (boolean | null) | components["schemas"]["StackVariable"];
         };
         /**
          * StackSpecWafConfig
@@ -8233,6 +8371,8 @@ export interface components {
                 skip: boolean | components["schemas"]["StackVariable"];
                 /** @description A string that describes if the role should allow or deny traffic based on the conditions. */
                 type: ("allow" | "deny") | components["schemas"]["StackVariable"];
+                /** @description The expiration date of the WAF config, if present. */
+                expires?: string | components["schemas"]["StackVariable"] | null;
                 /** @description A string that describes if both attributes need to be true (match all) or if only one of the conditions needs to be true (match any). */
                 match?: ("any" | "all") | components["schemas"]["StackVariable"];
                 /** @description An array of the specific conditions for the rule. */
@@ -8425,8 +8565,9 @@ export interface components {
             /** @description How to route the traffic to the destination.
              *     `random`: Pick a valid destination at random.
              *     `round-robin`: Send each request to the 'next' destination on the list, restarting from the beginning when the last destination is used.
+             *     `source-ip`: Utilizes a hash function to ensure traffic from an IP will always hit the same destination instance.
              *      */
-            mode: ("random" | "round-robin") | components["schemas"]["StackVariable"];
+            mode: ("random" | "round-robin" | "source-ip") | components["schemas"]["StackVariable"];
             config: {
                 /** @description If a request comes in from the same origin, ensure it hits the same destination. */
                 sticky_sessions: boolean | components["schemas"]["StackVariable"];
@@ -8520,13 +8661,6 @@ export interface components {
              */
             type: "v1";
             details: components["schemas"]["StackSpecV1LbConfig"] | components["schemas"]["StackVariable"];
-            /** @description Binds the load balancer to the host server IP address.
-             *
-             *     **Pros**: This allows for significantly lower cost (utilizing fewer IPv4 addresses), and enables building out a true edge network with lower latency.
-             *     **Cons**: Only 1 environment is allowed on the host. This is because the load balancer is the only ingress point for an environment, and if it is sharing
-             *     the same IP as the host, that host can only operate under that environment.
-             *      */
-            bind_host?: (boolean | null) | components["schemas"]["StackVariable"];
         };
         /** StackSpecDefaultLbType */
         StackSpecDefaultLbType: {
@@ -8882,6 +9016,14 @@ export interface components {
              */
             action: "stop";
         };
+        /** ContainerRetartActionTask */
+        ContainerRestartAction: {
+            /**
+             * @description The name of the action to perform. (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            action: "restart";
+        };
         /** ContainerReconfigureAction */
         ContainerReconfigureAction: {
             /**
@@ -8932,7 +9074,7 @@ export interface components {
             };
         };
         /** ContainerTask */
-        ContainerTask: components["schemas"]["ContainerStartAction"] | components["schemas"]["ContainerStopAction"] | components["schemas"]["ContainerReconfigureAction"] | components["schemas"]["ContainerReconfigureVolumesAction"] | components["schemas"]["ContainerReimageAction"] | components["schemas"]["ContainerScaleAction"];
+        ContainerTask: components["schemas"]["ContainerStartAction"] | components["schemas"]["ContainerStopAction"] | components["schemas"]["ContainerRestartAction"] | components["schemas"]["ContainerReconfigureAction"] | components["schemas"]["ContainerReconfigureVolumesAction"] | components["schemas"]["ContainerReimageAction"] | components["schemas"]["ContainerScaleAction"];
         /**
          * ServerInstancesSummary
          * @description A Server ID and number of Instances of a specific Container it hosts.
@@ -9028,7 +9170,7 @@ export interface components {
              * @description The current state of the server.
              * @enum {string}
              */
-            current: "new" | "provisioning" | "configuring" | "live" | "deleting" | "deleted";
+            current: "new" | "provisioning" | "configuring" | "quarantined" | "live" | "deleting" | "deleted";
         } & components["schemas"]["State"];
         /** NodeState */
         NodeState: {
@@ -9048,15 +9190,21 @@ export interface components {
             interfaces?: {
                 [key: string]: {
                     /** @description The interface name. */
-                    interface?: string;
+                    interface: string;
                     /** @description Flags for the given interface. */
-                    flags?: string;
+                    flags: string;
                     /** @description The maximum transmission unit for the interface. */
-                    mtu?: number;
+                    mtu: number;
                     /** @description The mac address for the interface. */
-                    mac_addr?: string;
+                    mac_addr: string;
                     /** @description An array of IP addresses associated with the interface. */
                     addrs?: string[] | null;
+                    /** @description The link speed for the interface in megabits. */
+                    speed: number;
+                    /** @description The bytes received over the interface. */
+                    rx_bytes: number;
+                    /** @description The bytes transmitted over the interface. */
+                    tx_bytes: number;
                 };
             };
             /** @description The public IPv4 address used to connect to this server. */
@@ -9105,6 +9253,8 @@ export interface components {
                 speed?: number;
             }[];
             usage?: components["schemas"]["ServerStatsCpuUsage"];
+            /** @description A true value indicates the server supports virtualization. */
+            virtualization?: boolean;
         };
         /**
          * ServerStatsLoad
@@ -9199,6 +9349,22 @@ export interface components {
             hostname?: string;
         };
         /**
+         * ServerStatsVendor
+         * @description Details about the vendors for the server.
+         */
+        ServerStatsVendor: {
+            /** @description The system vendor of the server. */
+            system_vendor?: string;
+            /** @description The board vendor of the server. */
+            board_vendor?: string;
+            /** @description The board name of the server. */
+            board_name?: string;
+            /** @description The board serial number of the server. */
+            board_serial?: string;
+            /** @description The bios vendor of the server. */
+            bios_vendor?: string;
+        };
+        /**
          * ServerStatsVersions
          * @description Information about the versions of Cycle services on a given server.
          */
@@ -9220,6 +9386,7 @@ export interface components {
             ram: components["schemas"]["ServerStatsRam"];
             storage: components["schemas"]["ServerStatsStorage"];
             os: components["schemas"]["ServerStatsOS"];
+            vendor: components["schemas"]["ServerStatsVendor"];
             versions: components["schemas"]["ServerStatsVersions"];
         };
         /**
@@ -9270,6 +9437,8 @@ export interface components {
             shared_file_systems: components["schemas"]["ServerSharedFileSystems"];
             /** @description The server hostname. */
             hostname: string;
+            /** @description A custom name given to the server for identification purposes. Does not affect server hostname. */
+            nickname?: string | null;
             creator: components["schemas"]["CreatorScope"];
             provider: components["schemas"]["ServerProvider"];
             /** @description The cluster the given server is deployed to. */
@@ -9343,6 +9512,7 @@ export interface components {
             location: string;
             /** @description A location code returned from the provider. */
             code: string;
+            vendor: string;
             availability_zones?: string[];
         };
         /**
@@ -9631,6 +9801,15 @@ export interface components {
             type: "string";
             default?: string | null;
         };
+        /** IntegrationDefinitionField */
+        IntegrationDefinitionField: {
+            regex?: string | null;
+            required: boolean;
+            description: string;
+            /** @enum {string} */
+            type?: "select" | "string" | "int" | "blob";
+            options?: string[] | null;
+        };
         /**
          * IntegrationDefinition
          * @description Describes an integration for a Cycle hub that can be enabled by the hub owner.
@@ -9640,28 +9819,17 @@ export interface components {
             name: string;
             supports_verification: boolean;
             supports_multiple: boolean;
-            /** @description A list of additional features supported by this integration. */
             features?: string[] | null;
-            /** @description A list of functionality that this integration extends. i.e. ["backups"] */
             extends?: string[] | null;
-            /** @description Additional configuration options that are available when using this integration. These describe additional functionality that Cycle may utilize. */
             extended_configuration?: {
                 options?: (components["schemas"]["IntegrationAdvancedOptionBoolean"] | components["schemas"]["IntegrationAdvancedOptionInt"] | components["schemas"]["IntegrationAdvancedOptionString"])[] | null;
             } | null;
             fields?: {
                 extra?: {
-                    [key: string]: {
-                        regex?: string | null;
-                        required: boolean;
-                        description: string;
-                    };
+                    [key: string]: components["schemas"]["IntegrationDefinitionField"];
                 } | null;
                 auth?: {
-                    [key: string]: {
-                        regex?: string | null;
-                        required: boolean;
-                        description: string;
-                    };
+                    [key: string]: components["schemas"]["IntegrationDefinitionField"];
                 } | null;
             };
             /** Format: uri */
@@ -9789,6 +9957,13 @@ export interface components {
             min_ttl: components["schemas"]["DateTime"];
         };
         /**
+         * InstanceTrafficDrain
+         * @description Traffic drain details for instance.
+         */
+        InstanceTrafficDrain: {
+            started: components["schemas"]["DateTime"];
+        };
+        /**
          * MigrationInstance
          * @description Information about a migrated instance.
          */
@@ -9813,6 +9988,18 @@ export interface components {
             key: string;
             /** @description A boolean where true represents the volumes for the instance should be copied to the new server as well. */
             copy_volumes: boolean;
+        };
+        /**
+         * InstanceMeta
+         * @description A list of meta fields that can be applied to an instance.
+         */
+        InstanceMeta: {
+            node?: {
+                healthy?: boolean;
+                online?: boolean;
+                last_checkin?: components["schemas"]["DateTime"];
+                state?: components["schemas"]["NodeState"];
+            };
         };
         /**
          * Instance
@@ -9855,6 +10042,7 @@ export interface components {
             extension?: components["schemas"]["ContainerExtension"] | null;
             state: components["schemas"]["InstanceState"];
             autoscale?: components["schemas"]["InstanceAutoScale"] | null;
+            traffic_drain?: components["schemas"]["InstanceTrafficDrain"] | null;
             migration?: components["schemas"]["InstanceMigration"] | null;
             deployment?: components["schemas"]["Deployment"] | null;
             /**
@@ -9869,6 +10057,7 @@ export interface components {
                 /** @description The timestamp of when the instance was deleted. */
                 deleted: components["schemas"]["DateTime"];
             };
+            meta?: components["schemas"]["InstanceMeta"] | null;
         };
         /**
          * ServerIncludes
@@ -9976,8 +10165,20 @@ export interface components {
                 extend_size: string;
             };
         };
+        /** InstanceTrafficDrainReconfigure */
+        InstanceTrafficDrainReconfigure: {
+            /**
+             * @description The name of the action to perform. (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            action: "traffic-drain.reconfigure";
+            contents: {
+                /** @description Enable or disable traffic drain for the instance. */
+                enable: boolean;
+            };
+        };
         /** InstanceTask */
-        InstanceTask: components["schemas"]["InstanceMigrateAction"] | components["schemas"]["InstanceRevertMigrationAction"] | components["schemas"]["InstanceExtendVolumeAction"];
+        InstanceTask: components["schemas"]["InstanceMigrateAction"] | components["schemas"]["InstanceRevertMigrationAction"] | components["schemas"]["InstanceExtendVolumeAction"] | components["schemas"]["InstanceTrafficDrainReconfigure"];
         /**
          * DeployedVolume
          * @description A deployed volume resource.
@@ -10734,6 +10935,13 @@ export interface components {
             cost_mills: number;
         };
         /**
+         * ClusterIncludes
+         * @description A resource associated with a cluster.
+         */
+        ClusterIncludes: {
+            [key: string]: components["schemas"]["Cluster"];
+        };
+        /**
          * EnvironmentStartAction
          * @description A task to start an environment.
          */
@@ -10863,6 +11071,12 @@ export interface components {
                 decode: boolean;
                 /** @description The path to mount the file to inside the container. */
                 path: string | null;
+                /** @description A linux file mode that will be set on the injected file. */
+                permissions?: string | null;
+                /** @description The linux UID to set on the file. */
+                uid?: number | null;
+                /** @description The linux GID to set on the file. */
+                gid?: number | null;
             } | null;
         };
         /**
@@ -11368,6 +11582,8 @@ export interface components {
             number?: number;
             /** @description Additional information. */
             string?: string;
+            /** @description A boolean describing if a resource exists or not. */
+            boolean?: string;
         };
         /**
          * ActivityChange
@@ -11485,15 +11701,138 @@ export interface components {
              * @description The activity event.
              * @enum {string}
              */
-            event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.services.scheduler.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.services.scheduler.task.reconfigure" | "environment.services.vpn.user.create" | "environment.services.vpn.login" | "environment.services.vpn.reset" | "environment.services.vpn.task.reset" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.task.deployments.reconfigure" | "environment.deployments.reconfigure" | "environment.deployments.prune" | "environment.deployment.start" | "environment.deployment.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.role.update" | "hub.role.delete" | "hub.role.create" | "hub.role.task.delete" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "hub.integration.create" | "hub.integration.update" | "hub.integration.delete" | "hub.inactive" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.reconfigure" | "container.reconfigure" | "container.task.volumes.reconfigure" | "container.function.trigger" | "container.function.task.trigger" | "container.volumes.reconfigure" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instances.autoscale.up" | "container.instances.autoscale.down" | "container.instance.healthcheck.restarted" | "container.instance.volume.extend" | "container.instance.task.volume.extend" | "container.instance.healthcheck.failed" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migration.revert" | "container.instance.task.migration.start" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "dns.certificate.associate" | "dns.certificate.deprecate" | "dns.certificate.create" | "dns.certificate.task.deprecate" | "stack.update" | "stack.task.delete" | "stack.delete" | "stack.create" | "stack.task.prune" | "stack.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.features.reconfigure" | "infrastructure.server.sharedfs.reconfigure" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.features.reconfigure" | "infrastructure.server.task.sharedfs.reconfigure" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "infrastructure.server.evacuation.start" | "infrastructure.server.task.evacuation.start" | "infrastructure.server.evacuation.reset" | "infrastructure.server.task.evacuation.reset" | "infrastructure.autoscale.group.create" | "infrastructure.autoscale.group.update" | "infrastructure.autoscale.group.task.delete" | "infrastructure.autoscale.group.delete" | "infrastructure.cluster.create" | "infrastructure.cluster.update" | "infrastructure.cluster.delete" | "infrastructure.ips.pool.task.delete" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.run.completed" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create" | "virtual-machine.create" | "virtual-machine.initialize" | "virtual-machine.task.start" | "virtual-machine.start" | "virtual-machine.task.stop" | "virtual-machine.stop" | "virtual-machine.reconfigure" | "virtual-machine.task.reconfigure" | "virtual-machine.update" | "virtual-machine.task.delete" | "virtual-machine.delete" | "virtual-machine.sos.login" | "virtual-machine.ssh-key.create" | "virtual-machine.ssh-key.update" | "virtual-machine.ssh-key.task.delete" | "virtual-machine.ssh-key.delete" | "virtual-machine.ip.allocate" | "virtual-machine.task.ip.allocate" | "virtual-machine.ip.unallocate" | "virtual-machine.task.ip.unallocate";
+            event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.services.scheduler.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.services.scheduler.task.reconfigure" | "environment.services.vpn.user.create" | "environment.services.vpn.login" | "environment.services.vpn.reset" | "environment.services.vpn.task.reset" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.task.deployments.reconfigure" | "environment.deployments.reconfigure" | "environment.deployments.prune" | "environment.deployment.start" | "environment.deployment.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.role.update" | "hub.role.delete" | "hub.role.create" | "hub.role.task.delete" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "hub.integration.create" | "hub.integration.update" | "hub.integration.delete" | "hub.integration.task.delete" | "hub.inactive" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.restart" | "container.restart" | "container.task.reconfigure" | "container.reconfigure" | "container.task.volumes.reconfigure" | "container.function.trigger" | "container.function.task.trigger" | "container.volumes.reconfigure" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.deprecate" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instances.autoscale.up" | "container.instances.autoscale.down" | "container.instance.healthcheck.restarted" | "container.instance.volume.extend" | "container.instance.task.volume.extend" | "container.instance.healthcheck.failed" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migration.revert" | "container.instance.task.migration.start" | "container.instance.traffic-drain.reconfigure" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "dns.certificate.associate" | "dns.certificate.deprecate" | "dns.certificate.create" | "dns.certificate.task.deprecate" | "stack.update" | "stack.task.delete" | "stack.delete" | "stack.create" | "stack.task.prune" | "stack.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "infrastructure.virtual-providers.iso.create" | "infrastructure.virtual-providers.iso.generate" | "infrastructure.virtual-providers.iso.update" | "infrastructure.virtual-providers.iso.delete" | "infrastructure.virtual-providers.iso.task.delete" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.unquarantine" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.features.reconfigure" | "infrastructure.server.sharedfs.reconfigure" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.features.reconfigure" | "infrastructure.server.task.sharedfs.reconfigure" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "infrastructure.server.evacuation.start" | "infrastructure.server.task.evacuation.start" | "infrastructure.server.evacuation.reset" | "infrastructure.server.task.evacuation.reset" | "infrastructure.server.power-off" | "infrastructure.server.auth.reset" | "infrastructure.autoscale.group.create" | "infrastructure.autoscale.group.update" | "infrastructure.autoscale.group.task.delete" | "infrastructure.autoscale.group.delete" | "infrastructure.cluster.create" | "infrastructure.cluster.update" | "infrastructure.cluster.delete" | "infrastructure.ips.pool.task.delete" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.run.completed" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create" | "virtual-machine.create" | "virtual-machine.initialize" | "virtual-machine.task.start" | "virtual-machine.start" | "virtual-machine.task.stop" | "virtual-machine.stop" | "virtual-machine.reconfigure" | "virtual-machine.task.reconfigure" | "virtual-machine.update" | "virtual-machine.task.delete" | "virtual-machine.delete" | "virtual-machine.sos.login" | "virtual-machine.ssh-key.create" | "virtual-machine.ssh-key.update" | "virtual-machine.ssh-key.task.delete" | "virtual-machine.ssh-key.delete" | "virtual-machine.ip.allocate" | "virtual-machine.task.ip.allocate" | "virtual-machine.ip.unallocate" | "virtual-machine.task.ip.unallocate";
             /** @description A timestamp for when the activity took place. */
             time: components["schemas"]["DateTime"];
+        };
+        /**
+         * IpAddress
+         * Format: ip-address
+         * @description An IP address is a numerical label that uniquely identifies a device on a network and enables it to send and receive data.
+         *
+         */
+        IpAddress: string;
+        /**
+         * VirtualProviderIsoNic
+         * @description Server ISO network interface.
+         */
+        VirtualProviderIsoNic: {
+            /** @description The criteria used to match the server to the interface. */
+            match: {
+                /** @description The name of the interface on the server. */
+                interface_name?: string | null;
+                /** @description The mac address of the server. */
+                mac_address?: string | null;
+            };
+            /** @description VLAN ID for the serer. */
+            vlan_id?: number | null;
+            /** @description The static configuration for the network interface. */
+            static?: {
+                /** @description Static IP assigned to the server. */
+                static_ip: components["schemas"]["IpAddress"];
+                /** @description Network assigned to the server */
+                network: components["schemas"]["Cidr"];
+                /** @description Gateway IP assigned to the server. */
+                gateway_ip?: components["schemas"]["IpAddress"] | null;
+            } | null;
+            /** @description The DHCP configuration for the network interface. */
+            dhcp?: {
+                /** @enum {string} */
+                mode: "all" | "none" | "ipv4" | "ipv6";
+            } | null;
+        };
+        /**
+         * VirtualProviderIsoBond
+         * @description Server ISO bond.
+         */
+        VirtualProviderIsoBond: {
+            interface_name: string;
+            interfaces?: {
+                /** @description The name of the interface on the server. */
+                interface_name?: string | null;
+                /** @description The mac address of the server. */
+                mac_address?: string | null;
+            }[];
+            /** @enum {string} */
+            mode: "round-robin" | "active-backup" | "lacp";
+        };
+        /**
+         * VirtualProviderIso
+         * @description The ISO image for a virtual provider.
+         */
+        VirtualProviderIso: {
+            id: components["schemas"]["ID"];
+            /** @description The name of the ISO. */
+            name: string;
+            creator: components["schemas"]["CreatorScope"];
+            hub_id: components["schemas"]["ID"];
+            integration_id: components["schemas"]["ID"];
+            config: {
+                /** @description Authentication token for the ISO. */
+                token: string;
+                ipxe?: {
+                    /** @description VLAN ID for the IPXE boot. */
+                    vlan_id?: number | null;
+                    /** @description Network interface for the IPXE boot. */
+                    network_interface?: number | null;
+                    /** @description Static IP assigned to the IPXE boot. */
+                    static_ip?: string | null;
+                    /** @description Netmask assigned to the IPXE boot. */
+                    netmask?: string | null;
+                    /** @description Gateway IP assigned to the IPXE boot. */
+                    gateway_ip?: string | null;
+                    /** @description DNS IP assigned to the IPXE boot. */
+                    dns_ip?: string | null;
+                } | null;
+                server?: {
+                    storage?: {
+                        conditional_format?: boolean;
+                    } | null;
+                    sdn_neighbor_preference?: ("ipv4" | "ipv6") | null;
+                    /** @description An array of server network interfaces. */
+                    nics: components["schemas"]["VirtualProviderIsoNic"][];
+                    /** @description An array of bonds */
+                    bonds?: components["schemas"]["VirtualProviderIsoBond"][];
+                } | null;
+            };
+            backend?: {
+                /**
+                 * @description The provider responsible for storing the ISO.
+                 * @enum {string}
+                 */
+                provider?: "AWS" | "Azure" | "GCP" | "Local";
+                /** @description Name of the ISO file. */
+                file_name?: string;
+                /** @description Unique identifier for the ISO file. */
+                file_id?: string;
+                /**
+                 * Format: int64
+                 * @description Size of the ISO file in bytes.
+                 */
+                size?: number;
+            } | null;
+            state: {
+                /**
+                 * @description The current state of the environment.
+                 * @enum {string}
+                 */
+                current: "new" | "building" | "live" | "deleting" | "deleted";
+            } & components["schemas"]["State"];
+            /** @description A collection of timestamps for each event in the ISO's lifetime. */
+            events: {
+                /** @description The timestamp of when the ISO was created. */
+                created: components["schemas"]["DateTime"];
+                /** @description The timestamp of when the ISO was updated. */
+                updated: components["schemas"]["DateTime"];
+                /** @description The timestamp of when the ISO was deleted. */
+                deleted: components["schemas"]["DateTime"];
+            };
         };
         /**
          * IPPoolProvider
          * @description A IP Pool provider.
          */
-        PoolProvider: {
+        IpPoolProvider: {
             /** @description A vendor for a provider. */
             vendor: string;
             /** @description ID of the provider integration used to provision the IP. */
@@ -11507,8 +11846,8 @@ export interface components {
             /** @description An identifier linked to the server assingment of the IP pool. */
             server_assignment: string;
         };
-        /** PoolState */
-        PoolState: {
+        /** IpPoolState */
+        IpPoolState: {
             /**
              * @description The current state of the pool.
              * @enum {string}
@@ -11516,10 +11855,10 @@ export interface components {
             current: "live" | "releasing" | "released";
         } & components["schemas"]["State"];
         /**
-         * InfrastructureIPPool
+         * IPPool
          * @description An IP Pool
          */
-        Pool: {
+        IpPool: {
             id: components["schemas"]["ID"];
             hub_id: components["schemas"]["HubID"];
             /** @description An ID associated with a server resource. */
@@ -11531,7 +11870,7 @@ export interface components {
              * @enum {string}
              */
             kind: "ipv4" | "ipv6";
-            provider: components["schemas"]["PoolProvider"];
+            provider: components["schemas"]["IpPoolProvider"];
             /** @description A boolean where true represents the pool as a floating IP pool. */
             floating: boolean;
             /** @description Data about IPs in the pool. */
@@ -11547,12 +11886,9 @@ export interface components {
                 cidr: string;
                 /** @description A gateway for the pool. */
                 gateway: string;
-                /** @description A netmask for the pool. */
-                netmask: string;
-                /** @description A network for the pool. */
-                network: string;
+                network?: components["schemas"]["Cidr"] | null;
             };
-            state: components["schemas"]["PoolState"];
+            state: components["schemas"]["IpPoolState"];
         };
         /** ApiKeyState */
         ApiKeyState: {
@@ -11599,6 +11935,56 @@ export interface components {
              */
             current: "live" | "deleting" | "deleted";
         } & components["schemas"]["State"];
+        /** NetworkVlanDhcpDetails */
+        NetworkVlanDhcpDetails: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            method: "dhcp";
+            details?: Record<string, never>;
+        };
+        /** NetworkVlanStaticDetails */
+        NetworkVlanStaticDetails: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            method: "static";
+            details: {
+                ipv4?: {
+                    /** @description The CIDR for the network. */
+                    network: string;
+                    /** @description The usable CIDR. */
+                    usable: string;
+                    /** @description The IP of the gateway */
+                    gateway?: string | null;
+                } | null;
+                ipv6?: {
+                    /** @description The CIDR for the network. */
+                    network: string;
+                    /** @description The usable CIDR. */
+                    usable: string;
+                    /** @description The IP of the gateway */
+                    gateway?: string | null;
+                } | null;
+            };
+        };
+        /**
+         * NetworkVlan
+         * @description VLAN information for a Cycle SDN.
+         */
+        NetworkVlan: {
+            location_ids: components["schemas"]["ID"][];
+            vid: number;
+            host_interface?: string | null;
+            /** @description An array of defined VLAN routes */
+            routes?: {
+                network: components["schemas"]["Cidr"];
+                gateway?: components["schemas"]["IpAddress"];
+            }[];
+            ips: components["schemas"]["NetworkVlanDhcpDetails"] | components["schemas"]["NetworkVlanStaticDetails"];
+        };
         /**
          * NetworkPrivacySettings
          * @description Private network information for a Cycle SDN.
@@ -11633,6 +12019,7 @@ export interface components {
             creator: components["schemas"]["CreatorScope"];
             hub_id: components["schemas"]["HubID"];
             state: components["schemas"]["NetworkState"];
+            vlan?: components["schemas"]["NetworkVlan"] | null;
             private_network?: components["schemas"]["NetworkPrivacySettings"] | null;
             /** @description An array of environments and timestamps. */
             environments?: {
@@ -11856,6 +12243,26 @@ export interface components {
             action: "container.delete";
             details: {
                 container: components["schemas"]["FluidIdentifier"];
+            };
+        };
+        /**
+         * ContainerDeprecateStep
+         * @description Settings for restarting a container in a pipeline
+         */
+        ContainerDeprecateStep: {
+            /** @description An identifier for the step. */
+            identifier?: string;
+            options?: {
+                skip?: boolean;
+            };
+            /**
+             * @description The action that the step takes. (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            action: "container.deprecate";
+            details: {
+                container: components["schemas"]["FluidIdentifier"];
+                unset?: boolean;
             };
         };
         /**
@@ -12532,7 +12939,7 @@ export interface components {
         PipelineRunStep: {
             identifier: string;
             /** @enum {string} */
-            action: "environment.create" | "environment.start" | "environment.stop" | "environment.delete" | "environment.deployments.prune" | "environment.deployments.tag" | "environment.deployment.start" | "environment.deployment.stop" | "environment.deployment.healthy.watch" | "image.create" | "image.import" | "images.prune" | "image.create-import" | "container.create" | "container.reimage" | "container.start" | "container.stop" | "container.restart" | "container.delete" | "container.function.trigger" | "stack.build.create" | "stack.build.deploy" | "stack.build.generate" | "stack.prune" | "sleep" | "webhook.post" | "webhook.get";
+            action: "environment.create" | "environment.start" | "environment.stop" | "environment.delete" | "environment.deployments.prune" | "environment.deployments.tag" | "environment.deployment.start" | "environment.deployment.stop" | "environment.deployment.healthy.watch" | "image.create" | "image.import" | "images.prune" | "image.create-import" | "container.create" | "container.reimage" | "container.deprecate" | "container.start" | "container.stop" | "container.restart" | "container.delete" | "container.function.trigger" | "stack.build.create" | "stack.build.deploy" | "stack.build.generate" | "stack.prune" | "sleep" | "webhook.post" | "webhook.get";
             /** @description A collection of timestamps for each event in the pipeline run's lifetime. */
             events: {
                 /** @description The timestamp of when the pipeline step was started. */
@@ -12632,7 +13039,7 @@ export interface components {
          * @description A resource that is associated with activity.
          */
         ComponentsIncludes: {
-            [key: string]: components["schemas"]["Container"] | components["schemas"]["VirtualMachine"] | components["schemas"]["Instance"] | components["schemas"]["Environment"] | components["schemas"]["Image"] | components["schemas"]["ImageSource"] | components["schemas"]["Server"] | components["schemas"]["Pool"] | components["schemas"]["Integration"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["DnsZone"] | components["schemas"]["DnsRecord"] | components["schemas"]["TlsCertificate"] | components["schemas"]["ApiKey"] | components["schemas"]["Network"] | components["schemas"]["HubMembership"] | components["schemas"]["Pipeline"] | components["schemas"]["TriggerKey"] | components["schemas"]["ScopedVariable"] | components["schemas"]["Hub"] | components["schemas"]["Invoice"] | components["schemas"]["Method"] | components["schemas"]["AutoScaleGroup"] | components["schemas"]["PipelineRun"] | components["schemas"]["Role"] | components["schemas"]["PublicAccount"] | components["schemas"]["VirtualMachineSshKey"];
+            [key: string]: components["schemas"]["Container"] | components["schemas"]["VirtualMachine"] | components["schemas"]["Instance"] | components["schemas"]["Environment"] | components["schemas"]["Image"] | components["schemas"]["ImageSource"] | components["schemas"]["Server"] | components["schemas"]["VirtualProviderIso"] | components["schemas"]["IpPool"] | components["schemas"]["Integration"] | components["schemas"]["Stack"] | components["schemas"]["StackBuild"] | components["schemas"]["DnsZone"] | components["schemas"]["DnsRecord"] | components["schemas"]["TlsCertificate"] | components["schemas"]["ApiKey"] | components["schemas"]["Network"] | components["schemas"]["HubMembership"] | components["schemas"]["Pipeline"] | components["schemas"]["TriggerKey"] | components["schemas"]["ScopedVariable"] | components["schemas"]["Hub"] | components["schemas"]["Invoice"] | components["schemas"]["Method"] | components["schemas"]["AutoScaleGroup"] | components["schemas"]["PipelineRun"] | components["schemas"]["Role"] | components["schemas"]["PublicAccount"] | components["schemas"]["VirtualMachineSshKey"];
         };
         /**
          * ActivityIncludes
@@ -12872,6 +13279,25 @@ export interface components {
             models?: components["schemas"]["ServerModelsIncludes"];
             locations?: components["schemas"]["LocationsIncludes"];
         };
+        /**
+         * VirtualProviderIsoIncludes
+         * @description A resource that is associated with an ISO.
+         */
+        VirtualProviderIsoIncludes: {
+            integrations?: {
+                [key: string]: components["schemas"]["Integration"];
+            };
+        };
+        /** VirtualProviderGenerateIsoAction */
+        VirtualProviderGenerateIsoAction: {
+            /**
+             * @description The action to take. (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            action: "generate";
+        };
+        /** VirtualProviderIsoTask */
+        VirtualProviderIsoTask: components["schemas"]["VirtualProviderGenerateIsoAction"];
         /** ServerStatsCpuUsageTelemetry */
         ServerStatsCpuUsageTelemetry: {
             /** Format: float */
@@ -13004,6 +13430,32 @@ export interface components {
             action: "restart";
         };
         /**
+         * ServerPowerOffAction
+         * @description A job that powers the server off.
+         *     Only for servers deployed from a virtual provider.
+         *
+         */
+        ServerPowerOffAction: {
+            /**
+             * @description The action to take. (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            action: "power-off";
+        };
+        /**
+         * ServerAuthResetAction
+         * @description A job that resets authentication for the server.
+         *     Only for servers deployed from a virtual provider.
+         *
+         */
+        ServerAuthResetAction: {
+            /**
+             * @description The action to take. (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            action: "auth.reset";
+        };
+        /**
          * ServerRestartComputeAction
          * @description A job that restarts compute service on a given server.
          */
@@ -13046,8 +13498,19 @@ export interface components {
              */
             action: "evacuation.reset";
         };
+        /** ServerUnquarantineAction */
+        ServerUnquarantineAction: {
+            /**
+             * @description The action to take. (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            action: "unquarantine";
+            contents: {
+                cluster: string;
+            };
+        };
         /** ServerTask */
-        ServerTask: components["schemas"]["ServerReconfigureSharedFsAction"] | components["schemas"]["ServerReconfigureFeaturesAction"] | components["schemas"]["ServerRestartAction"] | components["schemas"]["ServerRestartComputeAction"] | components["schemas"]["ServerRestartComputeSpawnerAction"] | components["schemas"]["ServerEvacuateAction"] | components["schemas"]["ServerEvacuateResetAction"];
+        ServerTask: components["schemas"]["ServerReconfigureSharedFsAction"] | components["schemas"]["ServerReconfigureFeaturesAction"] | components["schemas"]["ServerRestartAction"] | components["schemas"]["ServerPowerOffAction"] | components["schemas"]["ServerAuthResetAction"] | components["schemas"]["ServerRestartComputeAction"] | components["schemas"]["ServerRestartComputeSpawnerAction"] | components["schemas"]["ServerEvacuateAction"] | components["schemas"]["ServerEvacuateResetAction"] | components["schemas"]["ServerUnquarantineAction"];
         /**
          * ServerTags
          * @description Tags for a given server.
@@ -13069,10 +13532,10 @@ export interface components {
             memory_gb: number;
         };
         /**
-         * PoolIncludes
+         * IpPoolIncludes
          * @description Resources associated with an IP Pool.
          */
-        PoolIncludes: {
+        IpPoolIncludes: {
             creators?: components["schemas"]["CreatorInclude"];
             servers?: components["schemas"]["ServersIncludes"];
             integrations?: components["schemas"]["IntegrationsIncludes"];
@@ -13277,7 +13740,7 @@ export interface components {
          * EventType
          * @enum {string}
          */
-        EventType: "api.security_violation" | "console.ssh.login" | "console.ssh.login.failed" | "console.sos.login" | "console.sos.login.failed" | "container.instance.backup.completed" | "container.instance.backup.failed" | "container.instance.delete.failed" | "container.instance.error" | "container.instance.restart.max_restarts" | "container.instance.function.max_runtime" | "container.instance.healthcheck.failed" | "container.instance.healthcheck.recovered" | "container.instance.volume.extend.failed" | "container.instance.healthcheck.restarted" | "container.instance.migration.completed" | "container.instance.migration.failed" | "container.instance.network.interfaces.create.failed" | "container.instance.restart.failed" | "container.instance.start.failed" | "container.instance.start.privileged" | "container.instance.stop.failed" | "container.instances.autoscale.down" | "container.instances.autoscale.up" | "container.reconfigured.privileged" | "container.volumes.base.create.failed" | "container.volumes.create.failed" | "environment.service.auto_update" | "environment.service.lb.ips.sync.failed" | "environment.service.vpn.login.failed" | "infrastructure.cluster.resources.ram.full" | "infrastructure.server.compute.volumes.base.reconfigured" | "infrastructure.server.compute.full_restart" | "infrastructure.server.compute.sharedfs.mounts.mount" | "infrastructure.server.compute.sharedfs.mounts.mount.failed" | "infrastructure.server.compute.soft_restart" | "infrastructure.server.image.download.failed" | "infrastructure.server.internal_api.throttled" | "infrastructure.server.manifest.sync.failed" | "infrastructure.server.mesh.connect.failed" | "infrastructure.server.neighbor.reachable" | "infrastructure.server.neighbor.rebuild" | "infrastructure.server.neighbor.unreachable" | "infrastructure.server.neighbor.upgraded" | "infrastructure.server.resources.load.high" | "infrastructure.server.resources.ram.full" | "infrastructure.server.resources.storage.volumes.base.full" | "infrastructure.server.resources.storage.cycle_pool.full" | "infrastructure.server.sftp.lockdown" | "infrastructure.server.sftp.login" | "infrastructure.server.sftp.login.failed" | "infrastructure.server.evacuation.failed" | "infrastructure.server.evacuation.completed";
+        EventType: "api.security_violation" | "console.ssh.login" | "console.ssh.login.failed" | "console.sos.login" | "console.sos.login.failed" | "container.instance.backup.completed" | "container.instance.backup.failed" | "container.instance.delete.failed" | "container.instance.error" | "container.instance.restart.max_restarts" | "container.instance.function.max_runtime" | "container.instance.healthcheck.failed" | "container.instance.healthcheck.recovered" | "container.instance.volume.extend.failed" | "container.instance.healthcheck.restarted" | "container.instance.migration.completed" | "container.instance.migration.failed" | "container.instance.network.interfaces.create.failed" | "container.instance.restart.failed" | "container.instance.start.failed" | "container.instance.start.privileged" | "container.instance.stop.failed" | "container.instances.autoscale.down" | "container.instances.autoscale.up" | "container.reconfigured.privileged" | "container.volumes.base.create.failed" | "container.volumes.create.failed" | "environment.service.auto_update" | "environment.service.lb.ips.sync.failed" | "environment.service.vpn.login.failed" | "infrastructure.cluster.resources.ram.full" | "infrastructure.server.compute.volumes.base.reconfigured" | "infrastructure.server.compute.full_restart" | "infrastructure.server.compute.sharedfs.mounts.mount" | "infrastructure.server.compute.sharedfs.mounts.mount.failed" | "infrastructure.server.compute.soft_restart" | "infrastructure.server.image.download.failed" | "infrastructure.server.internal_api.throttled" | "infrastructure.server.manifest.sync.failed" | "infrastructure.server.mesh.connect.failed" | "infrastructure.server.neighbor.reachable" | "infrastructure.server.neighbor.rebuild" | "infrastructure.server.neighbors.rebuild" | "infrastructure.server.neighbor.unreachable" | "infrastructure.server.neighbor.upgraded" | "infrastructure.server.resources.load.high" | "infrastructure.server.resources.ram.full" | "infrastructure.server.resources.storage.volumes.base.full" | "infrastructure.server.resources.storage.cycle_pool.full" | "infrastructure.server.sftp.lockdown" | "infrastructure.server.sftp.login" | "infrastructure.server.sftp.login.failed" | "infrastructure.server.evacuation.failed" | "infrastructure.server.evacuation.completed" | "infrastructure.server.checkin.missed" | "infrastructure.server.checkin.resumed" | "infrastructure.server.power.reboot" | "infrastructure.server.power.power-off";
         /**
          * Event
          * @description A platform-generated event. Describes something happening on the platform at a specific time. Can be informational, security related, or a notice of something important.
@@ -14475,6 +14938,15 @@ export interface operations {
                         /** @description The number of the bank account. */
                         account_number: string;
                     } | null;
+                    direct_payment?: {
+                        /**
+                         * @description The preference for how the payment will be sent.
+                         * @enum {string}
+                         */
+                        preference: "check" | "wire" | "ach";
+                        /** @description Any additional instructions for an organization's billing dept., etc. that should be known about this payment method. */
+                        instructions: string;
+                    } | null;
                 };
             };
         };
@@ -14966,6 +15438,9 @@ export interface operations {
                     /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the container's current state.
                      *      */
                     state?: string;
+                    /** @description `filter[deprecated]=true` filter for containers that are deprecated.
+                     *      */
+                    deprecated?: string;
                     /** @description `filter[service]=value` service filtering will allow you to filter by service type: `loadbalancer`, `discovery`, `vpn`.
                      *      */
                     service?: string;
@@ -15337,6 +15812,8 @@ export interface operations {
             query?: {
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: ("creators" | "servers" | "locations" | "integrations" | "containers" | "environments")[];
+                /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
+                meta?: "node"[];
                 /** @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
                  *      */
@@ -15448,6 +15925,8 @@ export interface operations {
     getInstance: {
         parameters: {
             query?: {
+                /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
+                meta?: "node"[];
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: ("creators" | "servers" | "locations" | "integrations" | "containers" | "environments")[];
             };
@@ -16704,7 +17183,7 @@ export interface operations {
                 /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
                 meta?: ("containers" | "containers_count" | "instances_count")[];
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
-                include?: ("creators" | "stacks")[];
+                include?: ("creators" | "stacks" | "clusters")[];
             };
             header?: never;
             path: {
@@ -16725,6 +17204,7 @@ export interface operations {
                         data: components["schemas"]["Environment"];
                         includes?: {
                             creators?: components["schemas"]["CreatorInclude"];
+                            clusters?: components["schemas"]["ClusterIncludes"];
                         };
                     };
                 };
@@ -19472,6 +19952,7 @@ export interface operations {
                         data: {
                             "resource-density"?: components["schemas"]["DeploymentStrategy"];
                             "high-availability"?: components["schemas"]["DeploymentStrategy"];
+                            distributed?: components["schemas"]["DeploymentStrategy"];
                             "first-available"?: components["schemas"]["DeploymentStrategy"];
                             node?: components["schemas"]["DeploymentStrategy"];
                             edge?: components["schemas"]["DeploymentStrategy"];
@@ -19754,6 +20235,268 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["ProviderLocation"][];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    getVirtualProviderIsos: {
+        parameters: {
+            query?: {
+                /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
+                include?: "integrations"[];
+            };
+            header?: never;
+            path: {
+                /** @description The ID of the integration. */
+                integrationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns an a list of ISOs. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["VirtualProviderIso"][];
+                        includes?: components["schemas"]["VirtualProviderIsoIncludes"];
+                    };
+                };
+            };
+        };
+    };
+    createVirtualProviderIso: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the virtual provider integration to execute the job on. */
+                integrationId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Parameters for creating a new virtual provider job. */
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /** @description The name of the ISO. */
+                    name: string;
+                    config: {
+                        /** @description Authentication token for the ISO. */
+                        token: string;
+                        ipxe?: {
+                            /** @description VLAN ID for the IPXE boot. */
+                            vlan_id?: number | null;
+                            /** @description Network interface for the IPXE boot. */
+                            network_interface?: number | null;
+                            /** @description Static IP assigned to the IPXE boot. */
+                            static_ip?: string | null;
+                            /** @description Netmask assigned to the IPXE boot. */
+                            netmask?: string | null;
+                            /** @description Gateway IP assigned to the IPXE boot. */
+                            gateway_ip?: string | null;
+                            /** @description DNS IP assigned to the IPXE boot. */
+                            dns_ip?: string | null;
+                        } | null;
+                        server?: {
+                            storage?: {
+                                conditional_format?: boolean;
+                            } | null;
+                            sdn_neighbor_preference?: ("ipv4" | "ipv6") | null;
+                            /** @description An array of server network interfaces. */
+                            nics?: components["schemas"]["VirtualProviderIsoNic"][];
+                            /** @description An array of bonds */
+                            bonds?: components["schemas"]["VirtualProviderIsoBond"][];
+                        } | null;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Returns an ISO. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["VirtualProviderIso"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    getVirtualProviderIso: {
+        parameters: {
+            query?: {
+                /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
+                include?: "integrations"[];
+            };
+            header?: never;
+            path: {
+                /** @description The ID of the virtual provider integration. */
+                integrationId: string;
+                /** @description The ID for the virtual provider ISO. */
+                isoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns a virtual provider ISO. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["VirtualProviderIso"];
+                        includes?: components["schemas"]["VirtualProviderIsoIncludes"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    deleteVirtualProviderIso: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the virtual provider integration. */
+                integrationId: string;
+                /** @description The ID for the virtual provider ISO. */
+                isoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns a Job Descriptor. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["JobDescriptor"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    updateVirtualProviderIso: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the virtual provider integration. */
+                integrationId: string;
+                /** @description The ID for the virtual provider ISO. */
+                isoId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Parameters for updating an ISO. */
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /** @description The name of the ISO. */
+                    name?: string;
+                    config?: {
+                        server?: {
+                            storage?: {
+                                conditional_format?: boolean;
+                            } | null;
+                            sdn_neighbor_preference?: ("ipv4" | "ipv6") | null;
+                            /** @description An array of server network interfaces. */
+                            nics: components["schemas"]["VirtualProviderIsoNic"][];
+                            /** @description An array of bonds */
+                            bonds?: components["schemas"]["VirtualProviderIsoBond"][];
+                        } | null;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Returns a virtual provider ISO. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["VirtualProviderIso"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    createVirtualProviderIsoJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the virtual provider integration. */
+                integrationId: string;
+                /** @description The ID for the virtual provider ISO. */
+                isoId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Parameters for creating a new virtual provider iso job. */
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["VirtualProviderIsoTask"];
+            };
+        };
+        responses: {
+            /** @description Returns a job descriptor. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["JobDescriptor"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    getVirtualProviderIsoDownloadUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the virtual provider integration. */
+                integrationId: string;
+                /** @description The ID for the virtual provider ISO. */
+                isoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Returns a download URL. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            url: string;
+                        };
                     };
                 };
             };
@@ -20121,6 +20864,8 @@ export interface operations {
         requestBody?: {
             content: {
                 "application/json": {
+                    /** @description A custom name given to the server for identification purposes. Does not affect server hostname. */
+                    nickname?: string | null;
                     /** @description Server constriants. */
                     constraints: {
                         /** @description A list of Server tags. */
@@ -20345,7 +21090,7 @@ export interface operations {
             default: components["responses"]["DefaultError"];
         };
     };
-    getInfrastructureIPPools: {
+    getIpPools: {
         parameters: {
             query?: {
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
@@ -20360,6 +21105,12 @@ export interface operations {
                     /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the IP's current state.
                      *      */
                     state?: string;
+                    /** @description `filter[server]=ID` server filtering by ID. Submit the ID of the server you wish to filter for and the return will be any IP pool associated with that server.
+                     *      */
+                    server?: string;
+                    /** @description `filter[location]=ID` location filtering by ID. Submit the ID of the location you wish to filter by.
+                     *      */
+                    location?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
                 sort?: components["parameters"]["SortParam"];
@@ -20379,8 +21130,43 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        data: components["schemas"]["Pool"][];
-                        includes?: components["schemas"]["PoolIncludes"];
+                        data: components["schemas"]["IpPool"][];
+                        includes?: components["schemas"]["IpPoolIncludes"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    createIpPool: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Parameters for creating a new IP pool. */
+        requestBody?: {
+            content: {
+                "application/json": {
+                    server_id: components["schemas"]["ID"];
+                    block: {
+                        network?: components["schemas"]["Cidr"] | null;
+                        cidr: components["schemas"]["Cidr"];
+                        gateway: components["schemas"]["IpAddress"] | null;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Returns an IP Pool. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["IpPool"];
                     };
                 };
             };
@@ -20409,8 +21195,8 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        data: components["schemas"]["Pool"];
-                        includes?: components["schemas"]["PoolIncludes"];
+                        data: components["schemas"]["IpPool"];
+                        includes?: components["schemas"]["IpPoolIncludes"];
                     };
                 };
             };
@@ -20422,7 +21208,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The ID for the given IP Pool. */
+                /** @description The ID for the given IP pool. */
                 poolId: string;
             };
             cookie?: never;
@@ -21484,6 +22270,7 @@ export interface operations {
                     name: string;
                     /** @description A network identifier used to construct http calls that specifically use this network over another. */
                     identifier: string;
+                    vlan?: components["schemas"]["NetworkVlan"] | null;
                     acl?: components["schemas"]["ACL"] | null;
                     /** @description The infrastructure cluster the environments belonging to this network belong to. */
                     cluster: string;
@@ -21583,6 +22370,15 @@ export interface operations {
                 "application/json": {
                     /** @description The name of the network. */
                     name?: string;
+                    vlan?: {
+                        location_ids?: components["schemas"]["ID"][];
+                        host_interface?: string | null;
+                        /** @description An array of defined VLAN routes */
+                        routes?: {
+                            usable?: components["schemas"]["Cidr"];
+                            gateway?: components["schemas"]["IpAddress"];
+                        }[];
+                    } | null;
                 };
             };
         };
