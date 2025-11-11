@@ -41,7 +41,10 @@ jobs:
           scope: '@cycleplatform'
           always-auth: true
 
-      - run: npm install -g npm@latest
+      - name: Update npm
+        run: |
+          sudo npm i -g npm@latest
+          npm -v
 
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
