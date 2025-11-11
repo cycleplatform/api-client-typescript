@@ -92,6 +92,20 @@ jobs:
           make_latest: true
           allow_updates: true
 
+      - name: Verify OIDC auth & config
+        run: |
+          echo ">>> Effective npm configs"
+          npm config list
+          echo ">>> Show possible .npmrc files"
+          (echo "~/.npmrc:" && cat ~/.npmrc) || true
+          (echo ".npmrc in repo:" && cat .npmrc) || true
+          echo ">>> npm whoami (should work with OIDC)"
+          npm whoami --registry=https://registry.npmjs.org || true
+
+      - name: Remove any legacy token (safety)
+        run: |
+          npm config delete //registry.npmjs.org/:_authToken || tru
+
       - name: Install dependencies
         run: npm ci
 
