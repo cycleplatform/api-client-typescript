@@ -37,7 +37,6 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'   # or use: node-version: '22'
           registry-url: 'https://registry.npmjs.org'
           scope: '@cycleplatform'
           always-auth: true
@@ -111,5 +110,6 @@ jobs:
 
       - name: Publish to npm
         run: |
+          npm config set loglevel verbose
           echo "Publishing version ${{ steps.pkg.outputs.version }} with dist-tag '${NPM_TAG}'"
           npm publish --tag "${NPM_TAG}" --provenance --access public
