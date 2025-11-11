@@ -61,17 +61,22 @@ jobs:
       - name: Create git tag if missing
         run: |
           TAG="${{ steps.pkg.outputs.tag }}"
-          git fetch --tags
+
+          # Get latest refs safely
+          git fetch --tags origin
+          git fetch origin main
+
+          # Work on the remote tip to avoid local-branch/upstream issues
+          git checkout --detach origin/main
+
+          # Create annotated tag if it doesn't already exist
           if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
             echo "Tag $TAG already exists, continuing."
           else
-            git fetch origin main:main
-            git checkout main
-            git pull --ff-only
             git tag -a "$TAG" -m "Release $TAG"
             git push origin "$TAG"
           fi
-
+          
       - name: Create or Update GitHub Release
         id: release
         uses: softprops/action-gh-release@v2
