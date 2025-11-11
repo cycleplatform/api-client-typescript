@@ -18,7 +18,8 @@ on:
         default: ''
 
 permissions:
-  contents: write   # needed to push tags & create releases
+  id-token: write   # needed to push tags & create releases
+  contents: read
 
 jobs:
   release-and-publish:
@@ -88,8 +89,6 @@ jobs:
         run: npm ci
 
       - name: Publish to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           echo "Publishing version ${{ steps.pkg.outputs.version }} with dist-tag '${NPM_TAG}'"
           # Add --access public if your package is scoped and public (e.g., @your-scope/pkg)
