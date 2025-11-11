@@ -98,5 +98,4 @@ jobs:
       - name: Publish to npm
         run: |
           echo "Publishing version ${{ steps.pkg.outputs.version }} with dist-tag '${NPM_TAG}'"
-          # Add --access public if your package is scoped and public (e.g., @your-scope/pkg)
-          npm publish --tag "${NPM_TAG}" # --access public
+          npm publish --tag "${NPM_TAG}" --provenance --access public
