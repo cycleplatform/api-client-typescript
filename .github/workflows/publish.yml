@@ -1,0 +1,96 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      npm_tag:
+        description: 'npm dist-tag (e.g., latest, next, beta, rc)'
+        required: false
+        default: 'latest'
+      prerelease:
+        description: 'Mark the GitHub release as a pre-release'
+        required: false
+        type: boolean
+        default: false
+      release_body:
+        description: 'Optional release notes (leave empty for auto-generated notes)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write   # needed to push tags & create releases
+
+jobs:
+  release-and-publish:
+    runs-on: ubuntu-latest
+    env:
+      NPM_TAG: ${{ github.event.inputs.npm_tag || 'latest' }}
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'   # or use: node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Read package version
+        id: pkg
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
+            echo "package.json version is missing"; exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Create git tag if missing
+        run: |
+          TAG="${{ steps.pkg.outputs.tag }}"
+          git fetch --tags
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "Tag $TAG already exists, continuing."
+          else
+            git fetch origin main:main
+            git checkout main
+            git pull --ff-only
+            git tag -a "$TAG" -m "Release $TAG"
+            git push origin "$TAG"
+          fi
+
+      - name: Create or Update GitHub Release
+        id: release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.pkg.outputs.tag }}
+          name: ${{ steps.pkg.outputs.tag }}
+          body: ${{ github.event.inputs.release_body }}
+          prerelease: ${{ github.event.inputs.prerelease }}
+          generate_release_notes: ${{ github.event.inputs.release_body == '' }}
+          draft: false
+          make_latest: true
+          allow_updates: true
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "Publishing version ${{ steps.pkg.outputs.version }} with dist-tag '${NPM_TAG}'"
+          # Add --access public if your package is scoped and public (e.g., @your-scope/pkg)
+          npm publish --tag "${NPM_TAG}" # --access public
