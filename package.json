@@ -23,6 +23,7 @@
         "test:ts": "tsc --noEmit",
         "build:client": "openapi-typescript ./api-spec/platform/api.yml --output ./src/generated/types.ts",
         "build:lib": "npm run build:client && vite build",
+        "prepare": "npm run build:lib",
         "prepublishOnly": "npm run build:lib"
     },
     "repository": {
