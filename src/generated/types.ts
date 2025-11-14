@@ -247,7 +247,6 @@ export interface paths {
          * Get Billing Status
          * @description Retrieve meta details about the billing status of this Cycle core. It is unlikely that someone would need this endpoint outside
          *     of Cycle's internal teams.
-         *
          */
         get: operations["getBillingStatus"];
         put?: never;
@@ -270,7 +269,6 @@ export interface paths {
          * @description Lists the Billing Credits associated with the current Hub.
          *
          *     Requires the `billing-credits-view` capability.
-         *
          */
         get: operations["getCredits"];
         put?: never;
@@ -333,7 +331,6 @@ export interface paths {
          * @description List the Invoices assoicated with the Hub.
          *
          *     Requires the `billing-invoices-view` capability.
-         *
          */
         get: operations["getInvoices"];
         put?: never;
@@ -378,7 +375,6 @@ export interface paths {
          * @description Creates a new job for an Invoice. Generally used to make a payment on an invoice.
          *
          *     Requires the `billing-invoices-pay` capability.
-         *
          */
         post: operations["createInvoiceJob"];
         delete?: never;
@@ -399,7 +395,6 @@ export interface paths {
          * @description Lists the Billing Methods associated with the Hub defined in X-Hub-ID.
          *
          *     Requires the `billing-methods-manage` capability.
-         *
          */
         get: operations["getBillingMethods"];
         put?: never;
@@ -432,7 +427,6 @@ export interface paths {
          * Delete Biilling Method
          * @description Deletes the Billing Method. However, the primary payment method may not be deleted.
          *     Requires the `billing-methods-manage` capability.
-         *
          */
         delete: operations["deleteBillingMethod"];
         options?: never;
@@ -458,7 +452,6 @@ export interface paths {
          * @description Creates a new job for a billing method. Generally used to verify a payment method.
          *
          *     Requires the `billing-methods-manage` capability.
-         *
          */
         post: operations["createBillingMethodJob"];
         delete?: never;
@@ -529,7 +522,6 @@ export interface paths {
          * @description Used to confirm a Billing Order.
          *
          *     Requires the `billing-services-manage` capability.
-         *
          */
         post: operations["createOrderJob"];
         delete?: never;
@@ -671,7 +663,6 @@ export interface paths {
          * @description Gets a Container.
          *
          *     Requires the `containers-view` capability.
-         *
          */
         get: operations["getContainer"];
         put?: never;
@@ -688,7 +679,6 @@ export interface paths {
          * @description Updates the specified Container.
          *
          *     Requires the `containers-manage` capability.
-         *
          */
         patch: operations["updateContainer"];
         trace?: never;
@@ -734,7 +724,6 @@ export interface paths {
          *     `volumes.reconfigure`: `containers-volumes-manage`
          *     `reimage`: `containers-manage`
          *     `scale`: `containers-manage`
-         *
          */
         post: operations["createContainerJob"];
         delete?: never;
@@ -755,7 +744,6 @@ export interface paths {
          * @description Lists all Servers that currently have an Instance of this Container deployed to them.
          *
          *     Requires the `containers-view` capability.
-         *
          */
         get: operations["getContainerServers"];
         put?: never;
@@ -778,7 +766,6 @@ export interface paths {
          * @description Gets a list of servers that are compatible with the specified Container and its restrictions (tags, etc).
          *
          *     Requires the `containers-view` capability.
-         *
          */
         get: operations["getCompatibleServers"];
         put?: never;
@@ -802,7 +789,6 @@ export interface paths {
          *     Used to quickly find Images that can be used for reimaging the Container.
          *
          *     Requires the `containers-view` capability.
-         *
          */
         get: operations["getCompatibleImages"];
         put?: never;
@@ -831,7 +817,6 @@ export interface paths {
          * @description Manually create Instances of a Container.
          *
          *     Requires the `containers-update` capability.
-         *
          */
         post: operations["createInstances"];
         /**
@@ -839,7 +824,6 @@ export interface paths {
          * @description Manually delete Instances of a Container.
          *
          *     Requires the `containers-update` capability.
-         *
          */
         delete: operations["deleteContainerInstances"];
         options?: never;
@@ -884,7 +868,6 @@ export interface paths {
          *     into the Instance without exposing ports on the container or host.
          *
          *     Requires the `containers-ssh` capability.
-         *
          */
         get: operations["generateInstanceSSHCredentials"];
         put?: never;
@@ -894,7 +877,6 @@ export interface paths {
          * @description Instantly expires any SSH credentials generated for this Instance.
          *
          *     Requires the `containers-ssh` capability.
-         *
          */
         delete: operations["expireInstanceSSHCredentials"];
         options?: never;
@@ -916,7 +898,6 @@ export interface paths {
          * @description Used to perform different actions on a given Container Instance. Can be used to migrate or undo a migration of a Container Instance.
          *
          *     Requires the `containers-instance-migrate` capability.
-         *
          */
         post: operations["createInstanceJob"];
         delete?: never;
@@ -957,7 +938,6 @@ export interface paths {
          * @description Retrieves a point-in-time report of an Instance's resource usage (CPU, RAM, Network, Storage, etc).
          *
          *     Requires the `containers-view` capability.
-         *
          */
         get: operations["getInstanceTelemetryReport"];
         put?: never;
@@ -981,7 +961,6 @@ export interface paths {
          *     This connects directly to the compute layer on the server the instance is hosted on, and streams telemetry in real time.
          *
          *     Requires the `containers-view` capability.
-         *
          */
         get: operations["getInstanceTelemetryStreamAuth"];
         put?: never;
@@ -1005,7 +984,6 @@ export interface paths {
          *     To connect via WebSocket, use the returned address, and append the returned token as a URL parameter: `<address>?token=<token>`.
          *
          *     Requires the `containers-console` capability.
-         *
          */
         get: operations["getInstanceConsoleStreamAuth"];
         put?: never;
@@ -1030,7 +1008,6 @@ export interface paths {
          * @description Used to perform different actions on a given Function Container.
          *
          *     Requires the `containers-functions-trigger` capability.
-         *
          */
         post: operations["createFunctionJob"];
         delete?: never;
@@ -1071,7 +1048,6 @@ export interface paths {
          * @description Gets the specified Container Backup.
          *
          *     Requires the `containers-backups-view` capability.
-         *
          */
         get: operations["getContainerBackup"];
         put?: never;
@@ -1101,7 +1077,6 @@ export interface paths {
          *     Can be used to restore a Container Backup for a given Container Instance.
          *
          *     Requires the `containers-backups-manage` capability.
-         *
          */
         post: operations["createContainerBackupJob"];
         delete?: never;
@@ -1216,7 +1191,6 @@ export interface paths {
          * @description Used to perform different actions on a given DNS zone.
          *
          *     Requires the `dns-manage` capability.
-         *
          */
         post: operations["createDNSZoneJob"];
         delete?: never;
@@ -1287,7 +1261,6 @@ export interface paths {
          * @description Used to perform different actions on a given DNS Zone record.
          *
          *     Requires the `dns-manage` capability.
-         *
          */
         post: operations["createDNSZoneRecordJob"];
         delete?: never;
@@ -1328,7 +1301,6 @@ export interface paths {
          * @description Lookup and retrieve a TLS certificate bundle for a specified domain.
          *
          *     If the `private` parameter is set to `true`, the private key, bundle, and/or CSR will be included. Including these private fields requires the `dns-certs-view` capability.
-         *
          */
         get: operations["lookupTLSCertificate"];
         put?: never;
@@ -1351,7 +1323,6 @@ export interface paths {
          * @description Retrieve a list of TLS certificates that were uploaded to Cycle.
          *
          *     Requires the `dns-certs-view` capability.
-         *
          */
         get: operations["getUserSuppliedCertificates"];
         put?: never;
@@ -1360,7 +1331,6 @@ export interface paths {
          * @description Upload a user-supplied TLS certificate to the hub. This TLS certificate can be utilized by **LINKED** records matching the specified domains.
          *
          *     Requires the `dns-manage` capability.
-         *
          */
         post: operations["uploadUserSuppliedCertificate"];
         delete?: never;
@@ -1381,7 +1351,6 @@ export interface paths {
          * @description Gets a list of custom TLS certificates uploaded to the hub.
          *
          *     Requires the `dns-certs-view` capability.
-         *
          */
         get: operations["getUserSuppliedCertificate"];
         put?: never;
@@ -1406,7 +1375,6 @@ export interface paths {
          * @description Used to perform different actions on a given user supplied TLS certificate.
          *
          *     Requires the `dns-manage` capability.
-         *
          */
         post: operations["createUserSuppliedCertificateJob"];
         delete?: never;
@@ -1465,7 +1433,6 @@ export interface paths {
          * @description Updates the specificed Environment.
          *
          *     Requires the `environments-manage` capability.
-         *
          */
         patch: operations["updateEnvironment"];
         trace?: never;
@@ -1488,7 +1455,6 @@ export interface paths {
          * @description Updates the specificed Environment.
          *
          *     Requires the `environments-manage` capability. If an ACL is present, requires the `manage` privilege.
-         *
          */
         patch: operations["updateEnvironmentAccess"];
         trace?: never;
@@ -1507,7 +1473,6 @@ export interface paths {
          * @description Create a job for an Environment, such as 'start' or 'stop'.
          *
          *     Requires the `environments-manage` capability.
-         *
          */
         post: operations["createEnvironmentJob"];
         delete?: never;
@@ -1528,7 +1493,6 @@ export interface paths {
          * @description Gets the summary of an Environment. Contains useful and relevant data/statistics that would otherwise be several separate API calls.
          *
          *     Requires the `environments-view` capability.
-         *
          */
         get: operations["getEnvironmentSummary"];
         put?: never;
@@ -1551,7 +1515,6 @@ export interface paths {
          * @description Gets a list of all deployments in the specified Environment.
          *
          *     Requires the `environments-view` capability.
-         *
          */
         get: operations["getEnvironmentDeployments"];
         put?: never;
@@ -1576,7 +1539,6 @@ export interface paths {
          * @description Exports an environment as a stack file for reuse.
          *
          *     Requires the `environments-manage` capability. You must also have management permissions on the target environment ACL.
-         *
          */
         post: operations["exportStack"];
         delete?: never;
@@ -1730,7 +1692,6 @@ export interface paths {
          *
          *     ## Permissions
          *     Requires the `environments-view` capability. Also requires the user to have access specifically to the requested Environment.
-         *
          */
         get: operations["getLoadBalancerTelemetryReport"];
         put?: never;
@@ -1754,7 +1715,6 @@ export interface paths {
          *
          *     ## Permissions
          *     Requires the `environments-view` capability. Also requires the user to have access specifically to the requested Environment.
-         *
          */
         get: operations["getLoadBalancerLatestTelemetryReport"];
         put?: never;
@@ -1778,7 +1738,6 @@ export interface paths {
          *
          *     ## Permissions
          *     Requires the `environments-view` capability. Also requires the user to have access specifically to the requested Environment.
-         *
          */
         get: operations["getLoadBalancerTelemetryLatestControllers"];
         put?: never;
@@ -2083,7 +2042,6 @@ export interface paths {
          * @description Retrieves details of a single integration associated with the current hub.
          *
          *     Requires the `hubs-integrations-view` capability.
-         *
          */
         get: operations["getIntegration"];
         put?: never;
@@ -2114,7 +2072,6 @@ export interface paths {
          * @description Lists all integrations associated with the current Hub, with optional filtering.
          *
          *     Requires the `hubs-integrations-view` capability.
-         *
          */
         get: operations["getIntegrations"];
         put?: never;
@@ -2165,7 +2122,6 @@ export interface paths {
          *     ## Required Permissions
          *       - Requires a valid hub membership to the target hub.
          *       - Requires the `hubs-integrations-manage` capability.
-         *
          */
         post: operations["createIntegrationJob"];
         delete?: never;
@@ -2323,7 +2279,6 @@ export interface paths {
          *     token can then be applied to the URL parameter to the same endpoint to upgrade the connection to a WebSocket.
          *
          *     Requires the `apionly-notifications-listen` capability.
-         *
          */
         get: operations["getHubNotificationSocketAuth"];
         put?: never;
@@ -2346,7 +2301,6 @@ export interface paths {
          * @description Lists the Roles that have been created for this Hub.
          *
          *     Requires the `hubs-roles-manage` capability.
-         *
          */
         get: operations["getRoles"];
         put?: never;
@@ -2355,7 +2309,6 @@ export interface paths {
          * @description Creates a custom Role for a Hub.
          *
          *     Requires the `hubs-roles-manage` capability.
-         *
          */
         post: operations["createRole"];
         delete?: never;
@@ -2376,7 +2329,6 @@ export interface paths {
          * @description Retrieves the specified Role.
          *
          *     Requries the `hubs-roles-manage` capability.
-         *
          */
         get: operations["getRole"];
         put?: never;
@@ -2386,7 +2338,6 @@ export interface paths {
          * @description Marks a Role as 'deleted'.
          *
          *     Requires the 'hubs-roles-manage' capability.
-         *
          */
         delete: operations["deleteRole"];
         options?: never;
@@ -2396,7 +2347,6 @@ export interface paths {
          * @description Updates various properties of a specific Role.
          *
          *     Requires the `hubs-roles-manage` capability.
-         *
          */
         patch: operations["updateRole"];
         trace?: never;
@@ -2504,7 +2454,6 @@ export interface paths {
          * @description Used to perform different actions on a given image.
          *
          *     Requires the `images-manage` capability.
-         *
          */
         post: operations["createImagesJob"];
         delete?: never;
@@ -2527,7 +2476,6 @@ export interface paths {
          * @description Used to perform different actions on a given Image.
          *
          *     Requires the `images-import` capability.
-         *
          */
         post: operations["createImageJob"];
         delete?: never;
@@ -2658,7 +2606,6 @@ export interface paths {
         /**
          * Get Cluster Monitoring Tiers
          * @description Gets all the available monitoring tiers that can be enabled for a cluster.
-         *
          */
         get: operations["getClusterMonitoringTiers"];
         put?: never;
@@ -2705,7 +2652,6 @@ export interface paths {
          * @description Retrieves a single external volume by ID.
          *
          *     Requires the `external-volumes-view` capability.
-         *
          */
         get: operations["getExternalVolume"];
         put?: never;
@@ -2722,7 +2668,6 @@ export interface paths {
          * @description Updates the specified external volume.
          *
          *     Requires the `external-volumes-manage` capability.
-         *
          */
         patch: operations["updateExternalVolume"];
         trace?: never;
@@ -2765,7 +2710,6 @@ export interface paths {
          * @description Updates the ACL of the specified external volume.
          *
          *     Requires the `external-volumes-manage` capability.
-         *
          */
         patch: operations["updateExternalVolumeAccess"];
         trace?: never;
@@ -2784,7 +2728,6 @@ export interface paths {
          * @description Create a job for an external volume.
          *
          *     Requires the `external-volumes-manage` capability.
-         *
          */
         post: operations["createExternalVolumeJob"];
         delete?: never;
@@ -2911,7 +2854,6 @@ export interface paths {
          * @description Get ISOs for a virtual provider.
          *
          *     Requires the `servers-manage` capability.
-         *
          */
         get: operations["getVirtualProviderIsos"];
         put?: never;
@@ -2920,7 +2862,6 @@ export interface paths {
          * @description Create an ISO for a virtual provider.
          *
          *     Requires the `servers-manage` capability.
-         *
          */
         post: operations["createVirtualProviderIso"];
         delete?: never;
@@ -2971,7 +2912,6 @@ export interface paths {
          * @description Create a job for a virtual provider iso.
          *
          *     Requires the `servers-manage` capability.
-         *
          */
         post: operations["createVirtualProviderIsoJob"];
         delete?: never;
@@ -3035,7 +2975,6 @@ export interface paths {
          * Get Cluster
          * @description Gets a Cluster.
          *     Requires the `clusters-view` capability.
-         *
          */
         get: operations["getCluster"];
         put?: never;
@@ -3158,7 +3097,6 @@ export interface paths {
          * @description This call requires the filter query parameter to be used.
          *
          *     Requires the `servers-view` capability.
-         *
          */
         get: operations["getServerTelemetry"];
         put?: never;
@@ -3261,7 +3199,6 @@ export interface paths {
          * @description Gets the authorization information required to connect to a Server console websocket.
          *
          *     Requires the `servers-console` capability.
-         *
          */
         get: operations["GetServerConsole"];
         put?: never;
@@ -3290,7 +3227,6 @@ export interface paths {
          * @description Create an infrastructure IP Pool
          *
          *     Requires the 'ips-manage' capability.
-         *
          */
         post: operations["createIpPool"];
         delete?: never;
@@ -3435,7 +3371,6 @@ export interface paths {
          * @description A basic query for retrieving metrics. For a more complex and granular report, see the `/v1/monitoring/metrics/aggregate` endpoint.
          *
          *     Requires the `monitor-view` capability.
-         *
          */
         get: operations["getMetrics"];
         put?: never;
@@ -3463,7 +3398,6 @@ export interface paths {
          *     You should always provide a time range filter to this call, either through the filter parameter or in the critera body. The aggregate is limited to 25,000 input documents, so a time frame will give the best results.
          *
          *     Requires the `monitor-view` capability.
-         *
          */
         post: operations["generateAggregatedMetrics"];
         delete?: never;
@@ -3484,7 +3418,6 @@ export interface paths {
          * @description A basic query for retrieving events. For a more complex and granular report, see the `/v1/monitoring/events/aggregate` endpoint.
          *
          *     Requires the `monitor-view` capability.
-         *
          */
         get: operations["getEvents"];
         put?: never;
@@ -3512,7 +3445,6 @@ export interface paths {
          *     You should always provide a time range filter to this call, either through the filter parameter or in the critera body. The aggregate is limited to 25,000 input documents, so a time frame will give the best results.
          *
          *     Requires the `monitor-view` capability.
-         *
          */
         post: operations["generateAggregatedEvents"];
         delete?: never;
@@ -3537,7 +3469,6 @@ export interface paths {
          *     If 'local' is set to true, only cached logs will be queried, and logs in object storage will be ignored.  This leads to much faster performance.
          *
          *     Requires the `monitor-view` capability.
-         *
          */
         post: operations["aggregateLogs"];
         delete?: never;
@@ -3558,7 +3489,6 @@ export interface paths {
          * @description Returns location information about the monitors used for Cycle's external monitoring service.
          *     These monitors are used for determining the latency between the public internet and environment
          *     load balancers.
-         *
          */
         get: operations["getMonitoringMonitors"];
         put?: never;
@@ -3653,7 +3583,6 @@ export interface paths {
          * @description List information about times this Pipeline has run.
          *
          *     Requires the `pipelines-view` capability.
-         *
          */
         get: operations["getPipelineRuns"];
         put?: never;
@@ -3898,7 +3827,6 @@ export interface paths {
          *     Can be used to build a 'quick search' functionality for referencing the most frequently used resources.
          *
          *     Requires the `view` capability for each returned segment, i.e. to retrieve Containers, you must have `containers-view`.
-         *
          */
         get: operations["getSearchIndex"];
         put?: never;
@@ -4013,7 +3941,6 @@ export interface paths {
          * @description Look up a Stack Build using only the Build ID, instead of requiring a Stack ID as well.
          *
          *     Requires the `stacks-view` capability.
-         *
          */
         get: operations["lookupStackBuild"];
         put?: never;
@@ -4089,7 +4016,6 @@ export interface paths {
          *     will be included in the log.
          *
          *     Requires the `stacks-view` capability.
-         *
          */
         get: operations["getStackBuildLog"];
         put?: never;
@@ -4156,7 +4082,6 @@ export interface paths {
          * @description Retrieves a single virtual machine by ID.
          *
          *     Requires the `virtual-machines-view` capability.
-         *
          */
         get: operations["getVirtualMachine"];
         put?: never;
@@ -4173,7 +4098,6 @@ export interface paths {
          * @description Updates the specified virtual machine.
          *
          *     Requires the `virtual-machines-manage` capability.
-         *
          */
         patch: operations["updateVirtualMachine"];
         trace?: never;
@@ -4198,7 +4122,6 @@ export interface paths {
          *     `rootpw.change`: `virtual-machines-manage`
          *     `ip.allocate`: `virtual-machines-manage`
          *     `ip.unallocate`: `virtual-machines-manage`
-         *
          */
         post: operations["createVirtualMachineJob"];
         delete?: never;
@@ -4217,7 +4140,6 @@ export interface paths {
         /**
          * Get Virtual Machine Base Images
          * @description Retrieves the list of available base images for virtual machines provided by Cycle.
-         *
          */
         get: operations["getVirtualMachineBaseImages"];
         put?: never;
@@ -4240,7 +4162,6 @@ export interface paths {
          * @description Generates credentials for connecting to the serial console of a virtual machine via SSH.
          *
          *     Requires the `virtual-machines-console` capability.
-         *
          */
         get: operations["generateVirtualMachineSosCredentials"];
         put?: never;
@@ -4250,7 +4171,6 @@ export interface paths {
          * @description Instantly expires any serial-over-SSH credentials generated for this virtual machine.
          *
          *     Requires the `virtual-machines-console` capability.
-         *
          */
         delete: operations["expireVirtualMachineSosCredentials"];
         options?: never;
@@ -4294,7 +4214,6 @@ export interface paths {
          * @description Retrieves a single virtual machine SSH key by ID.
          *
          *     Requires the `virtual-machines-ssh-keys-manage` capability.
-         *
          */
         get: operations["getVirtualMachineSshKey"];
         put?: never;
@@ -4311,7 +4230,6 @@ export interface paths {
          * @description Updates the specified virtual machine SSH key.
          *
          *     Requires the `virtual-machines-ssh-keys-manage` capability.
-         *
          */
         patch: operations["updateVirtualMachineSshKey"];
         trace?: never;
@@ -4334,7 +4252,6 @@ export interface paths {
          *     3. The IP address must be in the `available` state.
          *
          *     Requires the `virtual-machines-view` capability.
-         *
          */
         get: operations["getAvailableIps"];
         put?: never;
@@ -4357,7 +4274,6 @@ export interface paths {
          * @description Given a (base64'd) resource identifier string (i.e. `cluster:production/env:abc`), returns the ID of the matching resource.
          *     If more than one resource matches the identifier, or no resource matches the identifier, this endpoint will return an error.
          *     Given identifiers are NOT unique, you may need to be more specific to target the exact identifier.
-         *
          */
         get: operations["lookupIdentifier"];
         put?: never;
@@ -4377,9 +4293,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Look up Cycle components (resources such as containers, servers, etc) based on their ID.
+        /**
+         * Look up Cycle components (resources such as containers, servers, etc) based on their ID.
          *     Useful when the IDs are known ahead of time - all relevant items can be fetched in a single request.
-         *      */
+         */
         post: operations["lookupComponents"];
         delete?: never;
         options?: never;
@@ -4436,11 +4353,13 @@ export interface components {
          * ID
          * Format: objectid
          * @description A 24 character hex string used to identify a unique resource.
+         * @example 651586fca6078e98982dbd90
          */
         ID: string;
         /**
          * DateTime
          * Format: date-time
+         * @example 2021-01-30T08:30:00Z
          */
         DateTime: string;
         /**
@@ -4608,6 +4527,7 @@ export interface components {
         /**
          * HubID
          * @description The unique ID of the Hub this resource was created in.
+         * @example 651586fca6078e98982dbd90
          */
         HubID: string;
         /** MembershipState */
@@ -4753,7 +4673,6 @@ export interface components {
          *     have the identifier of `my-container` and is automatically created by the platform.
          *
          *     The identifier does not have to be unique.
-         *
          */
         Identifier: string;
         /**
@@ -5567,7 +5486,9 @@ export interface components {
             credit: {
                 amount?: components["schemas"]["BillingAmount"];
                 expires?: {
+                    /** @example months */
                     interval: string;
+                    /** @example 2 */
                     number: number;
                 };
             } | null;
@@ -5858,9 +5779,15 @@ export interface components {
         };
         /** IPNet */
         IPNet: {
-            /** @description The IP address. */
+            /**
+             * @description The IP address.
+             * @example fd00::21:0:0:0
+             */
             ip: string;
-            /** @description The CIDR notation, describing the range of IP addresses. */
+            /**
+             * @description The CIDR notation, describing the range of IP addresses.
+             * @example fd00::21:0:0:0/96
+             */
             cidr: string;
         };
         /**
@@ -5926,7 +5853,6 @@ export interface components {
          * L2Domain
          * @description A standardized name for different layer-2 networks that can be configured on virtual provider hosts.
          *      Containers will utilize this name to determine which network to attach to on the host, if set in the config.
-         *
          * @enum {string}
          */
         L2Domain: "public" | "shared" | "private";
@@ -5946,10 +5872,11 @@ export interface components {
             ports?: string[];
             /** @description Layer 2 network configuration options for containers running on virtual provider servers. */
             l2?: {
-                /** @description The layer 2 'domains' that this container's instances should bridge to on the host server.
+                /**
+                 * @description The layer 2 'domains' that this container's instances should bridge to on the host server.
                  *     If the host has a matching layer 2 NIC configured via a virtual provider ISO, this container's instances
                  *     will be joined directly to the host's network.
-                 *      */
+                 */
                 domains: components["schemas"]["L2Domain"][];
             };
         };
@@ -5961,6 +5888,7 @@ export interface components {
         /**
          * Duration
          * @description A string signifying a duration of time. Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h", "d", "w", "y".
+         * @example 72h45m2s
          */
         Duration: string;
         /**
@@ -6073,7 +6001,11 @@ export interface components {
              */
             type: "ram";
             details: {
-                /** @description The target average RAM usage of all instances of this container. Going above this threshold will trigger a scaling event. This threshold must be greater than 25MB. */
+                /**
+                 * @description The target average RAM usage of all instances of this container. Going above this threshold will trigger a scaling event. This threshold must be greater than 25MB.
+                 * @example 2G
+                 * @example 25MB
+                 */
                 usage: string;
             };
         };
@@ -6094,7 +6026,7 @@ export interface components {
         /**
          * WebhookURL
          * @description A URL describing the destination Cycle should send a POST webhook payload to.
-         *
+         * @example https://example.com/cycle/autoscale
          */
         WebhookURL: string;
         /**
@@ -6151,7 +6083,11 @@ export interface components {
             type: "network-throughput";
             details: {
                 private: boolean;
-                /** @description The limit (maximum) amount of throughput each instance of the given container can use before triggering a scaling event. */
+                /**
+                 * @description The limit (maximum) amount of throughput each instance of the given container can use before triggering a scaling event.
+                 * @example 1gbps
+                 * @example 20mbps
+                 */
                 bandwidth: string;
             };
         };
@@ -6208,42 +6144,48 @@ export interface components {
          * @description A host device exposed to the container during runtime.
          */
         RuntimeExposedDevice: {
-            /** @description The path to the device on the host. */
+            /**
+             * @description The path to the device on the host.
+             * @example /dev/kvm
+             * @example /dev/net/tun
+             */
             source: string;
-            /** @description The path inside the container that the device is mapped to. */
+            /**
+             * @description The path inside the container that the device is mapped to.
+             * @example /dev/kvm
+             * @example /dev/net/tun
+             */
             destination: string;
             options?: string[] | null;
         };
         /**
          * RuntimeDevicePermissionType
          * @description The class of device this rule applies to (for example, block devices or character devices).
-         *
          * @enum {string}
          */
         RuntimeDevicePermissionType: "b" | "c";
         /**
          * RuntimeDevicePermissionAccess
          * @description The access mode permitted by this rule. Common conventions use a combination of letters (e.g., r, w, m) to indicate read, write, and mknod capabilities.
-         *
+         * @example r
+         * @example rw
+         * @example rwm
          */
         RuntimeDevicePermissionAccess: string;
         /**
          * RuntimeDevicePermission
          * @description A rule that grants or denies access to a device node (e.g., Linux cgroup device rule). Controls which device type and major/minor numbers are allowed, and with what access.
-         *
          */
         RuntimeDevicePermission: {
             type: components["schemas"]["RuntimeDevicePermissionType"];
             /**
              * Format: int64
              * @description Device major number.
-             *
              */
             major?: number | null;
             /**
              * Format: int64
              * @description Device minor number.
-             *
              */
             minor?: number | null;
             /** @description Whether this rule allows (true) or denies (false) access. */
@@ -6304,7 +6246,12 @@ export interface components {
                 readonly?: boolean;
             };
             devices?: {
-                /** @description The size of the shared host memory device (/dev/shm). */
+                /**
+                 * @description The size of the shared host memory device (/dev/shm).
+                 * @example 64M
+                 * @example 128M
+                 * @example 512M
+                 */
                 shm_size?: string | null;
                 expose?: components["schemas"]["RuntimeExposedDevice"][] | null;
                 permissions?: components["schemas"]["RuntimeDevicePermission"][] | null;
@@ -6328,7 +6275,11 @@ export interface components {
             };
             /** @description Configuration settings for limits and reserves of RAM resources for the given container. */
             ram: {
-                /** @description The limit (maximum) amount of RAM each instance of the given container can use. */
+                /**
+                 * @description The limit (maximum) amount of RAM each instance of the given container can use.
+                 * @example 1G
+                 * @example 1M
+                 */
                 limit?: string;
                 /** @description The reserve (allocation) of RAM given to each instance of the container. */
                 reserve?: string;
@@ -6337,6 +6288,7 @@ export interface components {
         /**
          * HybridIdentifier
          * @description Either a resource ID (objectid - i.e. 651586fca6078e98982dbd90) or a resource Identifier (human-readable)
+         * @example my-image-source
          */
         HybridIdentifier: string;
         /**
@@ -6425,7 +6377,7 @@ export interface components {
         /**
          * Version
          * @description Version can be any string, but if it begins with a "v", semantic version will be enforced. A [Semantic Version](https://semver.org/) string. Follows the format vMAJOR.MINOR.PATCH-build.
-         *
+         * @example v1.2.3-dev
          */
         Version: string;
         /**
@@ -6433,11 +6385,9 @@ export interface components {
          * @description A logical grouping of containers inside of an Environment. Facilitates zero-downtime deployments by separating multiple versions of the same application within an environment.
          *
          *     If a container is a member of a deployment, it can only resolve containers in that same deployment, or containers NOT in a deployment. If a container is NOT a member of a deployment, it can resolve all containers in the environment.
-         *
          */
         Deployment: {
-            /** @description A version string representing the deployment.
-             *      */
+            /** @description A version string representing the deployment. */
             version: components["schemas"]["Version"];
         };
         /**
@@ -6446,7 +6396,9 @@ export interface components {
          *       - b, k, m, g, t, p (bytes, kilobytes, megabytes, gigabytes, terabytes, petabytes)
          *       - An optional "b" suffix may be added (e.g., "mb", "gb").
          *     Units are case-insensitive. Example: "512M", "10GB", "1t".
-         *
+         * @example 512M
+         * @example 10GB
+         * @example 1t
          */
         DataSize: string;
         /**
@@ -6457,8 +6409,7 @@ export interface components {
             identifier?: components["schemas"]["Identifier"] | null;
             /** @description A boolean where true marks the volume as read only. */
             read_only: boolean;
-            /** @description Indicates that the volume will be used as unformatted block storage.
-             *      */
+            /** @description Indicates that the volume will be used as unformatted block storage. */
             block_device: boolean;
             local?: {
                 /** @description The maximum size this volume can grow to. Container volumes on Cycle are thinly provisioned, meaning this isn't an allocation - the volume will only use the space it needs up to this size. */
@@ -6634,9 +6585,10 @@ export interface components {
             } | {
                 virtual_machine: {
                     id: components["schemas"]["ID"];
-                    /** @description If true, traffic to this domain will skip the load balancer and go directly to the virtual machine
+                    /**
+                     * @description If true, traffic to this domain will skip the load balancer and go directly to the virtual machine
                      *     via the gateway service.
-                     *      */
+                     */
                     dmz: boolean;
                 };
             } | {
@@ -6702,7 +6654,7 @@ export interface components {
          * IpAddress
          * Format: ip-address
          * @description An IP address is a numerical label that uniquely identifies a device on a network and enables it to send and receive data.
-         *
+         * @example 192.168.1.1
          */
         IpAddress: string;
         /**
@@ -6710,7 +6662,7 @@ export interface components {
          * Format: cidr
          * @description A CIDR (Classless Inter-Domain Routing) string is a notation used to represent an IP address and its associated network prefix.
          *     It combines an IP address with a suffix that indicates how many bits are fixed for routing.
-         *
+         * @example 192.168.1.0/24
          */
         Cidr: string;
         /**
@@ -7001,7 +6953,10 @@ export interface components {
                      * @enum {string}
                      */
                     operator: "==" | "!=" | ">" | "<" | ">=" | "<=";
-                    /** @description The value corresponding to the condition type. */
+                    /**
+                     * @description The value corresponding to the condition type.
+                     * @example 0.0.0.0/0
+                     */
                     value: string;
                 }[];
             }[];
@@ -7134,10 +7089,12 @@ export interface components {
                             value: string;
                         }[] | null;
                     } | null;
-                    /** @description The URL to forward the request to.
+                    /**
+                     * @description The URL to forward the request to.
                      *
                      *     Given a path match of `^/example/(.*)$`, a route such as `/example/wow.jpg` would be forwarded as /wow.jpg.
-                     *      */
+                     * @example /$$1
+                     */
                     url?: string | null;
                 } | null;
                 proxy?: {
@@ -7158,7 +7115,10 @@ export interface components {
                 } | null;
                 caching?: {
                     files?: {
-                        /** @description Regex string that describes the files to cache. */
+                        /**
+                         * @description Regex string that describes the files to cache.
+                         * @example (.*)\.(js|jpg|css|png|svg)$
+                         */
                         match: string;
                         /** @description Time string that describes the time to live. */
                         ttl: components["schemas"]["Duration"];
@@ -7191,7 +7151,6 @@ export interface components {
              *     `random`: Pick a valid destination at random.
              *     `round-robin`: Send each request to the 'next' destination on the list, restarting from the beginning when the last destination is used.
              *     `source-ip`: Utilizes a hash function to ensure traffic from an IP will always hit the same destination instance.
-             *
              * @enum {string}
              */
             mode: "random" | "round-robin" | "source-ip";
@@ -7203,19 +7162,19 @@ export interface components {
                 destination_prioritization?: ("latency" | "random" | "fixed") | null;
                 /** @description TLS termination configuration. If null, the platform will use the default configuration. Port 443 by default has TLS termination enabled. */
                 tls?: {
-                    /** @description [Advanced] Change the domain the controller listens on.
-                     *      */
+                    /** @description [Advanced] Change the domain the controller listens on. */
                     server_name?: string | null;
                     /** @description If enabled, accept TLS traffic with an invalid certificate. This is usually done for development/testing, and is not recommended for production use. */
                     allow_insecure?: boolean | null;
                     /** @description A PEM encoded string of certificates. */
                     client_cert_auth?: string | null;
-                    /** @description Defines how to validate the connecting TLS certificate.
+                    /**
+                     * @description Defines how to validate the connecting TLS certificate.
                      *     `none`: Do not require a TLS certificate to be sent
                      *     `request`: Asks the client to send a TLS certificate, but does not require nor validate it.
                      *     `require`: Requires a certificate be sent for the request to be valid, but does not validate the certificate.
                      *     `require-verify`: Requires both that the client send a certificate, and that the certificate is valid. This is required when using https.
-                     *      */
+                     */
                     client_auth?: ("none" | "request" | "require" | "require-verify") | null;
                 } | null;
                 /** @description Defines how the length of various sorts of timeouts when communicating with the destination. */
@@ -7247,9 +7206,10 @@ export interface components {
                 mode: "tcp" | "udp" | "http";
                 /** @description Defines how the transport for this controller operates. */
                 config: {
-                    /** @description Enable/disable performance mode. If enabled, some telemetry will be disabled to dedicate full processing to handling requests.
+                    /**
+                     * @description Enable/disable performance mode. If enabled, some telemetry will be disabled to dedicate full processing to handling requests.
                      *     You will not see per-request breakdowns or URL logging if performance mode is enabled.
-                     *      */
+                     */
                     performance: boolean;
                     /** @description Defines how traffic gets into the load balancer. */
                     ingress: {
@@ -7379,8 +7339,15 @@ export interface components {
             config?: {
                 /** @description If true, routes all traffic through the VPN, even non-Cycle traffic. */
                 allow_internet: boolean;
-                /** @description Additional OpenVPN directives that will be appended to the server configuration on service start. Each line should follow standard OpenVPN syntax.
-                 *      */
+                /**
+                 * @description Additional OpenVPN directives that will be appended to the server configuration on service start. Each line should follow standard OpenVPN syntax.
+                 * @example client-to-client
+                 *     duplicate-cn
+                 *     persist-key
+                 *     persist-tun
+                 * @example verb 3
+                 *     mute 10
+                 */
                 custom_directives?: string | null;
                 /** @description Auth configuration for the VPN. */
                 auth: {
@@ -7410,8 +7377,7 @@ export interface components {
          * @description Configuration options for the scheduler Environment service.
          */
         SchedulerConfig: {
-            /** @description If true, this scheduler will be accessible over the public internet. It will enable a LINKED record to be pointed to the scheduler container, and inbound requests to trigger function containers.
-             *      */
+            /** @description If true, this scheduler will be accessible over the public internet. It will enable a LINKED record to be pointed to the scheduler container, and inbound requests to trigger function containers. */
             public: boolean;
             access_keys?: components["schemas"]["SchedulerAccessKey"][];
         };
@@ -7487,7 +7453,6 @@ export interface components {
          *     `dev` version of your app within an environment, where you can continuously deploy and update it without needing to change the record. It is
          *     even more useful when you have multiple LINKED records, and you update i.e. `prod`` tag to point to a new version, all records using the `prod` tag
          *     are switched at once.
-         *
          */
         EnvironmentDeploymentTags: {
             [key: string]: components["schemas"]["Version"];
@@ -7548,8 +7513,7 @@ export interface components {
             services: components["schemas"]["EnvironmentServices"];
             acl?: components["schemas"]["ACL"] | null;
             private_network?: components["schemas"]["PrivateNetwork"] | null;
-            /** @description A map of custom tags to deployment versions.
-             *      */
+            /** @description A map of custom tags to deployment versions. */
             deployments?: {
                 tags: components["schemas"]["EnvironmentDeploymentTags"];
             } | null;
@@ -7842,7 +7806,6 @@ export interface components {
          *
          *     In order to utilize this image origin type, a tar file of an OCI compliant image will need to be generated and pushed directly to the factory. The authentication token is generated when this image is created, and expires at the provided time.
          *     Once you have a token, it can be uploaded as multipart form data under the key `file.tar`, directly to the factory at `https://factory.cycle.io:9414/v1/images/<IMAGE ID>/upload?hub-id=<HUB ID>&token=<TOKEN>`.
-         *
          */
         CycleUploadOrigin: {
             /**
@@ -7862,7 +7825,6 @@ export interface components {
          * @description An image origin that references an image source on Cycle.
          *
          *     This origin will never be embedded in an image source. It is for use in stacks, describing an image which is already a part of an image source on Cycle.
-         *
          */
         CycleSourceOrigin: {
             /**
@@ -8074,6 +8036,7 @@ export interface components {
         /**
          * StackVariable
          * @description A variable specified in a stack spec.
+         * @example {{$stack-variable}}
          */
         StackVariable: string;
         /**
@@ -8149,13 +8112,25 @@ export interface components {
                 file?: ({
                     /** @description When true, Cycle will interpret this variable as a base-64 encoded string, and decode it before writing it to the file inside the container. */
                     decode: boolean | components["schemas"]["StackVariable"];
-                    /** @description The absolute path to write the variable to (including file name). If `null`, it will be written to `/var/run/cycle/variables/{variable-identifier}`. */
+                    /**
+                     * @description The absolute path to write the variable to (including file name). If `null`, it will be written to `/var/run/cycle/variables/{variable-identifier}`.
+                     * @example /var/run/cycle/variables/<myVariable>
+                     */
                     path: (string | null) | components["schemas"]["StackVariable"];
-                    /** @description A linux file mode that will be set on the injected file. */
+                    /**
+                     * @description A linux file mode that will be set on the injected file.
+                     * @example 0644
+                     */
                     permissions?: (string | null) | components["schemas"]["StackVariable"];
-                    /** @description The linux UID to set on the file. */
+                    /**
+                     * @description The linux UID to set on the file.
+                     * @example 777
+                     */
                     uid?: (number | null) | components["schemas"]["StackVariable"];
-                    /** @description The linux GID to set on the file. */
+                    /**
+                     * @description The linux GID to set on the file.
+                     * @example 777
+                     */
                     gid?: (number | null) | components["schemas"]["StackVariable"];
                 } | null) | components["schemas"]["StackVariable"];
             } | components["schemas"]["StackVariable"];
@@ -8204,7 +8179,8 @@ export interface components {
         StackSpecContainerConfigDeploy: {
             /** @description The number of desired instances to deploy. */
             instances: number | components["schemas"]["StackVariable"];
-            /** @description The strategy Cycle will apply when deploying instances of this container.
+            /**
+             * @description The strategy Cycle will apply when deploying instances of this container.
              *
              *     - ** resource-density **: Cycle will distribute instances across servers to maintain balanced resource usage.
              *     - ** high-availability **: Cycle will deploy instances across servers with an emphasis on geographic and physical separation. Requires multiple locations.
@@ -8214,8 +8190,8 @@ export interface components {
              *     - ** edge **: Cycle will prioritize geographic distribution of instances.
              *     - ** function **: Every ingress request/connection receives its own instance.
              *     - ** manual **: Cycle will not make any decisions on where instances are deployed. Instead, instances must be deployed manually using the portal or API.
-             *      */
-            strategy?: ("resource-density" | "manual" | "high-availability" | "first-available" | "node" | "edge" | "function") | components["schemas"]["StackVariable"];
+             */
+            strategy?: ("resource-density" | "manual" | "high-availability" | "first-available" | "node" | "edge" | "function" | null) | components["schemas"]["StackVariable"];
             /** @description Configuration options for containers using the 'function' deployment strategy. */
             function?: ({
                 /** @description The maximum number of instances that Cycle can pre-allocate (includes auto-scaled instances). */
@@ -8274,10 +8250,11 @@ export interface components {
             } | null) | components["schemas"]["StackVariable"];
             /** @description Configuration options for automated container health checks. */
             health_check?: ({
-                /** @description The command or script to run to verify the health of the container. This script is run inside the container by Cycle.
+                /**
+                 * @description The command or script to run to verify the health of the container. This script is run inside the container by Cycle.
                  *     This command accepts two types of entries:
                  *     - The first is a reference to a script that already lives in the container filesystem. This can be defined by giving the full path to the script as the value.   - The second format is an inline script.  If you need the code to execute within a shell, wrap the commands in escaped quotes like this `"\"curl -s -o /dev/console -w \"%{http_code}\" http://localhost:3000/_health | grep '200'  && exit 0 || exit 1\""`.  Do not use the `/bin/sh -c <commands>` format, this will not be accepted.
-                 *      */
+                 */
                 command: string | components["schemas"]["StackVariable"];
                 /** @description The number of times to retry the command before marking an instance unhealthy. */
                 retries: number | components["schemas"]["StackVariable"];
@@ -8313,7 +8290,11 @@ export interface components {
              */
             type: "ram";
             details: {
-                /** @description The target average RAM usage of all instances of this container. Going above this threshold will trigger a scaling event. This threshold must be greater than 25MB. */
+                /**
+                 * @description The target average RAM usage of all instances of this container. Going above this threshold will trigger a scaling event. This threshold must be greater than 25MB.
+                 * @example 2G
+                 * @example 25MB
+                 */
                 usage: string;
             };
         };
@@ -8385,7 +8366,11 @@ export interface components {
             type: "network-throughput";
             details: {
                 private: boolean;
-                /** @description The limit (maximum) amount of throughput each instance of the given container can use before triggering a scaling event. */
+                /**
+                 * @description The limit (maximum) amount of throughput each instance of the given container can use before triggering a scaling event.
+                 * @example 1gbps
+                 * @example 50mbps
+                 */
                 bandwidth: string;
             };
         };
@@ -8428,28 +8413,26 @@ export interface components {
         /**
          * StackSpecRuntimeDevicePermissionType
          * @description The class of device this rule applies to (for example, block devices or character devices).
-         *
          * @enum {string}
          */
         StackSpecRuntimeDevicePermissionType: "b" | "c";
         /**
          * StackSpecRuntimeDevicePermissionAccess
          * @description The access mode permitted by this rule. Common conventions use a combination of letters (e.g., r, w, m) to indicate read, write, and mknod capabilities.
-         *
+         * @example r
+         * @example rw
+         * @example rwm
          */
         StackSpecRuntimeDevicePermissionAccess: string;
         /**
          * StackSpecRuntimeDevicePermission
          * @description A rule that grants or denies access to a device node (e.g., Linux cgroup device rule). Controls which device type and major/minor numbers are allowed, and with what access.
-         *
          */
         StackSpecRuntimeDevicePermission: {
             type: components["schemas"]["StackSpecRuntimeDevicePermissionType"] | components["schemas"]["StackVariable"];
-            /** @description Device major number.
-             *      */
+            /** @description Device major number. */
             major?: (number | null) | components["schemas"]["StackVariable"];
-            /** @description Device minor number.
-             *      */
+            /** @description Device minor number. */
             minor?: (number | null) | components["schemas"]["StackVariable"];
             /** @description Whether this rule allows (true) or denies (false) access. */
             allow: boolean | components["schemas"]["StackVariable"];
@@ -8634,8 +8617,7 @@ export interface components {
             destination: string | components["schemas"]["StackVariable"];
             /** @description If true, the container will be unable to write data to the volume. */
             read_only?: boolean | components["schemas"]["StackVariable"];
-            /** @description Indicates that the volume will be used as unformatted block storage.
-             *      */
+            /** @description Indicates that the volume will be used as unformatted block storage. */
             block_device?: boolean | components["schemas"]["StackVariable"];
             /** @description Configuration options for setting up remote access to this volume via SFTP. */
             remote_access?: {
@@ -8751,9 +8733,11 @@ export interface components {
         /** StackSpecHAProxyConfigSet */
         StackSpecHaProxyConfigSet: {
             frontend: {
-                /** @description The type of traffic expected by the load balancer for this port. Can be either:
+                /**
+                 * @description The type of traffic expected by the load balancer for this port. Can be either:
                  *      - tcp: Traffic is forwarded without any parsing or additional manipulation.
-                 *      - http: Traffic is treated as web traffic. If a LINKED record is configured for a container exposing this port, the domain will be parsed and it will be forwarded to the proper container. This allows multiple services to run on port 80 in the same environment. */
+                 *      - http: Traffic is treated as web traffic. If a LINKED record is configured for a container exposing this port, the domain will be parsed and it will be forwarded to the proper container. This allows multiple services to run on port 80 in the same environment.
+                 */
                 mode: ("tcp" | "http") | components["schemas"]["StackVariable"];
                 /** @description The number of simultaneous connections that can be processed at a time. */
                 max_connections: (number | null) | components["schemas"]["StackVariable"];
@@ -8770,12 +8754,14 @@ export interface components {
                 } | null) | components["schemas"]["StackVariable"];
             } | components["schemas"]["StackVariable"];
             backend: {
-                /** @description How connections are balanced across your container instances. Can be one of the following:
+                /**
+                 * @description How connections are balanced across your container instances. Can be one of the following:
                  *      - `roundrobin`: Each container instance is used in turns.
                  *      - `static-rr`: Each container instance is used in turns, but is faster than Round Robin at the expense of being less dynamic.
                  *      - `leastconn`: Routes traffic to the instance with the least number of active connections.
                  *      - `first`: Routes traffic to the first available instance.
-                 *      - `source`: The same client IP always reaches the same container instance as long as no instance goes down or up. */
+                 *      - `source`: The same client IP always reaches the same container instance as long as no instance goes down or up.
+                 */
                 balance: ("roundrobin" | "static-rr" | "leastconn" | "first" | "source") | components["schemas"]["StackVariable"];
                 /** @description Various options for handling timeouts when communicating with a container instance behind the load balancer. */
                 timeouts: ({
@@ -8839,7 +8825,10 @@ export interface components {
                     type: ("ip-match" | "geo-match" | "url-match" | "method-match" | "header-match") | components["schemas"]["StackVariable"];
                     /** @description A string that indicates the range of values relative to the value property. */
                     operator: ("==" | "!=" | ">" | "<" | ">=" | "<=") | components["schemas"]["StackVariable"];
-                    /** @description The value corresponding to the condition type. */
+                    /**
+                     * @description The value corresponding to the condition type.
+                     * @example 0.0.0.0/0
+                     */
                     value: string | components["schemas"]["StackVariable"];
                 } | components["schemas"]["StackVariable"])[] | components["schemas"]["StackVariable"];
             } | components["schemas"]["StackVariable"])[] | components["schemas"]["StackVariable"];
@@ -8969,10 +8958,12 @@ export interface components {
                             value: string | components["schemas"]["StackVariable"];
                         } | components["schemas"]["StackVariable"])[] | null) | components["schemas"]["StackVariable"];
                     } | null) | components["schemas"]["StackVariable"];
-                    /** @description The URL to forward the request to.
+                    /**
+                     * @description The URL to forward the request to.
                      *
                      *     Given a path match of `^/example/(.*)$`, a route such as `/example/wow.jpg` would be forwarded as /wow.jpg.
-                     *      */
+                     * @example /$$1
+                     */
                     url?: string | components["schemas"]["StackVariable"];
                 } | null) | components["schemas"]["StackVariable"];
                 proxy?: ({
@@ -8993,7 +8984,10 @@ export interface components {
                 } | null) | components["schemas"]["StackVariable"];
                 caching?: ({
                     files?: (({
-                        /** @description Regex string that describes the files to cache. */
+                        /**
+                         * @description Regex string that describes the files to cache.
+                         * @example (.*)\.(js|jpg|css|png|svg)$
+                         */
                         match: string | components["schemas"]["StackVariable"];
                         /** @description Time string that describes the time to live. */
                         ttl: components["schemas"]["Duration"] | components["schemas"]["StackVariable"];
@@ -9020,11 +9014,12 @@ export interface components {
                     exclude?: (components["schemas"]["HybridIdentifier"][] | null) | components["schemas"]["StackVariable"];
                 } | null) | components["schemas"]["StackVariable"];
             } | components["schemas"]["StackVariable"];
-            /** @description How to route the traffic to the destination.
+            /**
+             * @description How to route the traffic to the destination.
              *     `random`: Pick a valid destination at random.
              *     `round-robin`: Send each request to the 'next' destination on the list, restarting from the beginning when the last destination is used.
              *     `source-ip`: Utilizes a hash function to ensure traffic from an IP will always hit the same destination instance.
-             *      */
+             */
             mode: ("random" | "round-robin" | "source-ip") | components["schemas"]["StackVariable"];
             config: {
                 /** @description If a request comes in from the same origin, ensure it hits the same destination. */
@@ -9034,19 +9029,19 @@ export interface components {
                 destination_prioritization?: ("latency" | "random" | "fixed") | components["schemas"]["StackVariable"] | null;
                 /** @description TLS termination configuration. If null, the platform will use the default configuration. Port 443 by default has TLS termination enabled. */
                 tls?: ({
-                    /** @description [Advanced] Change the domain the controller listens on.
-                     *      */
+                    /** @description [Advanced] Change the domain the controller listens on. */
                     server_name?: (string | null) | components["schemas"]["StackVariable"];
                     /** @description If enabled, accept TLS traffic with an invalid certificate. This is usually done for development/testing, and is not recommended for production use. */
                     allow_insecure?: (boolean | null) | components["schemas"]["StackVariable"];
                     /** @description A PEM encoded string of certificates. */
                     client_cert_auth?: (string | null) | components["schemas"]["StackVariable"];
-                    /** @description Defines how to validate the connecting TLS certificate.
+                    /**
+                     * @description Defines how to validate the connecting TLS certificate.
                      *     `none`: Do not require a TLS certificate to be sent
                      *     `request`: Asks the client to send a TLS certificate, but does not require nor validate it.
                      *     `require`: Requires a certificate be sent for the request to be valid, but does not validate the certificate.
                      *     `require-verify`: Requires both that the client send a certificate, and that the certificate is valid. This is required when using https.
-                     *      */
+                     */
                     client_auth?: ("none" | "request" | "require" | "require-verify") | components["schemas"]["StackVariable"] | null;
                 } | null) | components["schemas"]["StackVariable"];
                 /** @description Defines how the length of various sorts of timeouts when communicating with the destination. */
@@ -9075,9 +9070,10 @@ export interface components {
                 mode: ("tcp" | "udp" | "http") | components["schemas"]["StackVariable"];
                 /** @description Defines how the transport for this controller operates. */
                 config: {
-                    /** @description Enable/disable performance mode. If enabled, some telemetry will be disabled to dedicate full processing to handling requests.
+                    /**
+                     * @description Enable/disable performance mode. If enabled, some telemetry will be disabled to dedicate full processing to handling requests.
                      *     You will not see per-request breakdowns or URL logging if performance mode is enabled.
-                     *      */
+                     */
                     performance: boolean | components["schemas"]["StackVariable"];
                     /** @description Defines how traffic gets into the load balancer. */
                     ingress: {
@@ -9189,8 +9185,15 @@ export interface components {
                 vpn_accounts: boolean | components["schemas"]["StackVariable"];
             } | components["schemas"]["StackVariable"];
             allow_internet: boolean | components["schemas"]["StackVariable"];
-            /** @description Additional OpenVPN directives that will be appended to the server configuration on service start. Each line should follow standard OpenVPN syntax.
-             *      */
+            /**
+             * @description Additional OpenVPN directives that will be appended to the server configuration on service start. Each line should follow standard OpenVPN syntax.
+             * @example client-to-client
+             *     duplicate-cn
+             *     persist-key
+             *     persist-tun
+             * @example verb 3
+             *     mute 10
+             */
             custom_directives?: string | null;
         };
         /**
@@ -9205,7 +9208,6 @@ export interface components {
          * StackSpec
          * @description A Cycle stack file is an "environment as code". This allows an environment to be generated consistently based on a fixed specification.
          *     Stack files can describe multiple containers and their configurations, environment service settings, scoped variables, and important metadata.
-         *
          */
         StackSpec: {
             /**
@@ -9503,8 +9505,7 @@ export interface components {
              * @enum {string}
              */
             action: "volumes.reconfigure";
-            /** @description A map of volume objects where the key is the id and the value is the volume's config.
-             *      */
+            /** @description A map of volume objects where the key is the id and the value is the volume's config. */
             contents: {
                 [key: string]: components["schemas"]["ContainerVolume"];
             };
@@ -9555,7 +9556,10 @@ export interface components {
                 [key: string]: {
                     /** @description String describing the server mount type. */
                     type: string;
-                    /** @description Comma separated string describing the server mount options. */
+                    /**
+                     * @description Comma separated string describing the server mount options.
+                     * @example key1=value1,key2=value2
+                     */
                     options: string;
                     /** @description String describing the server mount source. */
                     source: string;
@@ -10413,11 +10417,12 @@ export interface components {
             current: "new" | "starting" | "migrating" | "running" | "stopping" | "stopped" | "failed" | "deleting" | "deleted";
             /** @description information about the health of the instance. */
             health?: {
-                /** @description Describes the healthiness of the instance. Health checks can be configured at the container level.
+                /**
+                 * @description Describes the healthiness of the instance. Health checks can be configured at the container level.
                  *     - `true`: The instance is considered healthy.
                  *     - `false`: The instance is considered unhealthy.
                  *     - `null`: The instance has not yet reported its health, or a health check has not yet been performed.
-                 *      */
+                 */
                 healthy: boolean | null;
                 /** @description A timestamp of the last time the instance health was updated. */
                 updated: components["schemas"]["DateTime"];
@@ -11009,7 +11014,6 @@ export interface components {
         /**
          * VirtualMachineNetworkConfig
          * @description Defines the network settings for a virtual machine, including public access mode, hostname, and ports.
-         *
          */
         VirtualMachineNetworkConfig: {
             /**
@@ -11027,7 +11031,6 @@ export interface components {
         /**
          * VirtualMachineDeployTags
          * @description Tags that define node requirements for the deployment. The `any` tag must match at least one condition, while `all` must match all conditions.
-         *
          */
         VirtualMachineDeployTags: {
             any?: string[] | null;
@@ -11036,7 +11039,6 @@ export interface components {
         /**
          * VirtualMachineNodeConstraints
          * @description Node-level constraints for the virtual machine deployment, specifying tags that must or must not be present.
-         *
          */
         VirtualMachineNodeConstraints: {
             tags: components["schemas"]["VirtualMachineDeployTags"];
@@ -11044,7 +11046,6 @@ export interface components {
         /**
          * VirtualMachineDeployConstraints
          * @description Constraints define node-level and resource restrictions for the virtual machine deployment.
-         *
          */
         VirtualMachineDeployConstraints: {
             node?: components["schemas"]["VirtualMachineNodeConstraints"] | null;
@@ -11054,7 +11055,6 @@ export interface components {
         /**
          * VirtualMachineShutdownPolicy
          * @description The shutdown policy defines how the virtual machine should handle shutdown, including a timeout and signals to be sent during shutdown.
-         *
          */
         VirtualMachineShutdownPolicy: {
             /** @description The timeout period for graceful shutdown. */
@@ -11063,7 +11063,6 @@ export interface components {
         /**
          * VirtualMachineStartupPolicy
          * @description The startup policy defines how the virtual machine should handle startup, including a possible delay before starting the machine.
-         *
          */
         VirtualMachineStartupPolicy: {
             /** @description Delay before startup. */
@@ -11072,7 +11071,6 @@ export interface components {
         /**
          * VirtualMachineTelemetryConfig
          * @description The telemetry configuration defines how telemetry data is handled, including retention, interval, and whether telemetry is disabled.
-         *
          */
         VirtualMachineTelemetryConfig: {
             /** @description Data retention duration for telemetry. */
@@ -11085,7 +11083,6 @@ export interface components {
         /**
          * VirtualMachineDeployConfig
          * @description Represents the deployment configuration for a virtual machine, including constraints, shutdown/startup policies, restart conditions, and telemetry settings.
-         *
          */
         VirtualMachineDeployConfig: {
             constraints?: components["schemas"]["VirtualMachineDeployConstraints"] | null;
@@ -11096,10 +11093,13 @@ export interface components {
         /**
          * VirtualMachineRamResources
          * @description Defines the RAM configuration of a virtual machine.
-         *
          */
         VirtualMachineRamResources: {
-            /** @description The limit (maximum) amount of RAM the virtual machine can consume. Must be at least 512M and less than 65GB. */
+            /**
+             * @description The limit (maximum) amount of RAM the virtual machine can consume. Must be at least 512M and less than 65GB.
+             * @example 1G
+             * @example 512M
+             */
             limit: string;
             /** @description Whether or not the RAM set in limit should be preallocated. */
             allocate?: boolean | null;
@@ -11107,22 +11107,29 @@ export interface components {
         /**
          * VirtualMachineCpuResources
          * @description Defines the CPU configuration of a virtual machine. Set **either** `cores` or `cpus`.
-         *
          */
         VirtualMachineCpuResources: {
             cores?: {
-                /** @description The number of cores to assign to this virtual machine. Must be between 1 and 32. */
+                /**
+                 * @description The number of cores to assign to this virtual machine. Must be between 1 and 32.
+                 * @example 1
+                 * @example 2
+                 */
                 number: number;
                 /** @description If true, reserves the cores so they cannot be used by any other virtual machine. */
                 allocate?: boolean | null;
             } | null;
-            /** @description The specific cores/range of cores to allocate to the virtual machine. An 'x' indicates the maximum core for a given machine. */
+            /**
+             * @description The specific cores/range of cores to allocate to the virtual machine. An 'x' indicates the maximum core for a given machine.
+             * @example 1
+             * @example 1-3
+             * @example 2-x
+             */
             cpus?: string | null;
         };
         /**
          * VirtualMachineResourcesConfig
          * @description Defines the resource settings for a virtual machine, including CPU and RAM.
-         *
          */
         VirtualMachineResourcesConfig: {
             ram: components["schemas"]["VirtualMachineRamResources"];
@@ -11160,7 +11167,6 @@ export interface components {
         /**
          * VirtualMachineRuntimeConfigHardware
          * @description Hardware parameters applied for VM runtime.
-         *
          */
         VirtualMachineRuntimeConfigHardware: {
             /** @description QEMU machine type to emulate. */
@@ -11186,13 +11192,11 @@ export interface components {
         /**
          * VirtualMachineRuntimeConfigAttachment
          * @description Additional attachment (ISO, etc) added during runtime.
-         *
          */
         VirtualMachineRuntimeConfigAttachment: components["schemas"]["VirtualMachineAttachmentTypeIso"];
         /**
          * VirtualMachineRuntimeConfig
          * @description Defines the runtime settings for a virtual machine.
-         *
          */
         VirtualMachineRuntimeConfig: {
             /** @description Hardware parameters applied for VM runtime. */
@@ -11205,7 +11209,6 @@ export interface components {
         /**
          * VirtualMachineConfig
          * @description Defines the network and deployment configurations for a virtual machine.
-         *
          */
         VirtualMachineConfig: {
             network: components["schemas"]["VirtualMachineNetworkConfig"];
@@ -11280,18 +11283,19 @@ export interface components {
         /**
          * VirtualMachineImage
          * @description Represents the image used by a virtual machine. It can either reference a URL where the image is located or specify a base image provided by Cycle.
-         *
          */
         VirtualMachineImage: components["schemas"]["VirtualMachineImageSourceUrl"] | components["schemas"]["VirtualMachineImageSourceIpxe"] | components["schemas"]["VirtualMachineImageSourceBase"] | components["schemas"]["VirtualMachineImageSourceExternalVolume"];
         /**
          * VirtualMachineVolumeConfig
          * @description Represents the configuration for a volume attached to a virtual machine.
-         *
          */
         VirtualMachineVolumeConfig: {
             /** @description Configuration details for a local volume. */
             local?: {
-                /** @description The maximum size allowed for the local volume. */
+                /**
+                 * @description The maximum size allowed for the local volume.
+                 * @example 100G
+                 */
                 max_size: string;
                 /** @description Indicates if the volume is part of a storage pool. */
                 storage_pool?: boolean | null;
@@ -11308,7 +11312,6 @@ export interface components {
         /**
          * VirtualMachineVolume
          * @description Represents a storage volume attached to a virtual machine.
-         *
          */
         VirtualMachineVolume: {
             id: components["schemas"]["ID"];
@@ -11348,7 +11351,6 @@ export interface components {
         /**
          * VirtualMachine
          * @description Describes a virtual machine running on the Cycle Platform.
-         *
          */
         VirtualMachine: {
             id: components["schemas"]["ID"];
@@ -11356,8 +11358,7 @@ export interface components {
             name: string;
             identifier: components["schemas"]["Identifier"];
             creator: components["schemas"]["CreatorScope"];
-            /** @description Basic information about the environment this virtual machine is in.
-             *      */
+            /** @description Basic information about the environment this virtual machine is in. */
             environment: {
                 id: components["schemas"]["ID"];
                 /** @description The cluster this environment is associated with. */
@@ -11618,13 +11619,25 @@ export interface components {
             file?: {
                 /** @description When true, Cycle will interpret this variable as a base-64 encoded string, and decode it before passing it into the container. */
                 decode: boolean;
-                /** @description The path to mount the file to inside the container. */
+                /**
+                 * @description The path to mount the file to inside the container.
+                 * @example /var/run/cycle/variables/<myVariable>
+                 */
                 path: string | null;
-                /** @description A linux file mode that will be set on the injected file. */
+                /**
+                 * @description A linux file mode that will be set on the injected file.
+                 * @example 0644
+                 */
                 permissions?: string | null;
-                /** @description The linux UID to set on the file. */
+                /**
+                 * @description The linux UID to set on the file.
+                 * @example 777
+                 */
                 uid?: number | null;
-                /** @description The linux GID to set on the file. */
+                /**
+                 * @description The linux GID to set on the file.
+                 * @example 777
+                 */
                 gid?: number | null;
             } | null;
         };
@@ -11787,13 +11800,26 @@ export interface components {
             destinations: {
                 [key: string]: {
                     requests: {
-                        /** @description The host name of the URL request. */
+                        /**
+                         * @description The host name of the URL request.
+                         * @example abc.cycle.io
+                         */
                         host: string;
-                        /** @description The HTTP method of the URL request. */
+                        /**
+                         * @description The HTTP method of the URL request.
+                         * @example GET
+                         */
                         method: string;
-                        /** @description The path portion of the inbound URL request. */
+                        /**
+                         * @description The path portion of the inbound URL request.
+                         * @example /pathname
+                         */
                         path: string;
-                        /** @description The number of requests to a this URL. */
+                        /**
+                         * @description The number of requests to a this URL.
+                         * @example 5
+                         * @example 10
+                         */
                         total: number;
                         /** @description The date of the most recent hit to the URL. */
                         last_hit: components["schemas"]["DateTime"];
@@ -11808,11 +11834,21 @@ export interface components {
                             /** @description Object containing hit count and timing data for redirect responses. */
                             redirect: components["schemas"]["LoadBalancerTelemetryUrlRequestHandler"];
                         };
-                        /** @description An object where the key is the response type and the value is the number of hits with that response. */
+                        /**
+                         * @description An object where the key is the response type and the value is the number of hits with that response.
+                         * @example {
+                         *       "http:404": 10
+                         *     }
+                         */
                         responses?: {
                             [key: string]: number;
                         };
-                        /** @description An object where the key is the error type and the value is the number of hits with that error. */
+                        /**
+                         * @description An object where the key is the error type and the value is the number of hits with that error.
+                         * @example {
+                         *       "i/o timeout": 1
+                         *     }
+                         */
                         errors?: {
                             [key: string]: number;
                         };
@@ -12060,8 +12096,15 @@ export interface components {
                 config?: {
                     /** @description If true, routes all traffic through the VPN, even non-Cycle traffic. */
                     allow_internet?: boolean;
-                    /** @description Additional OpenVPN directives that will be appended to the server configuration on service start. Each line should follow standard OpenVPN syntax.
-                     *      */
+                    /**
+                     * @description Additional OpenVPN directives that will be appended to the server configuration on service start. Each line should follow standard OpenVPN syntax.
+                     * @example client-to-client
+                     *     duplicate-cn
+                     *     persist-key
+                     *     persist-tun
+                     * @example verb 3
+                     *     mute 10
+                     */
                     custom_directives?: string | null;
                     /** @description Auth configuration for the VPN. */
                     auth?: {
@@ -12155,7 +12198,6 @@ export interface components {
         ActivitySecurity: {
             /**
              * @description A risk level assessed by the platform. Depending on the nature of the incident, this may change even if the event type is the same.
-             *
              * @enum {string}
              */
             risk: "info" | "low" | "medium" | "high" | "critical";
@@ -12182,7 +12224,6 @@ export interface components {
         ActivityMonitor: {
             /**
              * @description The severity of the event.
-             *
              * @enum {string}
              */
             level: "info" | "low" | "medium" | "high" | "critical";
@@ -12214,13 +12255,14 @@ export interface components {
                 /** @description The given user's ID. */
                 id: string;
             };
-            /** @description A number representing the detail level (verbosity) of this activity.
+            /**
+             * @description A number representing the detail level (verbosity) of this activity.
              *
              *     ## Levels
              *     - 0: activity that other users would find useful
              *     - 1: activity that can be useful in tracking down how a user did something
              *     - 2: full activity, can be useful in debugging problems
-             *      */
+             */
             verbosity: number;
             context: components["schemas"]["Context"];
             session: components["schemas"]["Session"] | null;
@@ -12318,7 +12360,6 @@ export interface components {
              *     lacp - Standard link aggregations using LACP.
              *     balance-tlb - Adaptive transmit-side balancing (no switch config needed)..
              *     balance-alb - TLB + receive load balancing (no switch config needed)..
-             *
              * @enum {string}
              */
             mode: "balance-rr" | "active-backup" | "balance-xor" | "lacp" | "balance-tlb" | "balance-alb";
@@ -12620,7 +12661,9 @@ export interface components {
          *     - `id:<mongo id>`: A raw resource ID
          *     - `resource:<a resource identifier>`: A compound identifier pointing to a resource.
          *     - `from:<stage/step>`: For referencing a previous pipeline step.
-         *
+         * @example id:6515098637b66c233ed164e7
+         * @example resource:cluster:dev,env:demo,container:api
+         * @example from:/image-create
          */
         FluidIdentifier: string;
         /**
@@ -12884,7 +12927,6 @@ export interface components {
         /**
          * VariableString
          * @description A string value for a pipeline that supports a variable. To use as a variable, set this string to `{{variable}}` where `variable` is a custom name.
-         *
          */
         VariableString: string;
         /**
@@ -13083,7 +13125,6 @@ export interface components {
          * @description Waits for a deployment to be considered 'healthy' before allowing the pipeline to continue.
          *     A deployement is considered 'healthy' when all instances of all containers that have had a state change in the last 15 minutes
          *     that have health checks defined, become healthy.
-         *
          */
         EnvironmentDeploymentHealthyWatchStep: {
             /** @description An identifier for the step. */
@@ -13191,9 +13232,10 @@ export interface components {
                 add_new: boolean;
                 /** @description When deploying to the environment, any scoped variables defined in the build that match an existing scoped variable in the environment will cause the existing scoped variable to be updated to the new value. */
                 replace_existing: boolean;
-                /** @description If set to true and `add_new` is enabled, any variables that dont exist FOR THAT DEPLOYMENT will be created.
+                /**
+                 * @description If set to true and `add_new` is enabled, any variables that dont exist FOR THAT DEPLOYMENT will be created.
                  *     If set to true and `replace_existing` is enabled, any matching variables FOR THAT DEPLOYMENT will be replaced.
-                 *      */
+                 */
                 associate_deployment: boolean;
             } | null;
         };
@@ -13290,7 +13332,6 @@ export interface components {
          * @description A pipeline step that will make a POST request to the specified endpoints. The webhook will post the full body of the resource referenced by the step.
          *     For example if you were to reference a step creating a container, you would receive that container object in the post body.
          *     You may also specify a custom body instead.
-         *
          */
         WebhookPostStep: {
             /** @description An identifier for the step. */
@@ -13313,14 +13354,16 @@ export interface components {
                 options?: components["schemas"]["WebhookStepOptions"] | null;
                 /** @description An optional POST body to send with the request. Cannot be used with `from``. */
                 body?: string | null;
-                /** @description Takes the output from a previous step and uses it as the body for the POST request. Cannot be used with `body`. String format is <stageIdentifier/stepIdentifier> */
+                /**
+                 * @description Takes the output from a previous step and uses it as the body for the POST request. Cannot be used with `body`. String format is <stageIdentifier/stepIdentifier>
+                 * @example init/image-create
+                 */
                 from?: string | null;
             };
         };
         /**
          * WebhookGetStep
          * @description A pipeline step that will make a GET request to the specified endpoint.
-         *
          */
         WebhookGetStep: {
             /** @description An identifier for the step. */
@@ -13519,7 +13562,6 @@ export interface components {
         /**
          * SourceSanIscsi
          * @description A SAN iSCSI volume source. Defines one or more iSCSI targets and the LUN number to attach.
-         *
          */
         SourceSanIscsi: {
             /**
@@ -13528,13 +13570,11 @@ export interface components {
              */
             type: "san-iscsi";
             details: {
-                /** @description One or more iSCSI integration IDs to use for authentication.
-                 *      */
+                /** @description One or more iSCSI integration IDs to use for authentication. */
                 integration_ids: components["schemas"]["ID"][];
                 /**
                  * Format: int32
                  * @description Logical Unit Number exposed by the target(s) to attach.
-                 *
                  */
                 lun: number;
             };
@@ -13556,7 +13596,6 @@ export interface components {
         /**
          * SourceCephRbd
          * @description A Ceph RBD volume source. Defines monitor endpoints, optional cluster FSID, client identity (CephX), and the specific image to attach.
-         *
          */
         SourceCephRbd: {
             /**
@@ -13565,8 +13604,7 @@ export interface components {
              */
             type: "ceph-rbd";
             details: {
-                /** @description The ID of a Ceph cluster integration for authentication.
-                 *      */
+                /** @description The ID of a Ceph cluster integration for authentication. */
                 integration_id: components["schemas"]["ID"];
                 image: components["schemas"]["SourceCephRbdImageRef"];
             };
@@ -13574,19 +13612,15 @@ export interface components {
         /**
          * SourceAwsEbsAuth
          * @description AWS credentials for accessing EBS. Either an instance role may be used or explicit Access Key credentials may be provided.
-         *
          */
         SourceAwsEbsAuth: {
-            /** @description When true, use the instance's IAM role for authentication.
-             *      */
+            /** @description When true, use the instance's IAM role for authentication. */
             use_instance_role?: boolean;
-            /** @description AWS Access Key ID to use for authentication (optional if using instance role).
-             *      */
+            /** @description AWS Access Key ID to use for authentication (optional if using instance role). */
             access_key_id?: string;
             /**
              * Format: password
              * @description AWS Secret Access Key to use for authentication (optional if using instance role).
-             *
              */
             secret_access_key?: string;
         };
@@ -13595,17 +13629,14 @@ export interface components {
          * @description Reference to the specific EBS volume to attach.
          */
         SourceAwsEbsRef: {
-            /** @description The EBS volume ID (for example, "vol-0abcd1234ef567890").
-             *      */
+            /** @description The EBS volume ID (for example, "vol-0abcd1234ef567890"). */
             volume_id: string;
-            /** @description Optional AWS Availability Zone where the volume resides (for example, "us-east-1a").
-             *      */
+            /** @description Optional AWS Availability Zone where the volume resides (for example, "us-east-1a"). */
             az?: string;
         };
         /**
          * SourceAwsEbs
          * @description An AWS EBS volume source. Defines how to authenticate to AWS and which EBS volume to attach.
-         *
          */
         SourceAwsEbs: {
             /**
@@ -13621,7 +13652,6 @@ export interface components {
         /**
          * ExternalVolumeSource
          * @description The source information for this volume.
-         *
          */
         ExternalVolumeSource: components["schemas"]["SourceSanIscsi"] | components["schemas"]["SourceCephRbd"] | components["schemas"]["SourceAwsEbs"];
         /**
@@ -13670,8 +13700,7 @@ export interface components {
          * @description Configuration options controlling the behavior of the volume.
          */
         ExternalVolumeOptions: {
-            /** @description If the volume doesn't exist, attempt to create it on container start if create struct defined.
-             *      */
+            /** @description If the volume doesn't exist, attempt to create it on container start if create struct defined. */
             create: {
                 /** @description Indicates the size of volume to create. */
                 size: components["schemas"]["DataSize"];
@@ -13696,11 +13725,9 @@ export interface components {
             updated: components["schemas"]["DateTime"];
             /** @description The timestamp of when the attached volume was deleted. */
             deleted: components["schemas"]["DateTime"];
-            /** @description Timestamp of the last successful verification event for this volume.
-             *      */
+            /** @description Timestamp of the last successful verification event for this volume. */
             last_verified?: components["schemas"]["DateTime"];
-            /** @description Timestamp of the last successful synchronization event for this volume.
-             *      */
+            /** @description Timestamp of the last successful synchronization event for this volume. */
             last_sync?: components["schemas"]["DateTime"];
         };
         /**
@@ -13726,7 +13753,6 @@ export interface components {
         /**
          * ExternalVolume
          * @description A persistent storage volume within a cluster. Volumes may be attached to containers or VMs and can originate from different storage sources.
-         *
          */
         ExternalVolume: {
             id: components["schemas"]["ID"];
@@ -13741,8 +13767,7 @@ export interface components {
             source: components["schemas"]["ExternalVolumeSource"];
             /** @description Information about the resource the external volume is currently attached to. */
             attachment?: components["schemas"]["ExternalVolumeAttachment"];
-            /** @description Size of the external volume; may be null or omitted if the size has not yet been determined.
-             *      */
+            /** @description Size of the external volume; may be null or omitted if the size has not yet been determined. */
             size?: components["schemas"]["DataSize"] | null;
             options: components["schemas"]["ExternalVolumeOptions"];
             state: components["schemas"]["ExternalVolumeState"];
@@ -13834,7 +13859,6 @@ export interface components {
         /**
          * VirtualMachineSshKey
          * @description Describes an SSH key used to access a virtual machine.
-         *
          */
         VirtualMachineSshKey: {
             id: components["schemas"]["ID"];
@@ -14086,7 +14110,13 @@ export interface components {
         MonitoringUsage: {
             /** @description Number that, when used in conjunction with unit, describes the included usage. */
             included: number;
-            /** @description A string describing the metric unit. */
+            /**
+             * @description A string describing the metric unit.
+             * @example Metrics
+             * @example Events
+             * @example Matches
+             * @example GB
+             */
             unit: string;
             /** @description A boolean indicating if there is hard usage limit on the tier. */
             hard_cap: boolean;
@@ -14318,7 +14348,10 @@ export interface components {
                     [key: string]: {
                         /** @description String describing the server mount type. */
                         type: string;
-                        /** @description Comma separated string describing the server mount options. */
+                        /**
+                         * @description Comma separated string describing the server mount options.
+                         * @example key1=value1,key2=value2
+                         */
                         options: string;
                         /** @description String describing the server mount source. */
                         source: string;
@@ -14368,7 +14401,6 @@ export interface components {
          * ServerPowerOffAction
          * @description A job that powers the server off.
          *     Only for servers deployed from a virtual provider.
-         *
          */
         ServerPowerOffAction: {
             /**
@@ -14381,7 +14413,6 @@ export interface components {
          * ServerAuthResetAction
          * @description A job that resets authentication for the server.
          *     Only for servers deployed from a virtual provider.
-         *
          */
         ServerAuthResetAction: {
             /**
@@ -14614,7 +14645,8 @@ export interface components {
             points: (components["schemas"]["DateTime"] | number)[][];
             /** @description Information about this metric, such as the type of metric, the data it represents, and critical common information such as hub ID and associated cluster. */
             metadata: {
-                /** @description The data this metric represents. Cycle provides several built-in metrics, and, tier allowing, hubs can submit custom metrics as well.
+                /**
+                 * @description The data this metric represents. Cycle provides several built-in metrics, and, tier allowing, hubs can submit custom metrics as well.
                  *
                  *     Here is a non-exhaustive list of some of the metrics provided by the platform automatically:
                  *       - container.instances.num
@@ -14663,7 +14695,7 @@ export interface components {
                  *       - memberships.num
                  *       - pipeline.runs.num
                  *       - stack.builds.num
-                 *      */
+                 */
                 metric: string;
                 /**
                  * @description The type of data represented by the metric.
@@ -14674,7 +14706,6 @@ export interface components {
                  *       - **histogram**: tracks the statistical distribution of a set of values.
                  *       - **distribution**: aggregates data across multiple hosts and applications.
                  *       - **set**: tracks the number of unique elements in a group.
-                 *
                  * @enum {string}
                  */
                 type: "gauge" | "count" | "counter" | "rate" | "histogram" | "distribution" | "set";
@@ -14712,8 +14743,7 @@ export interface components {
             text?: string;
             /** @description Information about this event, such as the type of event, the data it represents, and critical common information such as hub ID and associated cluster. */
             metadata: {
-                /** @description Describes what this event is.
-                 *      */
+                /** @description Describes what this event is. */
                 event: components["schemas"]["EventType"];
                 /**
                  * @description The type of event.
@@ -14724,7 +14754,6 @@ export interface components {
                  *       - **alert**: represents a critical message indicating a severe issue.
                  *       - **notice**: represents a notice message indicating a noteworthy event.
                  *       - **audit**: represents a notice message indicating a message that would be needed for audits
-                 *
                  * @enum {string}
                  */
                 type: "info" | "warning" | "error" | "success" | "alert" | "notice" | "audit";
@@ -14752,22 +14781,25 @@ export interface components {
         LogLine: {
             /** @description The time the log line occurred. */
             time: components["schemas"]["DateTime"];
-            /** @description The source that generated the log line. */
+            /**
+             * @description The source that generated the log line.
+             * @example stdout
+             */
             source: string;
             /** @description The message associated with the log line. */
             message: string;
             /** @description The container instance that the log line originated from. */
             instance_id?: string | null;
-            /** @description A randomly generated ID that is assigned to all lines in the same context window.
+            /**
+             * @description A randomly generated ID that is assigned to all lines in the same context window.
              *     The first line with a specific ID is the log line that matches the query, and the following
              *     log lines are included due to the the set context window in the aggregate.
-             *      */
+             */
             context_window?: string;
         };
         /**
          * Monitor
          * @description A monitor used to determine latency between the public internet and a load balancer on Cycle. These monitors are automatically created and managed by the platform. Information about specific monitors is provided for determining the regional latencies for an environment.
-         *
          */
         Monitor: {
             /** @description The ID of the node this monitor is running on. */
@@ -14820,9 +14852,10 @@ export interface components {
                 advanced?: {
                     /** @description Sub queue allows multiple concurrent pipeline runs. */
                     sub_queue?: string | null;
-                    /** @description To enable skip locks, pass the current UNIX timestamp. Must be accurate within 10 minutes of the current UTC time.
+                    /**
+                     * @description To enable skip locks, pass the current UNIX timestamp. Must be accurate within 10 minutes of the current UTC time.
                      *     This will skip lock checks when running a pipeline - the user takes all risk of ensuring two pipeline runs won't make conflicting changes.
-                     *      */
+                     */
                     skip_locks?: number | null;
                 };
             };
@@ -15115,8 +15148,7 @@ export interface components {
              * @enum {string}
              */
             action: "volumes.reconfigure";
-            /** @description A map of volume objects where the key is the id and the value is the volume's config.
-             *      */
+            /** @description A map of volume objects where the key is the id and the value is the volume's config. */
             contents: {
                 [key: string]: components["schemas"]["VirtualMachineVolumeConfig"];
             };
@@ -15126,7 +15158,6 @@ export interface components {
         /**
          * VirtualMachineBaseImage
          * @description Represents a virtual machine base OS image provided by Cycle.
-         *
          */
         VirtualMachineBaseImage: {
             /** @description The name of the base image (e.g., "Alpine Linux"). */
@@ -15140,9 +15171,15 @@ export interface components {
             homepage: string;
             /** @description A list of available versions for the base image, including details like version number and disk image URL. */
             versions: {
-                /** @description A unique identifier for the version. */
+                /**
+                 * @description A unique identifier for the version.
+                 * @example alpine-3-19
+                 */
                 identifier: string;
-                /** @description The version number of the base image. */
+                /**
+                 * @description The version number of the base image.
+                 * @example 3.19
+                 */
                 version: string;
                 /**
                  * Format: uri
@@ -15641,9 +15678,10 @@ export interface operations {
                 sort?: components["parameters"]["SortParam"];
                 /** @description In a list return, the data associated with the page number and size returned. 20 results per page, page 2 would be `page[size]=20&page[number]=2` */
                 page?: components["parameters"]["PageParam"];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
                     /**
                      * @description Get only Announcements that have been resolved, or only those that have not.
@@ -15708,12 +15746,12 @@ export interface operations {
             query?: {
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
                 sort?: components["parameters"]["SortParam"];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the credit's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the credit's current state. */
                     state?: string;
                     /** @description Use a text-based search to filter the credits. */
                     search?: string;
@@ -15805,15 +15843,14 @@ export interface operations {
                 page?: components["parameters"]["PageParam"];
                 /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
                 meta?: "due"[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[search]=value` search for the specified text on supported fields.
-                     *      */
+                    /** @description `filter[search]=value` search for the specified text on supported fields. */
                     search?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the invoice's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the invoice's current state. */
                     state?: string;
                     /** @description The start date from when to pull the invoices */
                     "range-start"?: components["schemas"]["DateTime"];
@@ -16459,52 +16496,40 @@ export interface operations {
                 meta?: ("instances_count" | "domains" | "ips")[];
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: ("creators" | "images" | "stack_builds" | "stacks" | "environments")[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[creator]=account-ID` filter for containers matching a particular creator, such as `account-ID` or `environment-ID`
-                     *      */
+                    /** @description `filter[creator]=account-ID` filter for containers matching a particular creator, such as `account-ID` or `environment-ID` */
                     creator?: string;
-                    /** @description `filter[identifier]=value` List only those containers matching this identifier. May return multiple results.
-                     *      */
+                    /** @description `filter[identifier]=value` List only those containers matching this identifier. May return multiple results. */
                     identifier?: string;
-                    /** @description `filter[search]=value` search containers for a value associated with a field on the given container(s).
-                     *      */
+                    /** @description `filter[search]=value` search containers for a value associated with a field on the given container(s). */
                     search?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the container's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the container's current state. */
                     state?: string;
-                    /** @description `filter[deprecated]=true` filter for containers that are deprecated.
-                     *      */
+                    /** @description `filter[deprecated]=true` filter for containers that are deprecated. */
                     deprecated?: string;
-                    /** @description `filter[service]=value` service filtering will allow you to filter by service type: `loadbalancer`, `discovery`, `vpn`.
-                     *      */
+                    /** @description `filter[service]=value` service filtering will allow you to filter by service type: `loadbalancer`, `discovery`, `vpn`. */
                     service?: string;
-                    /** @description `filter[public_network]=value` public network filtering will allow you to filter by the containers network settings: `enabled`, `disabled`, `egress-only`.
-                     *      */
+                    /** @description `filter[public_network]=value` public network filtering will allow you to filter by the containers network settings: `enabled`, `disabled`, `egress-only`. */
                     public_network?: string;
-                    /** @description `filter[image]=ID` image filtering by ID.  Submit the ID of the image you wish to filter for and the return will be any containers currently using the image.
-                     *      */
+                    /** @description `filter[image]=ID` image filtering by ID.  Submit the ID of the image you wish to filter for and the return will be any containers currently using the image. */
                     image?: string;
-                    /** @description `filter[environment]=ID` environment filtering by ID.  Submit the ID of the environment you wish to filter for and the return will be any containers in that environment.
-                     *      */
+                    /** @description `filter[environment]=ID` environment filtering by ID.  Submit the ID of the environment you wish to filter for and the return will be any containers in that environment. */
                     environment?: string;
-                    /** @description `filter[tags]=tagone,tagtwo,tagthree` container filtering using server tags. If the container has the tags you submit it will be part of the return.
-                     *      */
+                    /** @description `filter[tags]=tagone,tagtwo,tagthree` container filtering using server tags. If the container has the tags you submit it will be part of the return. */
                     tags?: string;
-                    /** @description `filter[stack]=ID` stack filtering by ID.  Submit the ID of the stack you wish to filter for and the return will be any containers deployed associated with 'containers' from the stack.
-                     *      */
+                    /** @description `filter[stack]=ID` stack filtering by ID.  Submit the ID of the stack you wish to filter for and the return will be any containers deployed associated with 'containers' from the stack. */
                     stack?: string;
-                    /** @description `filter[deployment]=v1,v2` filter containers by deployment(s).
-                     *      */
+                    /** @description `filter[deployment]=v1,v2` filter containers by deployment(s). */
                     deployment?: string;
                     /** @description The start date from when to pull the containers */
                     "range-start"?: components["schemas"]["DateTime"];
                     /** @description The end date from when to pull the containers */
                     "range-end"?: components["schemas"]["DateTime"];
-                    /** @description `filter[deployment_strategy]=strategy` deployment strategy filtering by strategy string.  Submit the deployment strategy (example: "function") of the strategy you wish to filter for and the return will be any containers matching that description.
-                     *      */
+                    /** @description `filter[deployment_strategy]=strategy` deployment strategy filtering by strategy string.  Submit the deployment strategy (example: "function") of the strategy you wish to filter for and the return will be any containers matching that description. */
                     deployment_strategy?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -16851,18 +16876,16 @@ export interface operations {
                 include?: ("creators" | "servers" | "locations" | "integrations" | "containers" | "environments")[];
                 /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
                 meta?: ("node" | "sdn_pool_ips")[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the instance's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the instance's current state. */
                     state?: string;
-                    /** @description `filter[search]=value` search instances for a value associated with a field on the given instance(s).
-                     *      */
+                    /** @description `filter[search]=value` search instances for a value associated with a field on the given instance(s). */
                     search?: string;
-                    /** @description `filter[server]=ID` server filtering by ID. Submit the ID of the server you wish to filter for and the return will be any instances of the container currently deployed to the given server.
-                     *      */
+                    /** @description `filter[server]=ID` server filtering by ID. Submit the ID of the server you wish to filter for and the return will be any instances of the container currently deployed to the given server. */
                     server?: string;
                     /** @description The start date from when to pull the instances */
                     "range-start"?: components["schemas"]["DateTime"];
@@ -17150,9 +17173,10 @@ export interface operations {
     getInstanceTelemetryReport: {
         parameters: {
             query?: {
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
                     /** @description The start date from when to pull instance telemetry data */
                     "range-start"?: components["schemas"]["DateTime"];
@@ -17454,12 +17478,12 @@ export interface operations {
             query?: {
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: "creators"[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the DNS Zone's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the DNS Zone's current state. */
                     state?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -17691,12 +17715,12 @@ export interface operations {
             query?: {
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: components["parameters"]["RecordIncludeParam"];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the DNS record's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the DNS record's current state. */
                     state?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -17876,12 +17900,12 @@ export interface operations {
     getTLSGenerationAttempts: {
         parameters: {
             query?: {
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[domain]=value` filter the return for TLS attempts by domain.
-                     *      */
+                    /** @description `filter[domain]=value` filter the return for TLS attempts by domain. */
                     domain?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -17944,15 +17968,14 @@ export interface operations {
     getUserSuppliedCertificates: {
         parameters: {
             query?: {
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[domain]=value1` filter user certificates by associated domain.
-                     *      */
+                    /** @description `filter[domain]=value1` filter user certificates by associated domain. */
                     domain?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow filtering by the current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow filtering by the current state. */
                     state?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -18058,7 +18081,6 @@ export interface operations {
                      *
                      *     **deprecate**: Cycle will deprecate this certificate, and try to find another usable certificate. If none exists, it will generate a new one
                      *     for the applicable domains.
-                     *
                      * @enum {string}
                      */
                     action: "deprecate";
@@ -18087,24 +18109,20 @@ export interface operations {
                 meta?: ("containers" | "containers_count" | "instances_count")[];
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: ("creators" | "stacks")[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[creator]=account-ID` filter for environments matching a particular creator, such as `account-ID`.
-                     *      */
+                    /** @description `filter[creator]=account-ID` filter for environments matching a particular creator, such as `account-ID`. */
                     creator?: string;
-                    /** @description `filter[identifier]=value` List only those environments matching this identifier. May return multiple results.
-                     *      */
+                    /** @description `filter[identifier]=value` List only those environments matching this identifier. May return multiple results. */
                     identifier?: string;
-                    /** @description `filter[search]=value` search for a value associated with a field on the given environment(s).
-                     *      */
+                    /** @description `filter[search]=value` search for a value associated with a field on the given environment(s). */
                     search?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the environment's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the environment's current state. */
                     state?: string;
-                    /** @description `filter[stack_build]=ID` stack build filtering by ID.  Submit the ID of the stack build you wish to filter for and the return sill be any environments that have the stack build deployed to them.
-                     *      */
+                    /** @description `filter[stack_build]=ID` stack build filtering by ID.  Submit the ID of the stack build you wish to filter for and the return sill be any environments that have the stack build deployed to them. */
                     stack_build?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -18411,15 +18429,15 @@ export interface operations {
         requestBody?: {
             content: {
                 "application/json": {
-                    /** @description Defines which deployment containers to include in the stack export. By default, no containers tagged in a deployment are exported.
+                    /**
+                     * @description Defines which deployment containers to include in the stack export. By default, no containers tagged in a deployment are exported.
                      *     This option includes all containers with the specific, comma separated deployment tags in the final output in addition to the
                      *     containers that are not part of any deployment.
-                     *      */
+                     */
                     deployment_tags?: string[];
                     /**
                      * @description When set to true, Cycle will resolve image origins and inline them into the stack, essentially making this stack portable outside the hub it's currently used in.
                      *     By default, this is set to false, and the export will just reference existing image sources used by this stack in your hub by ID.
-                     *
                      * @default false
                      */
                     resolve_origins?: boolean;
@@ -18444,21 +18462,18 @@ export interface operations {
     getScopedVariables: {
         parameters: {
             query?: {
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[identifier]=value` List only those scoped variables matching this identifier. May return multiple results.
-                     *      */
+                    /** @description `filter[identifier]=value` List only those scoped variables matching this identifier. May return multiple results. */
                     identifier?: string;
-                    /** @description `filter[container]=value` List only those scoped variables assigned to the specified container ID.
-                     *      */
+                    /** @description `filter[container]=value` List only those scoped variables assigned to the specified container ID. */
                     container?: string;
-                    /** @description `filter[search]=value` search for a value associated with a field on the given scoped variable(s).
-                     *      */
+                    /** @description `filter[search]=value` search for a value associated with a field on the given scoped variable(s). */
                     search?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the scoped variable's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the scoped variable's current state. */
                     state?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -18794,9 +18809,10 @@ export interface operations {
     getLoadBalancerTelemetryReport: {
         parameters: {
             query: {
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter: {
                     /** @description The start date from when to pull load balancer telemetry data */
                     "range-start"?: components["schemas"]["DateTime"];
@@ -18832,14 +18848,14 @@ export interface operations {
     getLoadBalancerLatestTelemetryReport: {
         parameters: {
             query: {
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
                  *     ### Required Filter
                  *     On this endpoint, you MUST pass filter[controller].
-                 *      */
+                 */
                 filter: {
-                    /** @description `filter[controller]=port-123` filter for a specific controller to load telemetry for. THIS FILTER IS REQUIRED.
-                     *      */
+                    /** @description `filter[controller]=port-123` filter for a specific controller to load telemetry for. THIS FILTER IS REQUIRED. */
                     controller?: string;
                 };
             };
@@ -19119,18 +19135,16 @@ export interface operations {
             query?: {
                 /** @description In a list return, the data associated with the page number and size returned. 20 results per page, page 2 would be `page[size]=20&page[number]=2` */
                 page?: components["parameters"]["PageParam"];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[identifier]=value` List only those environments matching this identifier. May return multiple results.
-                     *      */
+                    /** @description `filter[identifier]=value` List only those environments matching this identifier. May return multiple results. */
                     identifier?: string;
-                    /** @description `filter[search]=value` search hubs for a value associated with a field on the given Hub(s).
-                     *      */
+                    /** @description `filter[search]=value` search hubs for a value associated with a field on the given Hub(s). */
                     search?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Hub's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Hub's current state. */
                     state?: string;
                 };
             };
@@ -19346,42 +19360,38 @@ export interface operations {
             query?: {
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: ("users" | "components" | "creators" | "images" | "stack_builds" | "stacks" | "environments")[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[search]=value` search activities for a value associated with a field on the given activity(s).
-                     *      */
+                    /** @description `filter[search]=value` search activities for a value associated with a field on the given activity(s). */
                     search?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the activity's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the activity's current state. */
                     state?: string;
-                    /** @description `filter[user]=ID` user filtering by ID. Submit the ID of the user you wish to filter for and the return will be any activity from that user.
-                     *      */
+                    /** @description `filter[user]=ID` user filtering by ID. Submit the ID of the user you wish to filter for and the return will be any activity from that user. */
                     user?: string;
-                    /** @description `filter[environment]=ID` environment filtering by ID. Submit the ID of the environment you wish to filter for and the return will be any activity from that environment.
-                     *      */
+                    /** @description `filter[environment]=ID` environment filtering by ID. Submit the ID of the environment you wish to filter for and the return will be any activity from that environment. */
                     environment?: string;
-                    /** @description `filter[container]=ID` container filtering by ID. Submit the ID of the container you wish to filter for and the return will be any activity from that container.
-                     *      */
+                    /** @description `filter[container]=ID` container filtering by ID. Submit the ID of the container you wish to filter for and the return will be any activity from that container. */
                     container?: string;
-                    /** @description `filter[virtual-machine]=ID` virtual machine filtering by ID. Submit the ID of the virtual machine you wish to filter for and the return will be any activity from that virtual machine.
-                     *      */
+                    /** @description `filter[virtual-machine]=ID` virtual machine filtering by ID. Submit the ID of the virtual machine you wish to filter for and the return will be any activity from that virtual machine. */
                     "virtual-machine"?: string;
-                    /** @description `filter[instance]=ID` instance filtering by ID. Submit the ID of the instance you wish to filter for and the return will be any activity from that instance.
-                     *      */
+                    /** @description `filter[instance]=ID` instance filtering by ID. Submit the ID of the instance you wish to filter for and the return will be any activity from that instance. */
                     instance?: string;
-                    /** @description `filter[server]=ID` server filtering by ID. Submit the ID of the server you wish to filter for and the return will be any activity from that server.
-                     *      */
+                    /** @description `filter[server]=ID` server filtering by ID. Submit the ID of the server you wish to filter for and the return will be any activity from that server. */
                     server?: string;
-                    /** @description `filter[events]=value` filter by event names.
-                     *      */
+                    /**
+                     * @description `filter[events]=value` filter by event names.
+                     * @example filter[events]=environment.services.vpn.login
+                     */
                     events?: string;
-                    /** @description `filter[verbosity]=integer` filter the activity return by verbosity. The verbosity can be:
+                    /**
+                     * @description `filter[verbosity]=integer` filter the activity return by verbosity. The verbosity can be:
                      *       `0` - Activity that users would find useful.
                      *       `1` - Activity that can be useful when tracking down how something happened.
                      *       `2` - Full activity, can be useful in debugging problems.
-                     *      */
+                     */
                     verbosity?: number;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -19675,18 +19685,16 @@ export interface operations {
                 sort?: components["parameters"]["SortParam"];
                 /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
                 meta?: "definition"[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for. Supports filtering by state and a text search.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[state]=value` Filters integrations by their current state. For example, `filter[state]=active` would return only integrations in an active state.
-                     *      */
+                    /** @description `filter[state]=value` Filters integrations by their current state. For example, `filter[state]=active` would return only integrations in an active state. */
                     state?: string;
-                    /** @description `filter[search]=value` Performs a text search across relevant fields of the integrations. For example, `filter[search]=example` would return integrations that have "example" in any of the searchable fields
-                     *      */
+                    /** @description `filter[search]=value` Performs a text search across relevant fields of the integrations. For example, `filter[search]=example` would return integrations that have "example" in any of the searchable fields */
                     search?: string;
-                    /** @description `filter[category]=value` Filters integrations by their category. For example, `filter[category]=infrastructure-provider` would return only integrations that are capable of provisioning infrastructure.
-                     *      */
+                    /** @description `filter[category]=value` Filters integrations by their category. For example, `filter[category]=infrastructure-provider` would return only integrations that are capable of provisioning infrastructure. */
                     category?: string;
                 };
             };
@@ -20383,24 +20391,20 @@ export interface operations {
                 meta?: "containers_count"[];
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: ("creators" | "stack_builds" | "stacks" | "sources" | "integrations")[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[identifier]=value` List only those images matching this identifier. May return multiple results.
-                     *      */
+                    /** @description `filter[identifier]=value` List only those images matching this identifier. May return multiple results. */
                     identifier?: string;
-                    /** @description `filter[search]=value` search for a value associated with a field on the given Image(s).
-                     *      */
+                    /** @description `filter[search]=value` search for a value associated with a field on the given Image(s). */
                     search?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Image's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Image's current state. */
                     state?: string;
-                    /** @description `filter[source_type]=value` filter images by the Image source's type.  Can be: `direct`, `stack-build`, or `bucket`
-                     *      */
+                    /** @description `filter[source_type]=value` filter images by the Image source's type.  Can be: `direct`, `stack-build`, or `bucket` */
                     source_type?: string;
-                    /** @description `filter[source_id]=ID` Image filtering by source ID.  Submit the ID of the Image source you wish to filter for and the return will be any Images created from that source.
-                     *      */
+                    /** @description `filter[source_id]=ID` Image filtering by source ID.  Submit the ID of the Image source you wish to filter for and the return will be any Images created from that source. */
                     source_id?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -20680,18 +20684,16 @@ export interface operations {
                 meta?: "images_count"[];
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: ("creators" | "integrations")[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[identifier]=value` List only those image sources matching this identifier. May return multiple results.
-                     *      */
+                    /** @description `filter[identifier]=value` List only those image sources matching this identifier. May return multiple results. */
                     identifier?: string;
-                    /** @description `filter[search]=value` search for a value associated with a field on the given Image Source(s).
-                     *      */
+                    /** @description `filter[search]=value` search for a value associated with a field on the given Image Source(s). */
                     search?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Image Source's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Image Source's current state. */
                     state?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -20901,12 +20903,12 @@ export interface operations {
     getInfrastructureSummary: {
         parameters: {
             query?: {
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[cluster]=value` return an infrastructure summary only for the specified cluster.
-                     *      */
+                    /** @description `filter[cluster]=value` return an infrastructure summary only for the specified cluster. */
                     cluster?: string;
                 };
             };
@@ -20992,21 +20994,18 @@ export interface operations {
             query?: {
                 /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
                 meta?: "containers"[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[location]=value` List only those attached volumes available at the specified location.
-                     *      */
+                    /** @description `filter[location]=value` List only those attached volumes available at the specified location. */
                     location?: string;
-                    /** @description `filter[server-id]=value` List only those attached volumes attached to the specified server.
-                     *      */
+                    /** @description `filter[server-id]=value` List only those attached volumes attached to the specified server. */
                     server?: string;
-                    /** @description `filter[search]=value` List only those attached volumes within the specified cluster.
-                     *      */
+                    /** @description `filter[search]=value` List only those attached volumes within the specified cluster. */
                     cluster?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the attached volume's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the attached volume's current state. */
                     state?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -21084,10 +21083,11 @@ export interface operations {
     getExternalVolume: {
         parameters: {
             query?: {
-                /** @description A comma-separated list of meta values. Meta values will show up under a resource's `meta` field.
+                /**
+                 * @description A comma-separated list of meta values. Meta values will show up under a resource's `meta` field.
                  *     In the case of applying a meta to a collection of resources, each resource will have its own relevant meta data.
                  *     In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled.
-                 *      */
+                 */
                 meta?: "containers"[];
             };
             header?: never;
@@ -21293,21 +21293,18 @@ export interface operations {
                 page?: components["parameters"]["PageParam"];
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: ("integrations" | "models" | "locations")[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[search]=value` search for a value associated with a field on the given auto-scale group(s).
-                     *      */
+                    /** @description `filter[search]=value` search for a value associated with a field on the given auto-scale group(s). */
                     search?: string;
-                    /** @description `filter[cluster]=value` return a list of auto-scale groups that are associated with the specified cluster.
-                     *      */
+                    /** @description `filter[cluster]=value` return a list of auto-scale groups that are associated with the specified cluster. */
                     cluster?: string;
-                    /** @description `filter[identifier]=value` list only those auto-scale groups matching this identifier. May return multiple results.
-                     *      */
+                    /** @description `filter[identifier]=value` list only those auto-scale groups matching this identifier. May return multiple results. */
                     identifier?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the provider's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the provider's current state. */
                     state?: string;
                 };
             };
@@ -21499,12 +21496,12 @@ export interface operations {
                 sort?: components["parameters"]["SortParam"];
                 /** @description In a list return, the data associated with the page number and size returned. 20 results per page, page 2 would be `page[size]=20&page[number]=2` */
                 page?: components["parameters"]["PageParam"];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[location_ids]=value` List only those provider servers matching this location. May return multiple results.
-                     *      */
+                    /** @description `filter[location_ids]=value` List only those provider servers matching this location. May return multiple results. */
                     location_ids?: string;
                 };
             };
@@ -22060,24 +22057,20 @@ export interface operations {
                 meta?: ("node" | "instances_count")[];
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: ("locations" | "models" | "integrations" | "clusters")[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the provider's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the provider's current state. */
                     state?: string;
-                    /** @description `filter[tags]=tagone,tagtwo,tagthree` filtering by Server tag.  Enter one or more tags (comma separated) and the return will include servers that match any tags in the list.
-                     *      */
+                    /** @description `filter[tags]=tagone,tagtwo,tagthree` filtering by Server tag.  Enter one or more tags (comma separated) and the return will include servers that match any tags in the list. */
                     tags?: string;
-                    /** @description `filter[cluster]=clusterIdentifier` filtering by cluster.  Enter the cluster identifier and the return will include servers belonging to the specified cluster.
-                     *      */
+                    /** @description `filter[cluster]=clusterIdentifier` filtering by cluster.  Enter the cluster identifier and the return will include servers belonging to the specified cluster. */
                     cluster?: string;
-                    /** @description `filter[location]=location` filtering by location.  Enter the location id and the return will include servers belonging to the specified location.
-                     *      */
+                    /** @description `filter[location]=location` filtering by location.  Enter the location id and the return will include servers belonging to the specified location. */
                     location?: string;
-                    /** @description `filter[providers]=providerone,providertwo` filtering by provider.  Enter one or more providers (commas separated) and the return will include servers that match any providers in the list.
-                     *      */
+                    /** @description `filter[providers]=providerone,providertwo` filtering by provider.  Enter one or more providers (commas separated) and the return will include servers that match any providers in the list. */
                     providers?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -22283,9 +22276,10 @@ export interface operations {
     getServerTelemetry: {
         parameters: {
             query?: {
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
                     /** @description The start date from when to pull Server telemetry data */
                     "range-start"?: components["schemas"]["DateTime"];
@@ -22386,12 +22380,12 @@ export interface operations {
     getServerTags: {
         parameters: {
             query?: {
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[cluster]=clusterone,clustertwo` filtering by cluster.  Enter one or more clusters (commas separated) and the return will include tags from servers that match any cluster(s) in the list.
-                     *      */
+                    /** @description `filter[cluster]=clusterone,clustertwo` filtering by cluster.  Enter one or more clusters (commas separated) and the return will include tags from servers that match any cluster(s) in the list. */
                     cluster?: string;
                 };
             };
@@ -22475,21 +22469,18 @@ export interface operations {
             query?: {
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: ("servers" | "integrations" | "locations")[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[available]=true` filter for IPs that are available for use.
-                     *      */
+                    /** @description `filter[available]=true` filter for IPs that are available for use. */
                     available?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the IP's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the IP's current state. */
                     state?: string;
-                    /** @description `filter[server]=ID` server filtering by ID. Submit the ID of the server you wish to filter for and the return will be any IP pool associated with that server.
-                     *      */
+                    /** @description `filter[server]=ID` server filtering by ID. Submit the ID of the server you wish to filter for and the return will be any IP pool associated with that server. */
                     server?: string;
-                    /** @description `filter[location]=ID` location filtering by ID. Submit the ID of the location you wish to filter by.
-                     *      */
+                    /** @description `filter[location]=ID` location filtering by ID. Submit the ID of the location you wish to filter by. */
                     location?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -22672,19 +22663,18 @@ export interface operations {
             query?: {
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: "creators"[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
                     /** @description The start date from when to fetch Jobs */
                     "range-start"?: components["schemas"]["DateTime"];
                     /** @description The end date from when to fetch Jobs */
                     "range-end"?: components["schemas"]["DateTime"];
-                    /** @description `filter[search]=value` search jobs for a value associated with a field on the given job(s).
-                     *      */
+                    /** @description `filter[search]=value` search jobs for a value associated with a field on the given job(s). */
                     search?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the job's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the job's current state. */
                     state?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -22765,11 +22755,12 @@ export interface operations {
     getMetrics: {
         parameters: {
             query?: {
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
                  *
                  *     To search via labels, use `label:<label key>` as the filter. For example in URL parameters, `filter[label:test]=abc`.
-                 *      */
+                 */
                 filter?: {
                     /** @description Specify the environment associated with the metrics. */
                     environment?: components["schemas"]["ID"];
@@ -22821,9 +22812,10 @@ export interface operations {
     generateAggregatedMetrics: {
         parameters: {
             query?: {
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
                     /** @description The start date from when to pull metrics. Providing 'time' in the post-body criteria field will override this filter. */
                     "range-start"?: components["schemas"]["DateTime"];
@@ -22870,11 +22862,12 @@ export interface operations {
     getEvents: {
         parameters: {
             query?: {
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
                  *
                  *     To search via labels, use `label:<label key>` as the filter. For example in URL parameters, `filter[label:test]=abc`.
-                 *      */
+                 */
                 filter?: {
                     /** @description Specify the environment associated with the events. */
                     environment?: components["schemas"]["ID"];
@@ -22926,9 +22919,10 @@ export interface operations {
     generateAggregatedEvents: {
         parameters: {
             query?: {
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
                     /** @description The start date from when to pull events. Providing 'time' in the post-body criteria field will override this filter. */
                     "range-start"?: components["schemas"]["DateTime"];
@@ -23010,15 +23004,17 @@ export interface operations {
                     }[];
                     /** @description Indicates that only locally cached log lines should be queried.  If true, logs in object storage will not be returned. */
                     local?: boolean | null;
-                    /** @description Describes the maximum number of log lines the query will return. */
+                    /**
+                     * @description Describes the maximum number of log lines the query will return.
+                     * @example 1000
+                     */
                     limit?: number | null;
                     /**
                      * @description Context window size indicates how many log lines after a match to return in the response.
                      *     This allows greater context around the matched lines.
-                     *
                      * @default 5
                      */
-                    context_window_size?: number;
+                    context_window_size?: number | null;
                 };
             };
         };
@@ -23065,18 +23061,16 @@ export interface operations {
             query?: {
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: ("creators" | "name" | "components")[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[identifier]=value` List only those pipelines matching this identifier. May return multiple results.
-                     *      */
+                    /** @description `filter[identifier]=value` List only those pipelines matching this identifier. May return multiple results. */
                     identifier?: string;
-                    /** @description `filter[search]=value` search for a value associated with a field on the given pipelines(s).
-                     *      */
+                    /** @description `filter[search]=value` search for a value associated with a field on the given pipelines(s). */
                     search?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Pipeline's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Pipeline's current state. */
                     state?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -23430,9 +23424,10 @@ export interface operations {
                     advanced?: {
                         /** @description Sub queue allows multiple concurrent pipeline runs. */
                         sub_queue?: string | null;
-                        /** @description To enable skip locks, pass the current UNIX timestamp. Must be accurate within 10 minutes of the current UTC time.
+                        /**
+                         * @description To enable skip locks, pass the current UNIX timestamp. Must be accurate within 10 minutes of the current UTC time.
                          *     This will skip lock checks when running a pipeline - the user takes all risk of ensuring two pipeline runs won't make conflicting changes.
-                         *      */
+                         */
                         skip_locks?: number | null;
                     };
                 };
@@ -23456,15 +23451,14 @@ export interface operations {
     getPipelineTriggerKeys: {
         parameters: {
             query?: {
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[search]=value` search for a value associated with a field on the given Trigger Key(s).
-                     *      */
+                    /** @description `filter[search]=value` search for a value associated with a field on the given Trigger Key(s). */
                     search?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Trigger Key's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Trigger Key's current state. */
                     state?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -23629,18 +23623,16 @@ export interface operations {
             query?: {
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: ("creators" | "environments")[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[environment]=ID` Filter networks based on linked environment. Submit the ID of the environment you wish to filter for.
-                     *      */
+                    /** @description `filter[environment]=ID` Filter networks based on linked environment. Submit the ID of the environment you wish to filter for. */
                     environment?: string;
-                    /** @description `filter[search]=value` search for a value associated with a field on the given Network(s).
-                     *      */
+                    /** @description `filter[search]=value` search for a value associated with a field on the given Network(s). */
                     search?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the network's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the network's current state. */
                     state?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -23904,18 +23896,16 @@ export interface operations {
                 meta?: ("containers_count" | "builds_count")[];
                 /** @description A comma separated list of include values. Included resources will show up under the root document's `include` field, with the key being the id of the included resource. In the case of applying an include to a collection of resources, if two resources share the same include, it will only appear once in the return. */
                 include?: "creators"[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[identifier]=value` List only those stacks matching this identifier. May return multiple results.
-                     *      */
+                    /** @description `filter[identifier]=value` List only those stacks matching this identifier. May return multiple results. */
                     identifier?: string;
-                    /** @description `filter[search]=value` search for a value associated with a field on the given Stack(s).
-                     *      */
+                    /** @description `filter[search]=value` search for a value associated with a field on the given Stack(s). */
                     search?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Stack's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Stack's current state. */
                     state?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -24174,15 +24164,14 @@ export interface operations {
             query?: {
                 /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
                 meta?: "containers_count"[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[search]=value` search for a value associated with a field on the given Stack Build(s).
-                     *      */
+                    /** @description `filter[search]=value` search for a value associated with a field on the given Stack Build(s). */
                     search?: string;
-                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Stack Build's current state.
-                     *      */
+                    /** @description `filter[state]=value1,value2` state filtering will allow you to filter by the Stack Build's current state. */
                     state?: string;
                 };
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
@@ -24367,34 +24356,32 @@ export interface operations {
     getVirtualMachines: {
         parameters: {
             query?: {
-                /** @description A comma-separated list of meta values. Meta values will show up under a resource's `meta` field.
+                /**
+                 * @description A comma-separated list of meta values. Meta values will show up under a resource's `meta` field.
                  *     In the case of applying a meta to a collection of resources, each resource will have its own relevant meta data.
                  *     In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled.
-                 *      */
+                 */
                 meta?: ("domains" | "ips" | "hypervisor_ips" | "server")[];
-                /** @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
+                /**
+                 * @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
                  *     In the case of applying an include to a collection of resources, if multiple resources share the same include, it will only appear once in the return.
-                 *      */
+                 */
                 include?: ("creators" | "environments" | "clusters" | "containers")[];
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[identifier]=value` List only those virtual machines matching this identifier. May return multiple results.
-                     *      */
+                    /** @description `filter[identifier]=value` List only those virtual machines matching this identifier. May return multiple results. */
                     identifier?: string;
-                    /** @description `filter[search]=value` Search virtual machines for a value associated with a field.
-                     *      */
+                    /** @description `filter[search]=value` Search virtual machines for a value associated with a field. */
                     search?: string;
-                    /** @description `filter[creator]=account-ID` Filter for virtual machines matching a particular creator, such as `account-<ID>` or `environment-<ID>`.
-                     *      */
+                    /** @description `filter[creator]=account-ID` Filter for virtual machines matching a particular creator, such as `account-<ID>` or `environment-<ID>`. */
                     creator?: string;
-                    /** @description `filter[environment]=ID` Filter virtual machines by environment ID. Submit the ID of the environment you wish to filter for.
-                     *      */
+                    /** @description `filter[environment]=ID` Filter virtual machines by environment ID. Submit the ID of the environment you wish to filter for. */
                     environment?: string;
                     /**
                      * @description `filter[state]=value` Filter virtual machines by their current state.
-                     *
                      * @enum {string}
                      */
                     state?: "new" | "starting" | "running" | "stopping" | "stopped" | "deleting" | "deleted";
@@ -24402,12 +24389,10 @@ export interface operations {
                     "range-start"?: components["schemas"]["DateTime"];
                     /** @description The end date from when to pull the virtual machines. */
                     "range-end"?: components["schemas"]["DateTime"];
-                    /** @description `filter[tags]=value` Filter virtual machines by their tags.
-                     *      */
+                    /** @description `filter[tags]=value` Filter virtual machines by their tags. */
                     tags?: string;
                     /**
                      * @description `filter[public_network]=value` Filter virtual machines by their public network status.
-                     *
                      * @enum {string}
                      */
                     public_network?: "enabled" | "disabled";
@@ -24441,14 +24426,16 @@ export interface operations {
     createVirtualMachine: {
         parameters: {
             query?: {
-                /** @description A comma-separated list of meta values. Meta values will show up under a resource's `meta` field.
+                /**
+                 * @description A comma-separated list of meta values. Meta values will show up under a resource's `meta` field.
                  *     In the case of applying a meta to a collection of resources, each resource will have its own relevant meta data.
                  *     In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled.
-                 *      */
+                 */
                 meta?: ("domains" | "ips" | "server")[];
-                /** @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
+                /**
+                 * @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
                  *     In the case of applying an include to a collection of resources, if multiple resources share the same include, it will only appear once in the return.
-                 *      */
+                 */
                 include?: ("creators" | "environments" | "clusters")[];
             };
             header?: never;
@@ -24497,14 +24484,16 @@ export interface operations {
     getVirtualMachine: {
         parameters: {
             query?: {
-                /** @description A comma-separated list of meta values. Meta values will show up under a resource's `meta` field.
+                /**
+                 * @description A comma-separated list of meta values. Meta values will show up under a resource's `meta` field.
                  *     In the case of applying a meta to a collection of resources, each resource will have its own relevant meta data.
                  *     In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled.
-                 *      */
+                 */
                 meta?: ("domains" | "ips" | "server" | "hypervisor_ips")[];
-                /** @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
+                /**
+                 * @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
                  *     In the case of applying an include to a collection of resources, if multiple resources share the same include, it will only appear once in the return.
-                 *      */
+                 */
                 include?: ("creators" | "environments" | "clusters" | "containers")[];
             };
             header?: never;
@@ -24718,25 +24707,21 @@ export interface operations {
     getVirtualMachineSshKeys: {
         parameters: {
             query?: {
-                /** @description ## Filter Field
+                /**
+                 * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
-                 *      */
+                 */
                 filter?: {
-                    /** @description `filter[identifier]=value` List only those SSH keys matching this identifier. May return multiple results.
-                     *      */
+                    /** @description `filter[identifier]=value` List only those SSH keys matching this identifier. May return multiple results. */
                     identifier?: string;
-                    /** @description `filter[search]=value` Search SSH keys for a value associated with a field.
-                     *      */
+                    /** @description `filter[search]=value` Search SSH keys for a value associated with a field. */
                     search?: string;
-                    /** @description `filter[creator]=account-ID` Filter for SSH keys matching a particular creator, such as `account-<ID>` or `environment-<ID>`.
-                     *      */
+                    /** @description `filter[creator]=account-ID` Filter for SSH keys matching a particular creator, such as `account-<ID>` or `environment-<ID>`. */
                     creator?: string;
-                    /** @description `filter[environment]=ID` Filter SSH keys by environment ID. Submit the ID of the environment you wish to filter for.
-                     *      */
+                    /** @description `filter[environment]=ID` Filter SSH keys by environment ID. Submit the ID of the environment you wish to filter for. */
                     environment?: string;
                     /**
                      * @description `filter[state]=value` Filter virtual machines by their current state.
-                     *
                      * @enum {string}
                      */
                     state?: "live" | "deleting" | "deleted";
@@ -24745,9 +24730,10 @@ export interface operations {
                     /** @description The end date from when to pull the virtual machines. */
                     "range-end"?: components["schemas"]["DateTime"];
                 };
-                /** @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
+                /**
+                 * @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
                  *     In the case of applying an include to a collection of resources, if multiple resources share the same include, it will only appear once in the return.
-                 *      */
+                 */
                 include?: ("creators" | "environments")[];
                 /** @description An array of sort values. To sort descending, put a `-` in front of the value, e.g. `-id`. */
                 sort?: components["parameters"]["SortParam"];
@@ -24778,9 +24764,10 @@ export interface operations {
     createVirtualMachineSshKey: {
         parameters: {
             query?: {
-                /** @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
+                /**
+                 * @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
                  *     In the case of applying an include to a collection of resources, if multiple resources share the same include, it will only appear once in the return.
-                 *      */
+                 */
                 include?: ("creators" | "environments")[];
             };
             header?: never;
@@ -24818,9 +24805,10 @@ export interface operations {
     getVirtualMachineSshKey: {
         parameters: {
             query?: {
-                /** @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
+                /**
+                 * @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
                  *     In the case of applying an include to a collection of resources, if multiple resources share the same include, it will only appear once in the return.
-                 *      */
+                 */
                 include?: ("creators" | "environments")[];
             };
             header?: never;
@@ -24876,9 +24864,10 @@ export interface operations {
     updateVirtualMachineSshKey: {
         parameters: {
             query?: {
-                /** @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
+                /**
+                 * @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
                  *     In the case of applying an include to a collection of resources, if multiple resources share the same include, it will only appear once in the return.
-                 *      */
+                 */
                 include?: ("creators" | "environments")[];
             };
             header?: never;
@@ -24979,9 +24968,10 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        /** @description Accepts an array of component lookup objects. Consists of the type of resource to look up,
+        /**
+         * @description Accepts an array of component lookup objects. Consists of the type of resource to look up,
          *     and the ID.
-         *      */
+         */
         requestBody?: {
             content: {
                 "application/json": {
