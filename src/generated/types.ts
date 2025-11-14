@@ -13783,7 +13783,7 @@ export interface components {
              * @description The current state of the pipeline run.
              * @enum {string}
              */
-            current: "queued" | "acquiring" | "running" | "complete" | "deleting" | "deleted";
+            current: "queued" | "acquiring" | "running" | "complete" | "cancelled" | "deleted";
         } & components["schemas"]["State"];
         /**
          * PipelineRunEvents
@@ -21123,7 +21123,17 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        /** @description Parameters for deleting a external volume. */
+        requestBody?: {
+            content: {
+                "application/json": {
+                    options?: {
+                        /** @description If source device is set to true, this will delete the underlying source device. */
+                        source_device?: boolean;
+                    };
+                };
+            };
+        };
         responses: {
             /** @description Returns a job descriptor. */
             202: {
@@ -22199,7 +22209,7 @@ export interface operations {
             content: {
                 "application/json": {
                     options?: {
-                        /** @description If force is set to true, this will force delete the hub, even if there are servers running on it. */
+                        /** @description If force is set to true, this will force delete the server, even if there are instances running on it. */
                         force?: boolean;
                     };
                 };
