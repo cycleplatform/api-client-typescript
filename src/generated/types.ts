@@ -14188,30 +14188,32 @@ export interface components {
             price: components["schemas"]["BillingAmount"];
         };
         /**
-         * ExternalVolumeAttachAction
-         * @description A task to attach an external volume.
+         * ExternalVolumeIncludes
+         * @description All includable resources linked to the given external volume.
          */
-        ExternalVolumeAttachAction: {
-            /**
-             * @description The name of the action to perform (attach). (enum property replaced by openapi-typescript)
-             * @enum {string}
-             */
-            action: "attach";
-            contents: components["schemas"]["ExternalVolumeAttachment"];
+        ExternalVolumeIncludes: {
+            servers?: {
+                [key: string]: components["schemas"]["Server"];
+            };
+            locations?: {
+                [key: string]: components["schemas"]["ProviderLocation"];
+            };
         };
         /**
-         * ExternalVolumeDetachAction
-         * @description A task to detach an external volume from an instance.
+         * ExternalVolumeServersReconfigureAction
+         * @description A task to reconfigure mountable destination servers for external volume.
          */
-        ExternalVolumeDetachAction: {
+        ExternalVolumeServersReconfigureAction: {
             /**
-             * @description The name of the action to perform (detach). (enum property replaced by openapi-typescript)
+             * @description The name of the action to perform (servers.reconfigure). (enum property replaced by openapi-typescript)
              * @enum {string}
              */
-            action: "detach";
+            action: "servers.reconfigure";
+            /** @description Contents contains an array of server ids to set as mountable destinations for the external volume. */
+            contents?: components["schemas"]["ID"][];
         };
         /** ExternalVolumeTask */
-        ExternalVolumeTasks: components["schemas"]["ExternalVolumeAttachAction"] | components["schemas"]["ExternalVolumeDetachAction"];
+        ExternalVolumeTask: components["schemas"]["ExternalVolumeServersReconfigureAction"];
         /**
          * ServerModelsIncludes
          * @description A resource associated with a server models.
@@ -20995,6 +20997,11 @@ export interface operations {
                 /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
                 meta?: "containers"[];
                 /**
+                 * @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
+                 *     In the case of applying an include to a collection of resources, if multiple resources share the same include, it will only appear once in the return.
+                 */
+                include?: ("servers" | "locations")[];
+                /**
                  * @description ## Filter Field
                  *     The filter field is a key-value object, where the key is what you would like to filter, and the value is the value you're filtering for.
                  */
@@ -21027,9 +21034,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["ExternalVolume"][];
-                        includes?: {
-                            creators?: components["schemas"]["CreatorInclude"];
-                        };
+                        includes?: components["schemas"]["ExternalVolumeIncludes"];
                     };
                 };
             };
@@ -21038,7 +21043,15 @@ export interface operations {
     };
     createExternalVolume: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
+                meta?: "containers"[];
+                /**
+                 * @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
+                 *     In the case of applying an include to a collection of resources, if multiple resources share the same include, it will only appear once in the return.
+                 */
+                include?: ("servers" | "locations")[];
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -21074,6 +21087,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["ExternalVolume"];
+                        includes?: components["schemas"]["ExternalVolumeIncludes"];
                     };
                 };
             };
@@ -21089,6 +21103,11 @@ export interface operations {
                  *     In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled.
                  */
                 meta?: "containers"[];
+                /**
+                 * @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
+                 *     In the case of applying an include to a collection of resources, if multiple resources share the same include, it will only appear once in the return.
+                 */
+                include?: ("servers" | "locations")[];
             };
             header?: never;
             path: {
@@ -21107,6 +21126,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["ExternalVolume"];
+                        includes?: components["schemas"]["ExternalVolumeIncludes"];
                     };
                 };
             };
@@ -21151,7 +21171,15 @@ export interface operations {
     };
     updateExternalVolume: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A comma separated list of meta values. Meta values will show up under a resource's `meta` field. In the case of applying a meta to a collection of resources, each resource will have it's own relevant meta data. In some rare cases, meta may not apply to individual resources, and may appear in the root document. These will be clearly labeled. */
+                meta?: "containers"[];
+                /**
+                 * @description A comma-separated list of include values. Included resources will show up under the root document's `include` field.
+                 *     In the case of applying an include to a collection of resources, if multiple resources share the same include, it will only appear once in the return.
+                 */
+                include?: ("servers" | "locations")[];
+            };
             header?: never;
             path: {
                 /** @description The ID of the external volume. */
@@ -21184,6 +21212,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["ExternalVolume"];
+                        includes?: components["schemas"]["ExternalVolumeIncludes"];
                     };
                 };
             };
@@ -21268,7 +21297,7 @@ export interface operations {
         /** @description Parameters for creating a new attached volume job. */
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["ExternalVolumeTasks"];
+                "application/json": components["schemas"]["ExternalVolumeTask"];
             };
         };
         responses: {
