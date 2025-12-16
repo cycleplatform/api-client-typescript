@@ -2640,6 +2640,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/infrastructure/external-volumes/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create External Volumes Job
+         * @description Create a job for external volumes.
+         *
+         *     Requires the `external-volumes-manage` capability.
+         */
+        post: operations["createExternalVolumesJob"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/infrastructure/external-volumes/{externalVolumeId}": {
         parameters: {
             query?: never;
@@ -8149,8 +8171,13 @@ export interface components {
             origin: components["schemas"]["StackSpecImageOrigin"] | components["schemas"]["StackVariable"];
             /** @description Additional details applied when building an image. */
             build?: ({
+                /**
+                 * @description If true, will skip using /dev/shm when building an image on factory, which is limited to `6.5GB`. Allows for building much larger images, up to `20GB`.
+                 * @default false
+                 */
+                use_disk: boolean;
                 /** @description A map of build arguments applied to the image at build time. */
-                args: {
+                args?: {
                     [key: string]: string;
                 } | components["schemas"]["StackVariable"];
             } | null) | components["schemas"]["StackVariable"];
@@ -9648,9 +9675,9 @@ export interface components {
              * @description The current state of the node.
              * @enum {string}
              */
-            current: "new" | "offline" | "authorizing" | "online" | "decommissioned";
+            current: "new" | "offline" | "authorizing" | "online" | "decommissioned" | "deleted";
             changed: components["schemas"]["DateTime"];
-            desired?: ("new" | "offline" | "authorizing" | "online" | "decommissioned") | null;
+            desired?: ("new" | "offline" | "authorizing" | "online" | "decommissioned" | "deleted") | null;
         } & components["schemas"]["State"];
         /**
          * ServerStatsNetwork
@@ -12296,7 +12323,7 @@ export interface components {
              * @description The activity event.
              * @enum {string}
              */
-            event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.services.scheduler.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.services.scheduler.task.reconfigure" | "environment.services.vpn.user.create" | "environment.services.vpn.login" | "environment.services.vpn.reset" | "environment.services.vpn.task.reset" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.task.deployments.reconfigure" | "environment.deployments.reconfigure" | "environment.task.monitoring.reconfigure" | "environment.monitoring.reconfigure" | "environment.deployments.prune" | "environment.deployment.start" | "environment.deployment.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.role.update" | "hub.role.delete" | "hub.role.create" | "hub.role.task.delete" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "hub.integration.create" | "hub.integration.update" | "hub.integration.delete" | "hub.integration.task.verify" | "hub.integration.task.delete" | "hub.inactive" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.restart" | "container.restart" | "container.task.reconfigure" | "container.reconfigure" | "container.task.volumes.reconfigure" | "container.function.trigger" | "container.function.task.trigger" | "container.volumes.reconfigure" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.deprecate" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instances.autoscale.up" | "container.instances.autoscale.down" | "container.instance.healthcheck.restarted" | "container.instance.volume.extend" | "container.instance.task.volume.extend" | "container.instance.healthcheck.failed" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migration.revert" | "container.instance.task.migration.start" | "container.instance.traffic-drain.reconfigure" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "dns.certificate.associate" | "dns.certificate.deprecate" | "dns.certificate.create" | "dns.certificate.task.deprecate" | "stack.update" | "stack.task.delete" | "stack.delete" | "stack.create" | "stack.task.prune" | "stack.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "infrastructure.virtual-providers.iso.create" | "infrastructure.virtual-providers.iso.generate" | "infrastructure.virtual-providers.iso.update" | "infrastructure.virtual-providers.iso.delete" | "infrastructure.virtual-providers.iso.task.delete" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.unquarantine" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.features.reconfigure" | "infrastructure.server.sharedfs.reconfigure" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.features.reconfigure" | "infrastructure.server.task.sharedfs.reconfigure" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "infrastructure.server.evacuation.start" | "infrastructure.server.task.evacuation.start" | "infrastructure.server.evacuation.reset" | "infrastructure.server.task.evacuation.reset" | "infrastructure.server.power-off" | "infrastructure.server.auth.reset" | "infrastructure.autoscale.group.create" | "infrastructure.autoscale.group.update" | "infrastructure.autoscale.group.task.delete" | "infrastructure.autoscale.group.delete" | "infrastructure.external-volume.create" | "infrastructure.external-volume.update" | "infrastructure.external-volume.task.delete" | "infrastructure.external-volume.delete" | "infrastructure.external-volume.task.servers.reconfigure" | "infrastructure.external-volume.servers.reconfigure" | "infrastructure.cluster.create" | "infrastructure.cluster.update" | "infrastructure.cluster.task.delete" | "infrastructure.cluster.delete" | "infrastructure.cluster.features.monitoring.tier.reconfigure" | "infrastructure.ips.pool.task.delete" | "infrastructure.ips.pool.create" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.run.completed" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create" | "virtual-machine.create" | "virtual-machine.initialize" | "virtual-machine.task.start" | "virtual-machine.start" | "virtual-machine.task.stop" | "virtual-machine.stop" | "virtual-machine.reconfigure" | "virtual-machine.task.reconfigure" | "virtual-machine.update" | "virtual-machine.task.delete" | "virtual-machine.delete" | "virtual-machine.sos.login" | "virtual-machine.rootpw.change" | "virtual-machine.task.volumes.reconfigure" | "virtual-machine.volumes.reconfigure" | "virtual-machine.ssh-key.create" | "virtual-machine.ssh-key.update" | "virtual-machine.ssh-key.task.delete" | "virtual-machine.ssh-key.delete" | "virtual-machine.ip.allocate" | "virtual-machine.task.ip.allocate" | "virtual-machine.ip.unallocate" | "virtual-machine.task.ip.unallocate";
+            event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.services.scheduler.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.services.scheduler.task.reconfigure" | "environment.services.vpn.user.create" | "environment.services.vpn.login" | "environment.services.vpn.reset" | "environment.services.vpn.task.reset" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.task.deployments.reconfigure" | "environment.deployments.reconfigure" | "environment.task.monitoring.reconfigure" | "environment.monitoring.reconfigure" | "environment.deployments.prune" | "environment.deployment.start" | "environment.deployment.stop" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.role.update" | "hub.role.delete" | "hub.role.create" | "hub.role.task.delete" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "hub.integration.create" | "hub.integration.update" | "hub.integration.delete" | "hub.integration.task.verify" | "hub.integration.task.delete" | "hub.inactive" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.restart" | "container.restart" | "container.task.reconfigure" | "container.reconfigure" | "container.task.volumes.reconfigure" | "container.function.trigger" | "container.function.task.trigger" | "container.volumes.reconfigure" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.deprecate" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instances.autoscale.up" | "container.instances.autoscale.down" | "container.instance.healthcheck.restarted" | "container.instance.volume.extend" | "container.instance.task.volume.extend" | "container.instance.healthcheck.failed" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migration.revert" | "container.instance.task.migration.start" | "container.instance.traffic-drain.reconfigure" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "dns.certificate.associate" | "dns.certificate.deprecate" | "dns.certificate.create" | "dns.certificate.task.deprecate" | "stack.update" | "stack.task.delete" | "stack.delete" | "stack.create" | "stack.task.prune" | "stack.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "infrastructure.virtual-providers.iso.create" | "infrastructure.virtual-providers.iso.generate" | "infrastructure.virtual-providers.iso.update" | "infrastructure.virtual-providers.iso.delete" | "infrastructure.virtual-providers.iso.task.delete" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.unquarantine" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.features.reconfigure" | "infrastructure.server.sharedfs.reconfigure" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.features.reconfigure" | "infrastructure.server.task.sharedfs.reconfigure" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "infrastructure.server.evacuation.start" | "infrastructure.server.task.evacuation.start" | "infrastructure.server.evacuation.reset" | "infrastructure.server.task.evacuation.reset" | "infrastructure.server.power-off" | "infrastructure.server.auth.reset" | "infrastructure.autoscale.group.create" | "infrastructure.autoscale.group.update" | "infrastructure.autoscale.group.task.delete" | "infrastructure.autoscale.group.delete" | "infrastructure.external-volume.create" | "infrastructure.external-volume.update" | "infrastructure.external-volume.task.delete" | "infrastructure.external-volume.delete" | "infrastructure.external-volume.task.servers.reconfigure" | "infrastructure.external-volume.task.attachment.reconfigure" | "infrastructure.external-volume.servers.reconfigure" | "infrastructure.external-volume.attachment.reconfigure" | "infrastructure.external-volumes.task.scan" | "infrastructure.cluster.create" | "infrastructure.cluster.update" | "infrastructure.cluster.task.delete" | "infrastructure.cluster.delete" | "infrastructure.cluster.features.monitoring.tier.reconfigure" | "infrastructure.ips.pool.task.delete" | "infrastructure.ips.pool.create" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.run.completed" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create" | "virtual-machine.create" | "virtual-machine.initialize" | "virtual-machine.task.start" | "virtual-machine.start" | "virtual-machine.task.stop" | "virtual-machine.stop" | "virtual-machine.reconfigure" | "virtual-machine.task.reconfigure" | "virtual-machine.update" | "virtual-machine.task.delete" | "virtual-machine.delete" | "virtual-machine.sos.login" | "virtual-machine.rootpw.change" | "virtual-machine.task.volumes.reconfigure" | "virtual-machine.volumes.reconfigure" | "virtual-machine.ssh-key.create" | "virtual-machine.ssh-key.update" | "virtual-machine.ssh-key.task.delete" | "virtual-machine.ssh-key.delete" | "virtual-machine.ip.allocate" | "virtual-machine.task.ip.allocate" | "virtual-machine.ip.unallocate" | "virtual-machine.task.ip.unallocate";
             /** @description A timestamp for when the activity took place. */
             time: components["schemas"]["DateTime"];
         };
@@ -13766,7 +13793,7 @@ export interface components {
             server_ids: components["schemas"]["ID"][];
             source: components["schemas"]["ExternalVolumeSource"];
             /** @description Information about the resource the external volume is currently attached to. */
-            attachment?: components["schemas"]["ExternalVolumeAttachment"];
+            attachment?: components["schemas"]["ExternalVolumeAttachment"] | null;
             /** @description Size of the external volume; may be null or omitted if the size has not yet been determined. */
             size?: components["schemas"]["DataSize"] | null;
             options: components["schemas"]["ExternalVolumeOptions"];
@@ -14200,6 +14227,37 @@ export interface components {
             };
         };
         /**
+         * ExternalVolumesScanAction
+         * @description A task to scan for available external volumes on a given cluster.
+         */
+        ExternalVolumesScanAction: {
+            /**
+             * @description The action for the external volumes job. (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            action: "scan";
+            /** @description Scan options used by the platform to create the job. */
+            contents: {
+                /** @description ID of the integration to scan for external volumes. */
+                integration_id: components["schemas"]["ID"];
+                /** @description ID of the location to scan for external volumes. */
+                location_id?: components["schemas"]["ID"];
+                /**
+                 * @description Type of external volume system to scan.
+                 * @enum {string}
+                 */
+                source_type: "san-iscsi" | "ceph-rbd" | "aws-ebs";
+                /** @description ID of the cluster to scan for external volumes. */
+                cluster: components["schemas"]["Identifier"];
+                /** @description Optional list of server IDs to limit the scan scope. */
+                server_ids?: components["schemas"]["ID"][] | null;
+                /** @description Optional namespace string to limit the scan scope. */
+                namespace?: string | null;
+            };
+        };
+        /** ExternalVolumesTask */
+        ExternalVolumesTask: components["schemas"]["ExternalVolumesScanAction"];
+        /**
          * ExternalVolumeServersReconfigureAction
          * @description A task to reconfigure mountable destination servers for external volume.
          */
@@ -14212,8 +14270,21 @@ export interface components {
             /** @description Contents contains an array of server ids to set as mountable destinations for the external volume. */
             contents?: components["schemas"]["ID"][];
         };
+        /**
+         * ExternalVolumeAttachmentReconfigureAction
+         * @description A task to reconfigure the attachment for external volume.
+         */
+        ExternalVolumeAttachmentReconfigureAction: {
+            /**
+             * @description The name of the action to perform (attachment.reconfigure). (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            action: "attachment.reconfigure";
+            /** @description Attachment configuration details. */
+            contents?: components["schemas"]["ExternalVolumeAttachment"];
+        };
         /** ExternalVolumeTask */
-        ExternalVolumeTask: components["schemas"]["ExternalVolumeServersReconfigureAction"];
+        ExternalVolumeTask: components["schemas"]["ExternalVolumeServersReconfigureAction"] | components["schemas"]["ExternalVolumeAttachmentReconfigureAction"];
         /**
          * ServerModelsIncludes
          * @description A resource associated with a server models.
@@ -17880,7 +17951,7 @@ export interface operations {
                      * @description The action that the job will take.
                      * @enum {string}
                      */
-                    action: "generateCert";
+                    action: "cert.generate";
                 };
             };
         };
@@ -20622,7 +20693,7 @@ export interface operations {
                      * @enum {string}
                      */
                     action: "prune";
-                    /** @description Additional contents needed by the platform to create the Job. */
+                    /** @description Additional contents needed by the platform to create the job. */
                     contents: {
                         /** @description A list of IDs to be pruned. */
                         source_ids: string[];
@@ -21088,6 +21159,34 @@ export interface operations {
                     "application/json": {
                         data: components["schemas"]["ExternalVolume"];
                         includes?: components["schemas"]["ExternalVolumeIncludes"];
+                    };
+                };
+            };
+            default: components["responses"]["DefaultError"];
+        };
+    };
+    createExternalVolumesJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Parameters for creating a new external volumes job. */
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ExternalVolumesTask"];
+            };
+        };
+        responses: {
+            /** @description Returns a job descriptor. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["JobDescriptor"];
                     };
                 };
             };
