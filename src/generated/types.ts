@@ -7316,8 +7316,6 @@ export interface components {
          */
         DiscoveryConfig: {
             empty_set_delay?: components["schemas"]["Duration"] | null;
-            /** @description When enabled, discovery will return both IPv6 and IPv4 when in legacy mode.  Otherwise, only IPv4 will be returned. */
-            dual_stack_legacy?: boolean | null;
             /** @description A mapping of hostnames to IP addresses for custom internal resolutions. Acts as a custom /etc/resolv.conf file that works environment wide. */
             hosts?: {
                 [key: string]: {
@@ -7329,6 +7327,12 @@ export interface components {
             } | null;
             /** @description A list of custom DNS resolver strings.  Can specifify domains or ips. */
             custom_resolvers?: string[] | null;
+            /** @description When enabled, discovery will return both IPv6 and IPv4 when in legacy mode.  Otherwise, only IPv4 will be returned. */
+            dual_stack_legacy?: boolean | null;
+            external_resolution?: {
+                /** @enum {string} */
+                preference: "default" | "ipv4" | "ipv6";
+            } | null;
         };
         /**
          * DiscoveryEnvironmentService
@@ -8737,8 +8741,6 @@ export interface components {
         /** StackSpecDiscoveryConfig */
         StackSpecDiscoveryConfig: {
             empty_set_delay?: components["schemas"]["Duration"] | components["schemas"]["StackVariable"] | null;
-            /** @description When enabled, discovery will return both IPv6 and IPv4 when in legacy mode.  Otherwise, only IPv4 will be returned. */
-            dual_stack_legacy?: boolean | components["schemas"]["StackVariable"] | null;
             /** @description A custom mapping of hosts - for forced resolution of specific IPs for a domain. */
             hosts?: ({
                 [key: string]: {
@@ -8748,6 +8750,12 @@ export interface components {
             } | null) | components["schemas"]["StackVariable"];
             /** @description A list of custom DNS resolver strings.  Can specifify domains or ips. */
             custom_resolvers?: string[] | components["schemas"]["StackVariable"] | null;
+            /** @description When enabled, discovery will return both IPv6 and IPv4 when in legacy mode.  Otherwise, only IPv4 will be returned. */
+            dual_stack_legacy?: boolean | components["schemas"]["StackVariable"] | null;
+            external_resolution?: {
+                /** @enum {string} */
+                preference: "default" | "ipv4" | "ipv6";
+            } | components["schemas"]["StackVariable"] | null;
         };
         /**
          * StackSpecDiscoveryService
@@ -14798,7 +14806,7 @@ export interface components {
          * EventType
          * @enum {string}
          */
-        EventType: "api.security_violation" | "console.ssh.login" | "console.ssh.login.failed" | "console.sos.login" | "console.sos.login.failed" | "container.instance.backup.completed" | "container.instance.backup.failed" | "container.instance.delete.failed" | "container.instance.error" | "container.instance.restart.max_restarts" | "container.instance.function.max_runtime" | "container.instance.healthcheck.failed" | "container.instance.healthcheck.recovered" | "container.instance.volume.extend.failed" | "container.instance.healthcheck.restarted" | "container.instance.migration.completed" | "container.instance.migration.failed" | "container.instance.network.interfaces.create.failed" | "container.instance.restart.failed" | "container.instance.start.failed" | "container.instance.start.privileged" | "container.instance.stop.failed" | "container.instances.autoscale.down" | "container.instances.autoscale.up" | "container.reconfigured.privileged" | "container.volumes.base.create.failed" | "container.volumes.create.failed" | "environment.service.auto_update" | "environment.service.lb.ips.sync.failed" | "environment.service.vpn.login.failed" | "environment.service.discovery.client.throttle.hit" | "environment.service.gateway.ips.sync.failed" | "infrastructure.cluster.resources.ram.full" | "infrastructure.server.compute.volumes.base.reconfigured" | "infrastructure.server.compute.full_restart" | "infrastructure.server.compute.sharedfs.mounts.mount" | "infrastructure.server.compute.sharedfs.mounts.mount.failed" | "infrastructure.server.compute.soft_restart" | "infrastructure.server.image.download.failed" | "infrastructure.server.monitoring.throttled" | "infrastructure.server.internal_api.throttled" | "infrastructure.server.manifest.sync.failed" | "infrastructure.server.mesh.connect.failed" | "infrastructure.server.neighbor.reachable" | "infrastructure.server.neighbor.rebuild" | "infrastructure.server.neighbors.rebuild" | "infrastructure.server.neighbor.unreachable" | "infrastructure.server.neighbor.upgraded" | "infrastructure.server.resources.load.high" | "infrastructure.server.resources.ram.full" | "infrastructure.server.resources.storage.volumes.base.full" | "infrastructure.server.resources.storage.cycle_pool.full" | "infrastructure.server.autoscale.up" | "infrastructure.server.sftp.lockdown" | "infrastructure.server.sftp.login" | "infrastructure.server.sftp.login.failed" | "infrastructure.server.evacuation.failed" | "infrastructure.server.evacuation.completed" | "infrastructure.server.checkin.missed" | "infrastructure.server.checkin.resumed" | "infrastructure.server.power.reboot" | "infrastructure.server.power.power-off" | "infrastructure.server.neighbor.incompatible";
+        EventType: "api.security_violation" | "console.ssh.login" | "console.ssh.login.failed" | "console.sos.login" | "console.sos.login.failed" | "container.instance.backup.completed" | "container.instance.backup.failed" | "container.instance.delete.failed" | "container.instance.error" | "container.instance.restart.max_restarts" | "container.instance.function.max_runtime" | "container.instance.healthcheck.failed" | "container.instance.healthcheck.recovered" | "container.instance.volume.extend.failed" | "container.instance.healthcheck.restarted" | "container.instance.migration.completed" | "container.instance.migration.failed" | "container.instance.network.interfaces.create.failed" | "container.instance.restart.failed" | "container.instance.start.failed" | "container.instance.start.privileged" | "container.instance.stop.failed" | "container.instances.autoscale.down" | "container.instances.autoscale.up" | "container.reconfigured.privileged" | "container.volumes.base.create.failed" | "container.volumes.create.failed" | "environment.service.auto_update" | "environment.service.lb.ips.sync.failed" | "environment.service.vpn.login.failed" | "environment.service.discovery.client.throttle.hit" | "environment.service.gateway.ips.sync.failed" | "infrastructure.cluster.resources.ram.full" | "infrastructure.server.compute.volumes.base.reconfigured" | "infrastructure.server.compute.full_restart" | "infrastructure.server.compute.sharedfs.mounts.mount" | "infrastructure.server.compute.sharedfs.mounts.mount.failed" | "infrastructure.server.compute.soft_restart" | "infrastructure.server.compute.start.failure" | "infrastructure.server.computer-spawner.full_restart" | "infrastructure.server.image.download.failed" | "infrastructure.server.monitoring.throttled" | "infrastructure.server.internal_api.throttled" | "infrastructure.server.manifest.sync.failed" | "infrastructure.server.mesh.connect.failed" | "infrastructure.server.neighbor.reachable" | "infrastructure.server.neighbor.rebuild" | "infrastructure.server.neighbors.rebuild" | "infrastructure.server.neighbor.unreachable" | "infrastructure.server.neighbor.upgraded" | "infrastructure.server.power.power_off" | "infrastructure.server.resources.load.high" | "infrastructure.server.resources.ram.full" | "infrastructure.server.resources.storage.volumes.base.full" | "infrastructure.server.resources.storage.cycle_pool.full" | "infrastructure.server.autoscale.up" | "infrastructure.server.sftp.lockdown" | "infrastructure.server.sftp.login" | "infrastructure.server.sftp.login.failed" | "infrastructure.server.evacuation.failed" | "infrastructure.server.evacuation.completed" | "infrastructure.server.checkin.missed" | "infrastructure.server.checkin.resumed" | "infrastructure.server.power.reboot" | "infrastructure.server.power.power-off" | "infrastructure.server.neighbor.incompatible";
         /**
          * Event
          * @description A platform-generated event. Describes something happening on the platform at a specific time. Can be informational, security related, or a notice of something important.
