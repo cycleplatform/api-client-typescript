@@ -6,13 +6,10 @@
         "declaration": true,
         "outDir": "./dist",
         "forceConsistentCasingInFileNames": true,
-        "lib": [
-            "ES2023",
-            "DOM"
-        ],
+        "lib": ["ES2023", "DOM"],
         "inlineSources": false,
         "isolatedModules": true,
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noUncheckedIndexedAccess": true,
@@ -21,8 +18,5 @@
         "strict": true
     },
     "include": ["src", "tests"],
-    "exclude": [
-        "node_modules",
-        "dist"
-    ]
+    "exclude": ["node_modules", "dist"]
 }
