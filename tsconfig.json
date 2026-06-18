@@ -9,6 +9,7 @@
         "lib": ["ES2023", "DOM"],
         "inlineSources": false,
         "isolatedModules": true,
+        "module": "es2022",
         "moduleResolution": "bundler",
         "noUnusedLocals": true,
         "noUnusedParameters": true,
