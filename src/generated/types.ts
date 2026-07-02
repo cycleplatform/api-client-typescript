@@ -4450,21 +4450,31 @@ export interface components {
     schemas: {
         /**
          * ServerTelemetrySnapshot
-         * @description A single frame of server telemetry, pushed over the server telemetry websocket.
+         * @description A single frame of server telemetry.
          */
         ServerTelemetrySnapshot: {
             /** @description The timestamp at which this telemetry snapshot was generated. */
             generated: components["schemas"]["DateTime"];
+            /** @description General system telemetry. Null when system telemetry is unavailable. */
+            system: components["schemas"]["ServerTelemetrySystem"] | null;
             /** @description CPU telemetry for this snapshot. Null when CPU telemetry is unavailable. */
             cpu: components["schemas"]["ServerTelemetryCpu"] | null;
             /** @description Memory telemetry for this snapshot. Null when memory telemetry is unavailable. */
             memory: components["schemas"]["ServerTelemetryMemory"] | null;
+            /** @description Network telemetry for this snapshot. Null when network telemetry is unavailable. */
+            network: components["schemas"]["ServerTelemetryNetwork"] | null;
+            /** @description Disk telemetry for this snapshot. Null when disk telemetry is unavailable. */
+            disk: components["schemas"]["ServerTelemetryDisk"] | null;
+            /** @description Process telemetry for this snapshot. Null when process telemetry is unavailable. */
+            processes: components["schemas"]["ServerTelemetryProcesses"] | null;
+            /** @description Cgroup telemetry for this snapshot. Null when cgroup telemetry is unavailable. */
+            cgroups?: components["schemas"]["ServerTelemetryCgroups"] | null;
         };
         /**
          * @description A capability that a user or API key that represents what an API key or a user can do.
          * @enum {string}
          */
-        Capability: "external-volumes-view" | "external-volumes-manage" | "api-keys-manage" | "apionly-jobs-view" | "apionly-notifications-listen" | "autoscale-groups-manage" | "autoscale-groups-view" | "billing-credits-view" | "billing-invoices-pay" | "billing-invoices-view" | "billing-methods-manage" | "billing-services-manage" | "billing-services-view" | "containers-backups-manage" | "containers-backups-view" | "containers-console" | "containers-deploy" | "containers-instances-migrate" | "containers-lock" | "containers-ssh" | "containers-manage" | "containers-view" | "containers-functions-trigger" | "containers-volumes-manage" | "containers-volumes-view" | "dns-certs-view" | "dns-manage" | "dns-view" | "environments-deployments-manage" | "environments-manage" | "environments-scopedvariables-manage" | "environments-scopedvariables-view" | "environments-services-manage" | "environments-view" | "environments-vpn" | "environments-vpn-manage" | "hubs-delete" | "hubs-integrations-manage" | "hubs-integrations-view" | "hubs-invites-manage" | "hubs-invites-send" | "hubs-members-manage" | "hubs-members-view" | "hubs-roles-manage" | "hubs-roles-view" | "hubs-usage-view" | "hubs-update" | "hubs-auditlog-view" | "images-manage" | "images-sources-manage" | "images-sources-view" | "images-view" | "ips-manage" | "servers-console" | "servers-decommission" | "servers-login" | "clusters-manage" | "clusters-view" | "servers-provision" | "servers-manage" | "servers-view" | "san-manage" | "san-view" | "monitor-manage" | "monitor-view" | "pipelines-manage" | "pipelines-trigger" | "pipelines-view" | "sdn-networks-manage" | "sdn-networks-view" | "security-manage" | "security-view" | "stacks-builds-deploy" | "stacks-builds-manage" | "stacks-manage" | "stacks-view" | "virtual-machines-view" | "virtual-machines-manage" | "virtual-machines-deploy" | "virtual-machines-console" | "virtual-machines-lock" | "virtual-machines-ssh-keys-manage" | "virtual-machines-root-pw-view" | "virtual-machines-root-pw-view-temp";
+        Capability: "external-volumes-view" | "external-volumes-manage" | "api-keys-manage" | "apionly-jobs-view" | "apionly-notifications-listen" | "autoscale-groups-manage" | "autoscale-groups-view" | "billing-credits-view" | "billing-invoices-pay" | "billing-invoices-view" | "billing-methods-manage" | "billing-services-manage" | "billing-services-view" | "containers-backups-manage" | "containers-backups-view" | "containers-console" | "containers-deploy" | "containers-instances-migrate" | "containers-lock" | "containers-ssh" | "containers-manage" | "containers-view" | "containers-functions-trigger" | "containers-volumes-manage" | "containers-volumes-view" | "dns-certs-view" | "dns-manage" | "dns-view" | "environments-deployments-manage" | "environments-manage" | "environments-scopedvariables-manage" | "environments-scopedvariables-view" | "environments-services-manage" | "environments-view" | "environments-vpn" | "environments-vpn-manage" | "hubs-delete" | "hubs-integrations-manage" | "hubs-integrations-view" | "hubs-invites-manage" | "hubs-invites-send" | "hubs-members-manage" | "hubs-members-view" | "hubs-roles-manage" | "hubs-roles-view" | "hubs-usage-view" | "hubs-update" | "hubs-auditlog-view" | "images-manage" | "images-sources-manage" | "images-sources-view" | "images-view" | "ips-manage" | "servers-console" | "servers-decommission" | "servers-login" | "clusters-manage" | "clusters-view" | "servers-provision" | "servers-manage" | "servers-view" | "monitor-manage" | "monitor-view" | "pipelines-manage" | "pipelines-trigger" | "pipelines-view" | "sdn-networks-manage" | "sdn-networks-view" | "security-manage" | "security-view" | "stacks-builds-deploy" | "stacks-builds-manage" | "stacks-manage" | "stacks-view" | "virtual-machines-view" | "virtual-machines-manage" | "virtual-machines-deploy" | "virtual-machines-console" | "virtual-machines-lock" | "virtual-machines-ssh-keys-manage" | "virtual-machines-root-pw-view" | "virtual-machines-root-pw-view-temp";
         /**
          * Error
          * @description The Cycle API uses standard HTTP response codes to indicate the success or failure of an API request. Codes in the `2xx` range indicate success. Codes in the `4xx` range indicate a request that failed due to input, and codes in the `5xx` range indicate an error on Cycle's part (rare).
@@ -6002,6 +6012,51 @@ export interface components {
             identifier?: string;
         };
         /**
+         * Cidr
+         * Format: cidr
+         * @description A CIDR (Classless Inter-Domain Routing) string is a notation used to represent an IP address and its associated network prefix.
+         *     It combines an IP address with a suffix that indicates how many bits are fixed for routing.
+         * @example 192.168.1.0/24
+         */
+        Cidr: string;
+        /**
+         * IpAddress
+         * Format: ip-address
+         * @description An IP address is a numerical label that uniquely identifies a device on a network and enables it to send and receive data.
+         * @example 192.168.1.1
+         */
+        IpAddress: string;
+        /**
+         * NetworkRouteConfigNexthop
+         * @description A single next hop for a multipath network route.
+         */
+        NetworkRouteConfigNexthop: {
+            /** @description The IP address of this next hop's gateway. */
+            gateway: components["schemas"]["IpAddress"];
+            /** @description The relative weight of this next hop when distributing traffic across multiple next hops. */
+            hop_weight?: number | null;
+        };
+        /**
+         * NetworkRouteConfig
+         * @description A single network route directing traffic for a destination network.
+         */
+        NetworkRouteConfig: {
+            /** @description The destination network, in CIDR notation, that this route matches. */
+            destination: components["schemas"]["Cidr"] | null;
+            /** @description The source network, in CIDR notation, that this route applies to. */
+            source: components["schemas"]["Cidr"] | null;
+            /** @description When true, the source address is verified to exist on the host before this route is applied. */
+            ensure_source_exists: boolean;
+            /** @description The IP protocol family this route applies to. */
+            family?: ("ipv4" | "ipv6") | null;
+            /** @description The IP address that traffic matching the destination is forwarded to. */
+            gateway: components["schemas"]["IpAddress"];
+            /** @description Additional next hops for this route, used for multipath (ECMP) routing. */
+            nexthops?: components["schemas"]["NetworkRouteConfigNexthop"][];
+            /** @description The name of the network interface this route is bound to. */
+            interface: string;
+        };
+        /**
          * L2Domain
          * @description A standardized name for different layer-2 networks that can be configured on virtual provider hosts.
          *      Containers will utilize this name to determine which network to attach to on the host, if set in the config.
@@ -6014,10 +6069,14 @@ export interface components {
          */
         ContainerNetwork: {
             /**
-             * @description The public network settings for the given container
+             * @description The public network settings for the given container.
              * @enum {string}
              */
             public: "enable" | "egress-only" | "environment-limited" | "disable";
+            /** @description When true, the container's egress traffic is routed out through the environment gateway. */
+            egress_via_gateway: boolean;
+            /** @description Custom network routes applied to the container's instances. */
+            routes: components["schemas"]["NetworkRouteConfig"][] | null;
             /** @description The hostname for the given container. */
             hostname: string;
             /** @description An array of port mappings for the container. */
@@ -6044,6 +6103,14 @@ export interface components {
          */
         Duration: string;
         /**
+         * ContainerDeployHighAvailabilityConfig
+         * @description Configuration options for how the platform treats instances of this container when opting into high availability via the internal API.
+         */
+        ContainerDeployHighAvailabilityConfig: {
+            /** @description The amount of time that must pass between high availability checkins before an instance is considered stale. If it is the primary, a new primary will be elected after this deadline. Minimum is 15s. */
+            stale_primary_deadline: components["schemas"]["Duration"];
+        };
+        /**
          * ShutdownSignal
          * @description Process signals that Cycle can be configured to send to the container on a shutdown event.
          * @enum {string}
@@ -6058,6 +6125,8 @@ export interface components {
             instances: number;
             /** @description The deployment strategy to use when scaling the given container. */
             strategy?: components["schemas"]["DeploymentStrategyName"] | null;
+            /** @description Configuration options for how the platform treats instances of this container when opting into high availability elections via the internal API. */
+            ha_elections?: components["schemas"]["ContainerDeployHighAvailabilityConfig"] | null;
             /** @description Configuration options for containers using the 'function' deployment strategy. */
             function?: {
                 /** @description The maximum number of instances that Cycle can pre-allocate (includes auto-scaled instances). */
@@ -6280,6 +6349,13 @@ export interface components {
             thresholds: components["schemas"]["ScaleThresholdMetric"][];
         };
         /**
+         * RuntimeInternalApi
+         * @description Configuration options for the internal API access within instances of this container.
+         */
+        RuntimeInternalApi: {
+            scope?: ("self" | "environment" | "networks" | "server" | "notifications")[] | null;
+        };
+        /**
          * SeccompRule
          * @description Rules for controlling Linux seccomp inside a container.
          */
@@ -6376,6 +6452,7 @@ export interface components {
             privileged: boolean;
             /** @description A list of linux kernel capabilites for the given container. */
             capabilities?: ("CAP_CHOWN" | "CAP_FSETID" | "CAP_DAC_OVERRIDE" | "CAP_FOWNER" | "CAP_SETFCAP" | "CAP_SETGID" | "CAP_SETUID" | "CAP_KILL" | "CAP_MKNOD" | "CAP_NET_BIND_SERVICE" | "CAP_NET_RAW" | "CAP_AUDIT_WRITE" | "CAP_SYS_CHROOT" | "CAP_SETPCAP" | "CAP_DAC_READ_SEARCH" | "CAP_NET_ADMIN" | "CAP_NET_BROADCAST" | "CAP_SYS_ADMIN" | "CAP_SYS_MODULE" | "CAP_SYS_NICE" | "CAP_SYS_PACCT" | "CAP_SYS_PTRACE" | "CAP_SYS_RAWIO" | "CAP_SYS_RESOURCE" | "CAP_SYS_BOOT" | "CAP_SYS_TIME" | "CAP_SYS_TTY_CONFIG" | "CAP_SYSLOG" | "CAP_AUDIT_CONTROL" | "CAP_AUDIT_READ" | "CAP_IPC_LOCK" | "CAP_IPC_OWNER" | "CAP_LINUX_IMMUTABLE" | "CAP_MAC_ADMIN" | "CAP_MAC_OVERRIDE" | "CAP_BLOCK_SUSPEND" | "CAP_LEASE" | "CAP_WAKE_ALARM")[];
+            internal_api?: components["schemas"]["RuntimeInternalApi"];
             /** @description Configure the working directory for the given container. */
             workdir?: string;
             /** @description A record of sysctl fields and values for a given container. */
@@ -6627,6 +6704,33 @@ export interface components {
             /** @description The timestamp of the volume's removal, if applicable. */
             removed?: components["schemas"]["DateTime"] | null;
         };
+        /**
+         * ContainerHighAvailabilityPrimary
+         * @description Details about the instance currently elected as the high availability primary for a container.
+         */
+        ContainerHighAvailabilityPrimary: {
+            /** @description The ID of the instance that has been elected as the primary. */
+            instance_id: components["schemas"]["ID"];
+            /**
+             * Format: int32
+             * @description The priority value assigned to this instance for the election. Higher priority means more likely to be elected primary.
+             */
+            priority: number;
+            /** @description The time at which this instance was elected as the primary. */
+            elected: components["schemas"]["DateTime"];
+            /** @description The time the primary instance last checked into the high availability service. */
+            last_checkin: components["schemas"]["DateTime"];
+        };
+        /**
+         * ContainerHighAvailability
+         * @description The high availability configuration and status for a container, as determined by the platform.
+         */
+        ContainerHighAvailability: {
+            /** @description The last time the primary checked in. */
+            last_checkin: components["schemas"]["DateTime"];
+            /** @description Information about the instance currently elected as the primary for this container. Null when no primary has been elected. */
+            primary: components["schemas"]["ContainerHighAvailabilityPrimary"] | null;
+        };
         /** ContainerState */
         ContainerState: {
             /**
@@ -6833,21 +6937,6 @@ export interface components {
             events: components["schemas"]["Events"];
         };
         /**
-         * IpAddress
-         * Format: ip-address
-         * @description An IP address is a numerical label that uniquely identifies a device on a network and enables it to send and receive data.
-         * @example 192.168.1.1
-         */
-        IpAddress: string;
-        /**
-         * Cidr
-         * Format: cidr
-         * @description A CIDR (Classless Inter-Domain Routing) string is a notation used to represent an IP address and its associated network prefix.
-         *     It combines an IP address with a suffix that indicates how many bits are fixed for routing.
-         * @example 192.168.1.0/24
-         */
-        Cidr: string;
-        /**
          * IpOptions
          * @description Options for an IP.
          */
@@ -6878,7 +6967,7 @@ export interface components {
             /** @description The IP string this IP represents. */
             ip: components["schemas"]["IpAddress"];
             /** @description Information about the assignment of this IP. */
-            assignment?: {
+            assignment: {
                 container_id: components["schemas"]["ID"];
                 instance_id: components["schemas"]["ID"];
                 environment_id: components["schemas"]["ID"];
@@ -6931,7 +7020,7 @@ export interface components {
             image: components["schemas"]["ImageSummary"];
             stack?: components["schemas"]["StackSummary"] | null;
             config: components["schemas"]["Config"];
-            deployment?: components["schemas"]["Deployment"] | null;
+            deployment: components["schemas"]["Deployment"] | null;
             /** @description The number of instances for a given container. */
             instances: number;
             volumes?: components["schemas"]["VolumeSummary"][];
@@ -6940,7 +7029,9 @@ export interface components {
                 [key: string]: unknown;
             } | null;
             /** @description The role of a given container if it has one. */
-            role?: "orchestrator" | null;
+            role: "orchestrator" | null;
+            /** @description High availability election status of the container. Contains information about the primary instance, if any. */
+            ha_elections?: components["schemas"]["ContainerHighAvailability"] | null;
             /** @description A boolean where true signifies the container is stateful. */
             stateful: boolean;
             /** @description A boolean where true signifies the container is marked as deprecated. */
@@ -7636,6 +7727,15 @@ export interface components {
             auto_update?: boolean;
             config?: components["schemas"]["SchedulerConfig"] | null;
         };
+        /** GatewayConfig */
+        GatewayConfig: {
+            /** @description Enable / disable performance mode.  If enabled, gateway can use much more RAM and CPU. */
+            performance: boolean;
+            /** @description Allow / disallow traffic to be routed via IPv4. */
+            ipv4: boolean;
+            /** @description Allow / disallow traffic to be routed via IPv6. */
+            ipv6: boolean;
+        };
         /**
          * GatewayEnvironmentService
          * @description Information about the environments gateway service(s).
@@ -7645,10 +7745,14 @@ export interface components {
             enable: boolean;
             /** @description The ID of the gateway service container */
             container_id: string;
-            /** @description A boolean representing if this service container is set to high availability mode or not. */
+            /**
+             * @description A boolean representing if this service container is set to high availability
+             *     mode or not.
+             */
             high_availability: boolean;
             /** @description A boolean where `true` represents the desire to automatically update the environment gateway service. */
             auto_update?: boolean;
+            config?: components["schemas"]["GatewayConfig"] | null;
         };
         /**
          * EnvironmentServices
@@ -8290,6 +8394,7 @@ export interface components {
         /**
          * StackVariable
          * @description A variable specified in a stack spec.
+         * @example {{stack-variable}}
          * @example {{$stack-variable}}
          */
         StackVariable: string;
@@ -8426,10 +8531,51 @@ export interface components {
         StackSpecContainerConfigNetwork: {
             /** @description The level of public network access this container should have. */
             public: ("enable" | "disable" | "egress-only" | "environment-limited") | components["schemas"]["StackVariable"];
+            /** @description When true, the container's egress traffic is routed out through the environment gateway. */
+            egress_via_gateway?: boolean | components["schemas"]["StackVariable"];
+            /** @description Custom network routes applied to the container's instances. */
+            routes?: {
+                /** @description The destination network, in CIDR notation, that this route matches. */
+                destination: components["schemas"]["Cidr"] | null | components["schemas"]["StackVariable"];
+                /** @description The source network, in CIDR notation, that this route applies to. Used for source-based (policy) routing. */
+                source?: components["schemas"]["Cidr"] | null | components["schemas"]["StackVariable"];
+                /** @description When true, the source address is verified to exist on the host before this route is applied. */
+                ensure_source_exists?: boolean | components["schemas"]["StackVariable"];
+                /** @description The IP protocol family this route applies to. */
+                family?: ("ipv4" | "ipv6") | null | components["schemas"]["StackVariable"];
+                /** @description The IP address that traffic matching the destination is forwarded to. */
+                gateway: components["schemas"]["IpAddress"] | components["schemas"]["StackVariable"];
+                /** @description Additional next hops for this route, used for multipath routing. */
+                nexthops?: {
+                    /** @description The IP address of this next hop's gateway. */
+                    gateway: components["schemas"]["IpAddress"] | components["schemas"]["StackVariable"];
+                    /** @description The relative weight of this next hop when distributing traffic across multiple next hops. */
+                    hop_weight?: number | null | components["schemas"]["StackVariable"];
+                }[] | components["schemas"]["StackVariable"];
+                /** @description The name of the network interface this route is bound to. */
+                interface?: string | components["schemas"]["StackVariable"];
+            }[] | components["schemas"]["StackVariable"];
             /** @description The hostname of the container. This is how it can be referenced by other containers in the same environment. */
             hostname: string | components["schemas"]["StackVariable"];
             /** @description A list of port mappings on this container. */
             ports?: string[] | components["schemas"]["StackVariable"];
+            /** @description Layer 2 network configuration options for containers running on virtual provider servers. */
+            l2?: {
+                /**
+                 * @description The layer 2 'domains' that this container's instances should bridge to on the host server.
+                 *     If the host has a matching layer 2 NIC configured via a virtual provider ISO, this container's instances
+                 *     will be joined directly to the host's network.
+                 */
+                domains: components["schemas"]["L2Domain"][] | components["schemas"]["StackVariable"];
+            } | components["schemas"]["StackVariable"];
+        };
+        /**
+         * StackSpecContainerConfigHighAvailability
+         * @description Configuration options for how the platform treats instances of this container when opting into high availability elections via the internal API.
+         */
+        StackSpecContainerConfigHighAvailability: {
+            /** @description The amount of time that must pass between high availability checkins before an instance is considered stale. If it is the primary, a new primary will be elected after this deadline. Minimum is 15s. */
+            stale_primary_deadline: components["schemas"]["Duration"];
         };
         /**
          * StackSpecContainerConfigDeploy
@@ -8451,6 +8597,7 @@ export interface components {
              *     - ** manual **: Cycle will not make any decisions on where instances are deployed. Instead, instances must be deployed manually using the portal or API.
              */
             strategy?: ("resource-density" | "manual" | "high-availability" | "first-available" | "node" | "edge" | "function") | null | components["schemas"]["StackVariable"];
+            ha_elections?: components["schemas"]["StackSpecContainerConfigHighAvailability"] | null | components["schemas"]["StackVariable"];
             /** @description Configuration options for containers using the 'function' deployment strategy. */
             function?: {
                 /** @description The maximum number of instances that Cycle can pre-allocate (includes auto-scaled instances). */
@@ -8668,6 +8815,13 @@ export interface components {
             thresholds: components["schemas"]["StackSpecContainerScaleThreshold"][] | components["schemas"]["StackVariable"];
         };
         /**
+         * StackSpecRuntimeInternalApi
+         * @description Configuration options for the internal API access within instances of this container.
+         */
+        StackSpecRuntimeInternalApi: {
+            scope?: ("self" | "environment" | "networks" | "server" | "notifications")[] | null | components["schemas"]["StackVariable"];
+        };
+        /**
          * StackSpecRuntimeExposedDevice
          * @description A host device exposed to the container during runtime.
          */
@@ -8773,6 +8927,7 @@ export interface components {
             privileged?: boolean | components["schemas"]["StackVariable"];
             /** @description Additional Linux kernel capabilities to apply to this container process. */
             capabilities?: ("CAP_CHOWN" | "CAP_FSETID" | "CAP_DAC_OVERRIDE" | "CAP_FOWNER" | "CAP_SETFCAP" | "CAP_SETGID" | "CAP_SETUID" | "CAP_KILL" | "CAP_MKNOD" | "CAP_NET_BIND_SERVICE" | "CAP_NET_RAW" | "CAP_AUDIT_WRITE" | "CAP_SYS_CHROOT" | "CAP_SETPCAP" | "CAP_DAC_READ_SEARCH" | "CAP_NET_ADMIN" | "CAP_NET_BROADCAST" | "CAP_SYS_ADMIN" | "CAP_SYS_MODULE" | "CAP_SYS_NICE" | "CAP_SYS_PACCT" | "CAP_SYS_PTRACE" | "CAP_SYS_RAWIO" | "CAP_SYS_RESOURCE" | "CAP_SYS_BOOT" | "CAP_SYS_TIME" | "CAP_SYS_TTY_CONFIG" | "CAP_SYSLOG" | "CAP_AUDIT_CONTROL" | "CAP_AUDIT_READ" | "CAP_IPC_LOCK" | "CAP_IPC_OWNER" | "CAP_LINUX_IMMUTABLE" | "CAP_MAC_ADMIN" | "CAP_MAC_OVERRIDE" | "CAP_BLOCK_SUSPEND" | "CAP_LEASE" | "CAP_WAKE_ALARM")[] | components["schemas"]["StackVariable"];
+            internal_api?: components["schemas"]["StackSpecRuntimeInternalApi"] | null | components["schemas"]["StackVariable"];
             /** @description Configuration options for the root filesystem. */
             rootfs?: {
                 /** @description If true, the container's filesystem will be read-only. */
@@ -9481,6 +9636,26 @@ export interface components {
             config?: components["schemas"]["StackSpecSchedulerConfig"] | components["schemas"]["StackVariable"] | null;
         };
         /**
+         * StackSpecGatewayConfig
+         * @description Gateway specific configuration options.
+         */
+        StackSpecGatewayConfig: {
+            /** @description Enable / disable performance mode.  If enabled, gateway can use much more RAM and CPU. */
+            performance: boolean | components["schemas"]["StackVariable"];
+            /** @description Allow / disallow traffic to be routed via IPv4. */
+            ipv4: boolean | components["schemas"]["StackVariable"];
+            /** @description Allow / disallow traffic to be routed via IPv6. */
+            ipv6: boolean | components["schemas"]["StackVariable"];
+        } | null;
+        /**
+         * StackSpecGatewayService
+         * @description Configuration options for the gateway service.
+         */
+        StackSpecGatewayService: {
+            service?: components["schemas"]["StackService"] | components["schemas"]["StackVariable"] | null;
+            config?: components["schemas"]["StackSpecGatewayConfig"] | components["schemas"]["StackVariable"] | null;
+        };
+        /**
          * StackSpecVpnConfig
          * @description VPN specific configuraiton options.
          */
@@ -9542,6 +9717,7 @@ export interface components {
                 discovery?: components["schemas"]["StackSpecDiscoveryService"] | components["schemas"]["StackVariable"] | null;
                 loadbalancer?: components["schemas"]["StackSpecLoadBalancerService"] | components["schemas"]["StackVariable"] | null;
                 scheduler?: components["schemas"]["StackSpecSchedulerService"] | components["schemas"]["StackVariable"] | null;
+                gateway?: components["schemas"]["StackSpecGatewayService"] | components["schemas"]["StackVariable"] | null;
                 vpn?: components["schemas"]["StackSpecVpnService"] | components["schemas"]["StackVariable"] | null;
             } | null) | components["schemas"]["StackVariable"];
             /** @description Additional meta info about the stack. */
@@ -10812,6 +10988,18 @@ export interface components {
             copy_volumes: boolean;
         };
         /**
+         * InstanceHighAvailability
+         * @description The high availability status of the instance, as determined by the platform.
+         *
+         *     This data becomes avaialble when utilizing the internal API high availability endpoint. The platform will hold elections for all instances hitting the endpoint and choose a primary. As long as those instances continue to check in, the primary will continue to be the primary until it is dropped off. After which, a secondary will be promoted.
+         */
+        InstanceHighAvailability: {
+            /** @description If a time is set, indicates that this instance is the primary, and the time at which it was promoted. */
+            elected_primary?: components["schemas"]["DateTime"] | null;
+            /** @description The time that the instance last checked into the HA service. */
+            last_checkin: components["schemas"]["DateTime"];
+        };
+        /**
          * InstanceMeta
          * @description A list of meta fields that can be applied to an instance.
          */
@@ -10868,6 +11056,7 @@ export interface components {
             traffic_drain?: components["schemas"]["InstanceTrafficDrain"] | null;
             migration?: components["schemas"]["InstanceMigration"] | null;
             deployment?: components["schemas"]["Deployment"] | null;
+            ha_elections?: components["schemas"]["InstanceHighAvailability"] | null;
             /**
              * InstanceEvents
              * @description A collection of timestamps for each event in the instance's lifetime.
@@ -12803,7 +12992,7 @@ export interface components {
              * @description The activity event.
              * @enum {string}
              */
-            event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.services.scheduler.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.services.scheduler.task.reconfigure" | "environment.services.vpn.user.create" | "environment.services.vpn.login" | "environment.services.vpn.reset" | "environment.services.vpn.task.reset" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.task.deployments.reconfigure" | "environment.deployments.reconfigure" | "environment.task.monitoring.reconfigure" | "environment.monitoring.reconfigure" | "environment.deployments.prune" | "environment.deployment.start" | "environment.deployment.stop" | "environment.deployment.deprecate" | "environment.deployment.reinstate" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.role.update" | "hub.role.delete" | "hub.role.create" | "hub.role.task.delete" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "hub.integration.create" | "hub.integration.update" | "hub.integration.delete" | "hub.integration.task.verify" | "hub.integration.task.delete" | "hub.inactive" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.restart" | "container.restart" | "container.task.reconfigure" | "container.reconfigure" | "container.task.volumes.reconfigure" | "container.function.trigger" | "container.function.task.trigger" | "container.volumes.reconfigure" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.deprecate" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instances.autoscale.up" | "container.instances.autoscale.down" | "container.instance.healthcheck.restarted" | "container.instance.volume.extend" | "container.instance.task.volume.extend" | "container.instance.healthcheck.failed" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migration.revert" | "container.instance.task.migration.start" | "container.instance.traffic-drain.reconfigure" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "dns.certificate.associate" | "dns.certificate.deprecate" | "dns.certificate.create" | "dns.certificate.task.deprecate" | "stack.update" | "stack.task.delete" | "stack.delete" | "stack.create" | "stack.task.prune" | "stack.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "infrastructure.virtual-providers.iso.create" | "infrastructure.virtual-providers.iso.generate" | "infrastructure.virtual-providers.iso.update" | "infrastructure.virtual-providers.iso.delete" | "infrastructure.virtual-providers.iso.task.delete" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.unquarantine" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.features.reconfigure" | "infrastructure.server.sharedfs.reconfigure" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.features.reconfigure" | "infrastructure.server.task.sharedfs.reconfigure" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "infrastructure.server.evacuation.start" | "infrastructure.server.task.evacuation.start" | "infrastructure.server.evacuation.reset" | "infrastructure.server.task.evacuation.reset" | "infrastructure.server.power-off" | "infrastructure.server.auth.reset" | "infrastructure.autoscale.group.create" | "infrastructure.autoscale.group.update" | "infrastructure.autoscale.group.task.delete" | "infrastructure.autoscale.group.delete" | "infrastructure.external-volume.create" | "infrastructure.external-volume.update" | "infrastructure.external-volume.task.delete" | "infrastructure.external-volume.delete" | "infrastructure.external-volume.task.servers.reconfigure" | "infrastructure.external-volume.task.attachment.reconfigure" | "infrastructure.external-volume.servers.reconfigure" | "infrastructure.external-volume.attachment.reconfigure" | "infrastructure.external-volumes.task.scan" | "infrastructure.cluster.create" | "infrastructure.cluster.update" | "infrastructure.cluster.task.delete" | "infrastructure.cluster.delete" | "infrastructure.cluster.features.monitoring.tier.reconfigure" | "infrastructure.ips.pool.task.delete" | "infrastructure.ips.pool.create" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.run.completed" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create" | "virtual-machine.create" | "virtual-machine.initialize" | "virtual-machine.task.start" | "virtual-machine.start" | "virtual-machine.task.stop" | "virtual-machine.stop" | "virtual-machine.reconfigure" | "virtual-machine.task.reconfigure" | "virtual-machine.update" | "virtual-machine.task.delete" | "virtual-machine.delete" | "virtual-machine.sos.login" | "virtual-machine.rootpw.change" | "virtual-machine.task.volumes.reconfigure" | "virtual-machine.volumes.reconfigure" | "virtual-machine.volumes.remove" | "virtual-machine.task.volumes.remove" | "virtual-machine.volumes.add" | "virtual-machine.task.volumes.add" | "virtual-machine.ssh-key.create" | "virtual-machine.ssh-key.update" | "virtual-machine.ssh-key.task.delete" | "virtual-machine.ssh-key.delete" | "virtual-machine.ip.allocate" | "virtual-machine.task.ip.allocate" | "virtual-machine.ip.unallocate" | "virtual-machine.task.ip.unallocate";
+            event: "hub.images.prune" | "hub.update" | "hub.create" | "hub.task.delete" | "hub.task.images.prune" | "environment.services.discovery.reconfigure" | "environment.services.lb.reconfigure" | "environment.services.vpn.reconfigure" | "environment.services.scheduler.reconfigure" | "environment.services.gateway.reconfigure" | "environment.delete" | "environment.initialize" | "environment.start" | "environment.stop" | "environment.create" | "environment.update" | "environment.task.delete" | "environment.services.discovery.task.reconfigure" | "environment.services.lb.task.reconfigure" | "environment.services.vpn.task.reconfigure" | "environment.services.scheduler.task.reconfigure" | "environment.services.gateway.task.reconfigure" | "environment.services.vpn.user.create" | "environment.services.vpn.login" | "environment.services.vpn.reset" | "environment.services.vpn.task.reset" | "environment.task.initialize" | "environment.task.start" | "environment.task.stop" | "environment.task.deployments.reconfigure" | "environment.deployments.reconfigure" | "environment.task.monitoring.reconfigure" | "environment.monitoring.reconfigure" | "environment.deployments.prune" | "environment.deployment.start" | "environment.deployment.stop" | "environment.deployment.deprecate" | "environment.deployment.reinstate" | "environment.scoped-variable.delete" | "environment.scoped-variable.update" | "environment.scoped-variable.task.delete" | "environment.scoped-variable.create" | "image.delete" | "image.import" | "image.create" | "image.update" | "image.task.delete" | "image.task.import" | "image.source.delete" | "image.source.create" | "image.source.update" | "image.source.task.delete" | "billing.invoice.task.void" | "billing.invoice.task.credit" | "billing.invoice.task.refund" | "billing.invoice.pay" | "billing.invoice.task.pay" | "billing.order.confirm" | "billing.order.task.confirm" | "billing.method.update" | "billing.method.delete" | "billing.method.task.delete" | "billing.method.create" | "hub.apikey.update" | "hub.apikey.delete" | "hub.apikey.create" | "hub.role.update" | "hub.role.delete" | "hub.role.create" | "hub.role.task.delete" | "hub.membership.delete" | "hub.membership.create" | "hub.membership.update" | "hub.integration.create" | "hub.integration.update" | "hub.integration.delete" | "hub.integration.task.verify" | "hub.integration.task.delete" | "hub.inactive" | "container.initialize" | "container.task.start" | "container.start" | "container.task.stop" | "container.stop" | "container.task.restart" | "container.restart" | "container.task.reconfigure" | "container.reconfigure" | "container.task.volumes.reconfigure" | "container.function.trigger" | "container.function.task.trigger" | "container.volumes.reconfigure" | "container.create" | "container.restart" | "container.task.reimage" | "container.reimage" | "container.deprecate" | "container.update" | "container.task.delete" | "container.delete" | "container.task.scale" | "container.scale" | "container.instances.create" | "container.instances.delete" | "container.instances.autoscale.up" | "container.instances.autoscale.down" | "container.instance.healthcheck.restarted" | "container.instance.volume.extend" | "container.instance.task.volume.extend" | "container.instance.healthcheck.failed" | "container.instance.error" | "container.instance.ssh.login" | "container.instance.migration.start" | "container.instance.migration.revert" | "container.instance.delete" | "container.instance.task.migration.revert" | "container.instance.task.migration.start" | "container.instance.traffic-drain.reconfigure" | "container.backup.create" | "container.backup.restore" | "container.backup.delete" | "container.backup.task.delete" | "container.backup.task.restore" | "dns.zone.verify" | "dns.zone.delete" | "dns.zone.task.verify" | "dns.zone.update" | "dns.zone.task.delete" | "dns.zone.create" | "dns.zone.record.delete" | "dns.zone.record.cert.generate" | "dns.zone.record.cert.generate.auto" | "dns.zone.record.task.cert.generate" | "dns.zone.record.update" | "dns.zone.record.task.delete" | "dns.zone.record.create" | "dns.certificate.associate" | "dns.certificate.deprecate" | "dns.certificate.create" | "dns.certificate.task.deprecate" | "stack.update" | "stack.task.delete" | "stack.delete" | "stack.create" | "stack.task.prune" | "stack.prune" | "stack.build.create" | "stack.build.generate" | "stack.build.deploy" | "stack.build.delete" | "stack.build.task.delete" | "stack.build.task.generate" | "stack.build.task.deploy" | "infrastructure.provider.update" | "infrastructure.provider.task.delete" | "infrastructure.provider.create" | "infrastructure.provider.task.verify" | "infrastructure.virtual-providers.iso.create" | "infrastructure.virtual-providers.iso.generate" | "infrastructure.virtual-providers.iso.update" | "infrastructure.virtual-providers.iso.delete" | "infrastructure.virtual-providers.iso.task.delete" | "infrastructure.server.task.delete" | "infrastructure.server.task.restart" | "infrastructure.server.services.sftp.auth" | "infrastructure.server.live" | "infrastructure.server.delete" | "infrastructure.server.restart" | "infrastructure.server.unquarantine" | "infrastructure.server.compute.restart" | "infrastructure.server.compute.spawner.restart" | "infrastructure.server.features.reconfigure" | "infrastructure.server.sharedfs.reconfigure" | "infrastructure.server.provision" | "infrastructure.server.console" | "infrastructure.server.update" | "infrastructure.server.task.provision" | "infrastructure.server.ssh.token" | "infrastructure.server.task.features.reconfigure" | "infrastructure.server.task.sharedfs.reconfigure" | "infrastructure.server.services.sftp.lockdown" | "infrastructure.server.services.internal-api.throttle" | "infrastructure.server.evacuation.start" | "infrastructure.server.task.evacuation.start" | "infrastructure.server.evacuation.reset" | "infrastructure.server.task.evacuation.reset" | "infrastructure.server.power-off" | "infrastructure.server.auth.reset" | "infrastructure.autoscale.group.create" | "infrastructure.autoscale.group.update" | "infrastructure.autoscale.group.task.delete" | "infrastructure.autoscale.group.delete" | "infrastructure.external-volume.create" | "infrastructure.external-volume.update" | "infrastructure.external-volume.task.delete" | "infrastructure.external-volume.delete" | "infrastructure.external-volume.task.servers.reconfigure" | "infrastructure.external-volume.task.attachment.reconfigure" | "infrastructure.external-volume.servers.reconfigure" | "infrastructure.external-volume.attachment.reconfigure" | "infrastructure.external-volumes.task.scan" | "infrastructure.cluster.create" | "infrastructure.cluster.update" | "infrastructure.cluster.task.delete" | "infrastructure.cluster.delete" | "infrastructure.cluster.features.monitoring.tier.reconfigure" | "infrastructure.ips.pool.task.delete" | "infrastructure.ips.pool.create" | "sdn.network.update" | "sdn.network.task.delete" | "sdn.network.create" | "sdn.network.task.reconfigure" | "pipeline.delete" | "pipeline.trigger" | "pipeline.update" | "pipeline.task.delete" | "pipeline.create" | "pipeline.task.trigger" | "pipeline.run.completed" | "pipeline.key.update" | "pipeline.key.delete" | "pipeline.key.create" | "virtual-machine.create" | "virtual-machine.initialize" | "virtual-machine.task.start" | "virtual-machine.start" | "virtual-machine.task.stop" | "virtual-machine.stop" | "virtual-machine.reconfigure" | "virtual-machine.task.reconfigure" | "virtual-machine.update" | "virtual-machine.task.delete" | "virtual-machine.delete" | "virtual-machine.sos.login" | "virtual-machine.rootpw.change" | "virtual-machine.task.volumes.reconfigure" | "virtual-machine.volumes.reconfigure" | "virtual-machine.volumes.remove" | "virtual-machine.task.volumes.remove" | "virtual-machine.volumes.add" | "virtual-machine.task.volumes.add" | "virtual-machine.ssh-key.create" | "virtual-machine.ssh-key.update" | "virtual-machine.ssh-key.task.delete" | "virtual-machine.ssh-key.delete" | "virtual-machine.ip.allocate" | "virtual-machine.task.ip.allocate" | "virtual-machine.ip.unallocate" | "virtual-machine.task.ip.unallocate";
             /** @description A timestamp for when the activity took place. */
             time: components["schemas"]["DateTime"];
         };
@@ -12968,7 +13157,7 @@ export interface components {
             reservation: string;
             /** @description A server identifier associated with the pool. */
             server: string;
-            /** @description An identifier linked to the server assingment of the IP pool. */
+            /** @description An identifier linked to the server assignment of the IP pool. */
             server_assignment: string;
         };
         /** IpPoolState */
@@ -15332,7 +15521,7 @@ export interface components {
          * EventType
          * @enum {string}
          */
-        EventType: "api.security_violation" | "console.ssh.login" | "console.ssh.login.failed" | "console.sos.login" | "console.sos.login.failed" | "container.instance.image.changed" | "container.instance.backup.completed" | "container.instance.backup.failed" | "container.instance.delete.failed" | "container.instance.error" | "container.instance.restart.max_restarts" | "container.instance.function.max_runtime" | "container.instance.healthcheck.failed" | "container.instance.healthcheck.recovered" | "container.instance.volume.extend.failed" | "container.instance.healthcheck.restarted" | "container.instance.migration.completed" | "container.instance.migration.failed" | "container.instance.network.interfaces.create.failed" | "container.instance.restart.failed" | "container.instance.start.failed" | "container.instance.start.privileged" | "container.instance.start.host_network" | "container.instance.stop.failed" | "container.instances.autoscale.down" | "container.instances.autoscale.up" | "container.reconfigured.privileged" | "container.volumes.base.create.failed" | "container.volumes.create.failed" | "environment.service.auto_update" | "environment.service.lb.ips.sync.failed" | "environment.service.vpn.login.failed" | "environment.service.discovery.client.throttle.hit" | "environment.service.gateway.ips.sync.failed" | "infrastructure.cluster.resources.ram.full" | "infrastructure.server.compute.volumes.base.reconfigured" | "infrastructure.server.compute.full_restart" | "infrastructure.server.compute.sharedfs.mounts.mount" | "infrastructure.server.compute.sharedfs.mounts.mount.failed" | "infrastructure.server.compute.soft_restart" | "infrastructure.server.compute.start.failure" | "infrastructure.server.compute.died" | "infrastructure.server.compute-spawner.full_restart" | "infrastructure.server.image.download.failed" | "infrastructure.server.monitoring.throttled" | "infrastructure.server.internal_api.throttled" | "infrastructure.server.manifest.sync.failed" | "infrastructure.server.mesh.connect.failed" | "infrastructure.server.neighbor.reachable" | "infrastructure.server.neighbor.rebuild" | "infrastructure.server.neighbors.rebuild" | "infrastructure.server.neighbor.unreachable" | "infrastructure.server.neighbor.upgraded" | "infrastructure.server.power.power_off" | "infrastructure.server.resources.load.high" | "infrastructure.server.resources.ram.full" | "infrastructure.server.resources.storage.volumes.base.full" | "infrastructure.server.resources.storage.cycle_pool.full" | "infrastructure.server.autoscale.up" | "infrastructure.server.sftp.lockdown" | "infrastructure.server.sftp.login" | "infrastructure.server.sftp.login.failed" | "infrastructure.server.evacuation.failed" | "infrastructure.server.evacuation.completed" | "infrastructure.server.checkin.missed" | "infrastructure.server.checkin.resumed" | "infrastructure.server.power.reboot" | "infrastructure.server.neighbor.incompatible";
+        EventType: "api.security_violation" | "console.ssh.login" | "console.ssh.login.failed" | "console.sos.login" | "console.sos.login.failed" | "container.instance.image.changed" | "container.instance.backup.completed" | "container.instance.backup.failed" | "container.instance.delete.failed" | "container.instance.error" | "container.instance.restart.max_restarts" | "container.instance.function.max_runtime" | "container.instance.healthcheck.failed" | "container.instance.healthcheck.recovered" | "container.instance.volume.extend.failed" | "container.instance.healthcheck.restarted" | "container.instance.migration.completed" | "container.instance.migration.failed" | "container.instance.network.interfaces.create.failed" | "container.instance.restart.failed" | "container.instance.start.failed" | "container.instance.start.privileged" | "container.instance.start.host_network" | "container.instance.stop.failed" | "container.instances.autoscale.down" | "container.instances.autoscale.up" | "container.instances.ha.elections.primary.elected" | "container.reconfigured.privileged" | "container.volumes.base.create.failed" | "container.volumes.create.failed" | "environment.service.auto_update" | "environment.service.lb.ips.sync.failed" | "environment.service.vpn.login.failed" | "environment.service.discovery.client.throttle.hit" | "environment.service.gateway.ips.sync.failed" | "infrastructure.cluster.resources.ram.full" | "infrastructure.server.compute.volumes.base.reconfigured" | "infrastructure.server.compute.full_restart" | "infrastructure.server.compute.sharedfs.mounts.mount" | "infrastructure.server.compute.sharedfs.mounts.mount.failed" | "infrastructure.server.compute.soft_restart" | "infrastructure.server.compute.start.failure" | "infrastructure.server.compute.died" | "infrastructure.server.compute-spawner.full_restart" | "infrastructure.server.image.download.failed" | "infrastructure.server.monitoring.throttled" | "infrastructure.server.internal_api.throttled" | "infrastructure.server.manifest.sync.failed" | "infrastructure.server.mesh.connect.failed" | "infrastructure.server.neighbor.reachable" | "infrastructure.server.neighbor.rebuild" | "infrastructure.server.neighbors.rebuild" | "infrastructure.server.neighbor.unreachable" | "infrastructure.server.neighbor.upgraded" | "infrastructure.server.power.power_off" | "infrastructure.server.resources.load.high" | "infrastructure.server.resources.ram.full" | "infrastructure.server.resources.storage.volumes.base.full" | "infrastructure.server.resources.storage.cycle_pool.full" | "infrastructure.server.autoscale.up" | "infrastructure.server.sftp.lockdown" | "infrastructure.server.sftp.login" | "infrastructure.server.sftp.login.failed" | "infrastructure.server.evacuation.failed" | "infrastructure.server.evacuation.completed" | "infrastructure.server.checkin.missed" | "infrastructure.server.checkin.resumed" | "infrastructure.server.power.reboot" | "infrastructure.server.neighbor.incompatible";
         /**
          * Event
          * @description A platform-generated event. Describes something happening on the platform at a specific time. Can be informational, security related, or a notice of something important.
@@ -15896,6 +16085,45 @@ export interface components {
             };
         };
         /**
+         * ServerTelemetryLoadAvg
+         * @description System load averages over the last 1, 5, and 15 minutes.
+         */
+        ServerTelemetryLoadAvg: {
+            /**
+             * Format: double
+             * @description The system load average over the last 1 minute.
+             */
+            last_1_min: number;
+            /**
+             * Format: double
+             * @description The system load average over the last 5 minutes.
+             */
+            last_5_min: number;
+            /**
+             * Format: double
+             * @description The system load average over the last 15 minutes.
+             */
+            last_15_min: number;
+        };
+        /**
+         * ServerTelemetrySystem
+         * @description General system telemetry for the server.
+         */
+        ServerTelemetrySystem: {
+            /**
+             * Format: double
+             * @description Total time elapsed since the server booted, in seconds.
+             */
+            uptime_seconds: number;
+            /**
+             * Format: double
+             * @description Total time all CPUs have spent idle since boot, in seconds.
+             */
+            idle_seconds: number;
+            /** @description System load averages over the last 1, 5, and 15 minutes. */
+            load_average: components["schemas"]["ServerTelemetryLoadAvg"];
+        };
+        /**
          * ServerTelemetryProcessor
          * @description Telemetry for a single logical processor on the server, as reported by the kernel via /proc/cpuinfo.
          */
@@ -16170,6 +16398,719 @@ export interface components {
              * @description Amount of memory mapped into the kernel address space using 1 GB pages, in kB.
              */
             direct_map_1G: number;
+        };
+        /**
+         * ServerTelemetryDeviceStats
+         * @description Network interface counters for a single device, as reported by the kernel (/proc/net/dev). All counters are cumulative since boot.
+         */
+        ServerTelemetryDeviceStats: {
+            /** @description The name of the network interface (e.g. "eth0"). */
+            name: string;
+            /**
+             * Format: int64
+             * @description Total bytes received.
+             */
+            rx_bytes: number;
+            /**
+             * Format: int64
+             * @description Total packets received.
+             */
+            rx_packets: number;
+            /**
+             * Format: int64
+             * @description Total receive errors.
+             */
+            rx_errors: number;
+            /**
+             * Format: int64
+             * @description Total received packets dropped.
+             */
+            rx_drop: number;
+            /**
+             * Format: int64
+             * @description Total receive FIFO buffer errors.
+             */
+            rx_fifo: number;
+            /**
+             * Format: int64
+             * @description Total receive framing errors.
+             */
+            rx_frame: number;
+            /**
+             * Format: int64
+             * @description Total compressed packets received.
+             */
+            rx_compressed: number;
+            /**
+             * Format: int64
+             * @description Total multicast packets received.
+             */
+            rx_multicast: number;
+            /**
+             * Format: int64
+             * @description Total bytes transmitted.
+             */
+            tx_bytes: number;
+            /**
+             * Format: int64
+             * @description Total packets transmitted.
+             */
+            tx_packets: number;
+            /**
+             * Format: int64
+             * @description Total transmit errors.
+             */
+            tx_errors: number;
+            /**
+             * Format: int64
+             * @description Total transmitted packets dropped.
+             */
+            tx_drop: number;
+            /**
+             * Format: int64
+             * @description Total transmit FIFO buffer errors.
+             */
+            tx_fifo: number;
+            /**
+             * Format: int64
+             * @description Total collisions detected on the interface.
+             */
+            tx_colls: number;
+            /**
+             * Format: int64
+             * @description Total transmit carrier losses.
+             */
+            tx_carrier: number;
+            /**
+             * Format: int64
+             * @description Total compressed packets transmitted.
+             */
+            tx_compressed: number;
+        };
+        /**
+         * ServerTelemetryNetwork
+         * @description Network telemetry for the server.
+         */
+        ServerTelemetryNetwork: {
+            /** @description Per-interface network counters, keyed by interface name. */
+            devices: {
+                [key: string]: components["schemas"]["ServerTelemetryDeviceStats"];
+            } | null;
+        };
+        /**
+         * ServerTelemetryDiskIo
+         * @description Block-device I/O counters for a single disk device, as reported by the kernel (/proc/diskstats). All counters are cumulative since boot.
+         */
+        ServerTelemetryDiskIo: {
+            /**
+             * Format: int64
+             * @description Total number of completed read requests.
+             */
+            read_requests: number;
+            /**
+             * Format: int64
+             * @description Total number of sectors read. Multiply by 512 for bytes.
+             */
+            read_sectors: number;
+            /**
+             * Format: int64
+             * @description Total time spent servicing read requests, in milliseconds.
+             */
+            read_time_ms: number;
+            /**
+             * Format: int64
+             * @description Total number of completed write requests.
+             */
+            write_requests: number;
+            /**
+             * Format: int64
+             * @description Total number of sectors written. Multiply by 512 for bytes.
+             */
+            write_sectors: number;
+            /**
+             * Format: int64
+             * @description Total time spent servicing write requests, in milliseconds.
+             */
+            write_time_ms: number;
+            /**
+             * Format: int64
+             * @description Number of I/O requests currently in progress.
+             */
+            io_in_progress: number;
+            /**
+             * Format: int64
+             * @description Total time spent performing I/O, in milliseconds.
+             */
+            io_time_ms: number;
+        };
+        /**
+         * ServerTelemetryDiskUsage
+         * @description Filesystem usage for a single disk device. Reported as zero for devices without a mounted filesystem.
+         */
+        ServerTelemetryDiskUsage: {
+            /**
+             * Format: int64
+             * @description Total size of the filesystem, in bytes.
+             */
+            total_bytes: number;
+            /**
+             * Format: int64
+             * @description Free space on the filesystem, in bytes.
+             */
+            free_bytes: number;
+            /**
+             * Format: int64
+             * @description Free space accessible to unprivileged users, in bytes.
+             */
+            available_bytes: number;
+            /**
+             * Format: double
+             * @description Percentage of the filesystem currently in use.
+             */
+            used_percent: number;
+        };
+        /**
+         * ServerTelemetryDiskDevice
+         * @description Telemetry for a single disk device on the server.
+         */
+        ServerTelemetryDiskDevice: {
+            /** @description The name of the disk device (e.g. "vda"). */
+            name: string;
+            /** @description The filesystem mount point for the device. */
+            mount?: string;
+            /** @description Block-device I/O counters for the device. */
+            io: components["schemas"]["ServerTelemetryDiskIo"];
+            /** @description Filesystem usage for the device. */
+            usage: components["schemas"]["ServerTelemetryDiskUsage"];
+        };
+        /**
+         * ServerTelemetryDiskVolume
+         * @description Telemetry for a single volume on the server.
+         */
+        ServerTelemetryDiskVolume: {
+            /** @description The name of the volume. */
+            name: string;
+            /** @description The type of volume (e.g. 'lvm') */
+            type: string;
+            /** @description Mountpoint of the volume */
+            mount?: string;
+            /** @description Block-device I/O counters for the volume. */
+            io: components["schemas"]["ServerTelemetryDiskIo"];
+            /** @description Filesystem usage for the volume. */
+            usage: components["schemas"]["ServerTelemetryDiskUsage"];
+        };
+        /**
+         * ServerTelemetryDisk
+         * @description Disk telemetry for the server.
+         */
+        ServerTelemetryDisk: {
+            /** @description Per-device disk telemetry, keyed by device name. */
+            devices: {
+                [key: string]: components["schemas"]["ServerTelemetryDiskDevice"];
+            } | null;
+            /** @description Telemetry for all volumes mounted on this host, keyed by device name. */
+            volumes?: components["schemas"]["ServerTelemetryDiskVolume"][] | null;
+        };
+        /**
+         * ServerTelemetryProcessFds
+         * @description A breakdown of the file descriptors held open by a process.
+         */
+        ServerTelemetryProcessFds: {
+            /**
+             * Format: int64
+             * @description Total number of open file descriptors.
+             */
+            total: number;
+            /**
+             * Format: int64
+             * @description Number of descriptors referring to regular files.
+             */
+            files: number;
+            /**
+             * Format: int64
+             * @description Number of descriptors referring to sockets.
+             */
+            sockets: number;
+            /**
+             * Format: int64
+             * @description Number of descriptors referring to pipes.
+             */
+            pipes: number;
+            /**
+             * Format: int64
+             * @description Number of descriptors of other types (e.g. epoll, eventfd, anonymous inodes).
+             */
+            other: number;
+        };
+        /**
+         * ServerTelemetryProcessStats
+         * @description Per-process scheduling and memory statistics, as reported by the kernel (/proc/[pid]/stat). Time fields are expressed in clock ticks unless noted otherwise.
+         */
+        ServerTelemetryProcessStats: {
+            /**
+             * Format: int64
+             * @description The process ID.
+             */
+            pid: number;
+            /** @description The executable filename, as reported by the kernel. */
+            comm: string;
+            /** @description The process state code (e.g. R running, S sleeping, D uninterruptible sleep, Z zombie, T stopped). */
+            state: string;
+            /**
+             * Format: int64
+             * @description The parent process ID.
+             */
+            ppid: number;
+            /**
+             * Format: int64
+             * @description The process group ID.
+             */
+            pgrp: number;
+            /**
+             * Format: int64
+             * @description The session ID.
+             */
+            session: number;
+            /**
+             * Format: int64
+             * @description The controlling terminal device number.
+             */
+            tty_nr: number;
+            /**
+             * Format: int64
+             * @description The foreground process group ID of the controlling terminal.
+             */
+            tpgid: number;
+            /**
+             * Format: int64
+             * @description The kernel flags word for the process.
+             */
+            flags: number;
+            /**
+             * Format: int64
+             * @description Minor faults that did not require loading a page from disk.
+             */
+            minflt: number;
+            /**
+             * Format: int64
+             * @description Minor faults of the process's waited-for children.
+             */
+            cminflt: number;
+            /**
+             * Format: int64
+             * @description Major faults that required loading a page from disk.
+             */
+            majflt: number;
+            /**
+             * Format: int64
+             * @description Major faults of the process's waited-for children.
+             */
+            cmajflt: number;
+            /**
+             * Format: int64
+             * @description Time scheduled in user mode, in clock ticks.
+             */
+            utime: number;
+            /**
+             * Format: int64
+             * @description Time scheduled in kernel mode, in clock ticks.
+             */
+            stime: number;
+            /**
+             * Format: int64
+             * @description Children's time scheduled in user mode, in clock ticks.
+             */
+            cutime: number;
+            /**
+             * Format: int64
+             * @description Children's time scheduled in kernel mode, in clock ticks.
+             */
+            cstime: number;
+            /**
+             * Format: int64
+             * @description The scheduling priority.
+             */
+            priority: number;
+            /**
+             * Format: int64
+             * @description The nice value, ranging from -20 (high priority) to 19 (low priority).
+             */
+            nice: number;
+            /**
+             * Format: int64
+             * @description The number of threads in the process.
+             */
+            num_threads: number;
+            /**
+             * Format: int64
+             * @description Time in jiffies before the next SIGALRM. Obsolete and always 0 on modern kernels.
+             */
+            itrealvalue: number;
+            /**
+             * Format: int64
+             * @description The time the process started after boot, in clock ticks.
+             */
+            starttime: number;
+            /**
+             * Format: int64
+             * @description The virtual memory size, in bytes.
+             */
+            vsize: number;
+            /**
+             * Format: int64
+             * @description The resident set size, the number of pages the process has in real memory.
+             */
+            rss: number;
+            /**
+             * Format: int64
+             * @description The soft limit on the resident set size, in bytes. A very large sentinel value indicates no limit.
+             */
+            rsslim: number;
+            /**
+             * Format: int64
+             * @description The address above which program text can run.
+             */
+            startcode: number;
+            /**
+             * Format: int64
+             * @description The address below which program text can run.
+             */
+            endcode: number;
+            /**
+             * Format: int64
+             * @description The address of the start (bottom) of the stack.
+             */
+            startstack: number;
+            /**
+             * Format: int64
+             * @description The current value of the stack pointer.
+             */
+            kstkesp: number;
+            /**
+             * Format: int64
+             * @description The current instruction pointer.
+             */
+            kstkeip: number;
+            /**
+             * Format: int64
+             * @description Bitmap of pending signals. Obsolete; per-thread signal fields should be used instead.
+             */
+            signal: number;
+            /**
+             * Format: int64
+             * @description Bitmap of blocked signals.
+             */
+            blocked: number;
+            /**
+             * Format: int64
+             * @description Bitmap of ignored signals.
+             */
+            sigignore: number;
+            /**
+             * Format: int64
+             * @description Bitmap of caught signals.
+             */
+            sigcatch: number;
+            /**
+             * Format: int64
+             * @description The address of the kernel function where the process is sleeping.
+             */
+            wchan: number;
+            /**
+             * Format: int64
+             * @description Pages swapped. Not maintained and always 0.
+             */
+            nswap: number;
+            /**
+             * Format: int64
+             * @description Cumulative nswap of children. Not maintained and always 0.
+             */
+            cnswap: number;
+            /**
+             * Format: int64
+             * @description The signal sent to the parent when this process dies.
+             */
+            exit_signal: number;
+            /**
+             * Format: int64
+             * @description The CPU number the process last executed on.
+             */
+            processor: number;
+            /**
+             * Format: int64
+             * @description The real-time scheduling priority.
+             */
+            rt_priority: number;
+            /**
+             * Format: int64
+             * @description The scheduling policy.
+             */
+            policy: number;
+            /**
+             * Format: int64
+             * @description Aggregated block I/O delays, in clock ticks.
+             */
+            delayacct_blkio_ticks: number;
+            /**
+             * Format: int64
+             * @description Time spent running a virtual CPU for a guest, in clock ticks.
+             */
+            guest_time: number;
+            /**
+             * Format: int64
+             * @description Children's guest time, in clock ticks.
+             */
+            cguest_time: number;
+            /**
+             * Format: int64
+             * @description The address above which program initialized and uninitialized (bss) data are placed.
+             */
+            start_data: number;
+            /**
+             * Format: int64
+             * @description The address below which program initialized and uninitialized (bss) data are placed.
+             */
+            end_data: number;
+            /**
+             * Format: int64
+             * @description The address above which the program heap can be expanded with brk.
+             */
+            start_brk: number;
+            /**
+             * Format: int64
+             * @description The address above which the program command-line arguments are placed.
+             */
+            arg_start: number;
+            /**
+             * Format: int64
+             * @description The address below which the program command-line arguments are placed.
+             */
+            arg_end: number;
+            /**
+             * Format: int64
+             * @description The address above which the program environment is placed.
+             */
+            env_start: number;
+            /**
+             * Format: int64
+             * @description The address below which the program environment is placed.
+             */
+            env_end: number;
+            /**
+             * Format: int64
+             * @description The thread's exit status in the form reported by waitpid.
+             */
+            exit_code: number;
+        };
+        /**
+         * ServerTelemetryProcessIo
+         * @description I/O accounting for a process, as reported by the kernel (/proc/[pid]/io). All counters are cumulative over the life of the process.
+         */
+        ServerTelemetryProcessIo: {
+            /**
+             * Format: int64
+             * @description Bytes read by the process via read-like syscalls, whether or not they hit storage.
+             */
+            rchar: number;
+            /**
+             * Format: int64
+             * @description Bytes written by the process via write-like syscalls, whether or not they hit storage.
+             */
+            wchar: number;
+            /**
+             * Format: int64
+             * @description Number of read syscalls issued.
+             */
+            syscr: number;
+            /**
+             * Format: int64
+             * @description Number of write syscalls issued.
+             */
+            syscw: number;
+            /**
+             * Format: int64
+             * @description Bytes actually fetched from the storage layer.
+             */
+            read_bytes: number;
+            /**
+             * Format: int64
+             * @description Bytes actually sent to the storage layer.
+             */
+            write_bytes: number;
+            /**
+             * Format: int64
+             * @description Bytes written but later truncated or cancelled before reaching storage.
+             */
+            cancelled_write_bytes: number;
+        };
+        /**
+         * ServerTelemetryProcess
+         * @description Telemetry for a single running process on the server.
+         */
+        ServerTelemetryProcess: {
+            /**
+             * Format: int64
+             * @description The process ID.
+             */
+            pid: number;
+            /** @description The full command line the process was started with. */
+            cmdline: string;
+            /** @description A breakdown of the file descriptors the process holds open. */
+            fds: components["schemas"]["ServerTelemetryProcessFds"];
+            /** @description Scheduling and memory statistics for the process. */
+            stat: components["schemas"]["ServerTelemetryProcessStats"];
+            /** @description I/O accounting for the process. */
+            io: components["schemas"]["ServerTelemetryProcessIo"];
+        };
+        /**
+         * ServerTelemetryProcesses
+         * @description Telemetry for the processes running on the server.
+         */
+        ServerTelemetryProcesses: {
+            /** @description The list of processes observed on the server. */
+            list: components["schemas"]["ServerTelemetryProcess"][] | null;
+        };
+        /**
+         * ServerTelemetryCgroupCpuStats
+         * @description CPU usage and throttling statistics for a cgroup, sourced from cpu.stat.
+         */
+        ServerTelemetryCgroupCpuStats: {
+            /**
+             * Format: int64
+             * @description Total CPU time consumed by the cgroup, in microseconds.
+             */
+            usage_usec: number;
+            /**
+             * Format: int64
+             * @description CPU time consumed in user mode, in microseconds.
+             */
+            user_usec: number;
+            /**
+             * Format: int64
+             * @description CPU time consumed in kernel (system) mode, in microseconds.
+             */
+            system_usec: number;
+            /**
+             * Format: int64
+             * @description Number of enforcement periods that have elapsed while CPU bandwidth limiting was active.
+             */
+            nr_periods: number;
+            /**
+             * Format: int64
+             * @description Number of enforcement periods in which the cgroup was throttled.
+             */
+            nr_throttled: number;
+            /**
+             * Format: int64
+             * @description Total time the cgroup was throttled, in microseconds.
+             */
+            throttled_usec: number;
+        };
+        /**
+         * ServerTelemetryCgroupMemoryStats
+         * @description Memory and swap usage statistics for a cgroup.
+         */
+        ServerTelemetryCgroupMemoryStats: {
+            /**
+             * Format: int64
+             * @description Current total memory usage of the cgroup, in bytes (memory.current).
+             */
+            usage_bytes: number;
+            /**
+             * Format: int64
+             * @description Current swap usage of the cgroup, in bytes (memory.swap.current).
+             */
+            swap_usage_bytes: number;
+            /**
+             * Format: int64
+             * @description Peak memory usage recorded for the cgroup, in bytes (memory.peak).
+             */
+            peak_bytes: number;
+            /**
+             * Format: int64
+             * @description Peak swap usage recorded for the cgroup, in bytes (memory.swap.peak).
+             */
+            swap_peak_bytes: number;
+            /** @description Memory controller event counters keyed by event name, sourced from memory.events (for example low, high, max, oom, oom_kill). */
+            events: {
+                [key: string]: number;
+            } | null;
+            /** @description Detailed memory statistics keyed by metric name, sourced from memory.stat. */
+            stat_metrics: {
+                [key: string]: number;
+            } | null;
+        };
+        /**
+         * ServerTelemetryCgroupPressureValues
+         * @description Pressure stall averages over trailing time windows, plus the total accumulated stall time.
+         */
+        ServerTelemetryCgroupPressureValues: {
+            /**
+             * Format: double
+             * @description Percentage of time stalled over the trailing 10-second window.
+             */
+            avg10: number;
+            /**
+             * Format: double
+             * @description Percentage of time stalled over the trailing 60-second window.
+             */
+            avg60: number;
+            /**
+             * Format: double
+             * @description Percentage of time stalled over the trailing 300-second window.
+             */
+            avg300: number;
+            /**
+             * Format: int64
+             * @description Total stall time accumulated, in microseconds.
+             */
+            total_usec: number;
+        };
+        /**
+         * ServerTelemetryCgroupPressureMetric
+         * @description Pressure stall information for a single resource, split into some and full stall measurements.
+         */
+        ServerTelemetryCgroupPressureMetric: {
+            /** @description Pressure measured while one or more tasks were stalled waiting on the resource. */
+            some: components["schemas"]["ServerTelemetryCgroupPressureValues"];
+            /** @description Pressure measured while all non-idle tasks were simultaneously stalled waiting on the resource. */
+            full: components["schemas"]["ServerTelemetryCgroupPressureValues"];
+        };
+        /**
+         * ServerTelemetryCgroupPressureStats
+         * @description Pressure stall information (PSI) for a cgroup, covering CPU, memory, and IO.
+         */
+        ServerTelemetryCgroupPressureStats: {
+            /** @description CPU pressure stall information. */
+            cpu: components["schemas"]["ServerTelemetryCgroupPressureMetric"];
+            /** @description Memory pressure stall information. */
+            memory: components["schemas"]["ServerTelemetryCgroupPressureMetric"];
+            /** @description IO pressure stall information. */
+            io: components["schemas"]["ServerTelemetryCgroupPressureMetric"];
+        };
+        /**
+         * ServerTelemetryCgroupV2Stats
+         * @description Statistics collected from a single cgroup v2 control group.
+         */
+        ServerTelemetryCgroupV2Stats: {
+            /** @description The cgroup v2 filesystem path these statistics were collected from. */
+            path: string;
+            /** @description CPU usage and throttling statistics for the cgroup. */
+            cpu: components["schemas"]["ServerTelemetryCgroupCpuStats"];
+            /** @description Memory and swap usage statistics for the cgroup. */
+            memory: components["schemas"]["ServerTelemetryCgroupMemoryStats"];
+            /** @description Pressure stall information (PSI) for the cgroup. */
+            pressure: components["schemas"]["ServerTelemetryCgroupPressureStats"];
+        };
+        /**
+         * ServerTelemetryCgroups
+         * @description A collection of cgroup v2 statistics, keyed by cgroup identifier.
+         */
+        ServerTelemetryCgroups: {
+            /** @description Map of cgroup v2 statistics, keyed by cgroup identifier. */
+            cgroups: {
+                [key: string]: components["schemas"]["ServerTelemetryCgroupV2Stats"];
+            } | null;
         };
     };
     responses: {
@@ -19435,17 +20376,58 @@ export interface operations {
             content: {
                 "application/json": {
                     /**
-                     * @description Defines which deployment containers to include in the stack export. By default, no containers tagged in a deployment are exported.
-                     *     This option includes all containers with the specific, comma separated deployment tags in the final output in addition to the
-                     *     containers that are not part of any deployment.
+                     * @description Controls which top-level resources from the environment are included in the exported stack.
+                     *     Any option left unset defaults to `false`.
                      */
-                    deployment_tags?: string[];
+                    include?: {
+                        /**
+                         * @description When true, includes the environment's service containers (e.g. discovery, load balancer, VPN) in the export.
+                         * @default false
+                         */
+                        services?: boolean;
+                        /**
+                         * @description When true, includes the environment's scoped variables in the export.
+                         * @default false
+                         */
+                        scoped_variables?: boolean;
+                        /**
+                         * @description When true, includes the environment's containers in the export.
+                         * @default false
+                         */
+                        containers?: boolean;
+                    };
                     /**
-                     * @description When set to true, Cycle will resolve image origins and inline them into the stack, essentially making this stack portable outside the hub it's currently used in.
-                     *     By default, this is set to false, and the export will just reference existing image sources used by this stack in your hub by ID.
-                     * @default false
+                     * @description Controls how included resources are rendered into the stack - i.e. how image origins are resolved
+                     *     and how much detail is inlined for each resource type.
                      */
-                    resolve_origins?: boolean;
+                    render?: {
+                        /** @description Render options applied to scoped variables included in the export. */
+                        scoped_variables?: {
+                            /**
+                             * @description When true, the secret values of included scoped variables are resolved and inlined into the export.
+                             *     By default secrets are not included, and only the variable definitions are exported.
+                             * @default false
+                             */
+                            include_secrets?: boolean;
+                        };
+                        /** @description Render options applied to images referenced by the export. */
+                        images?: {
+                            /**
+                             * @description When set to true, Cycle will resolve image origins and inline them into the stack, essentially making this stack portable outside the hub it's currently used in.
+                             *     By default, this is set to false, and the export will just reference existing image sources used by this stack in your hub by ID.
+                             * @default false
+                             */
+                            resolve_origins?: boolean;
+                        };
+                        /** @description Render options applied to containers included in the export. */
+                        containers?: {
+                            /**
+                             * @description Defines which deployment containers to include in the stack export. By default, no containers tagged in a deployment are exported.
+                             *     This option includes all containers with the specified deployment tags in the final output, in addition to the containers that are not part of any deployment.
+                             */
+                            include_deployments?: string[];
+                        };
+                    };
                 };
             };
         };
@@ -19710,6 +20692,7 @@ export interface operations {
                     contents: {
                         /** @description A boolean where `true` represents the desire to automatically update the environment gateway service. */
                         auto_update?: boolean | null;
+                        config?: components["schemas"]["GatewayConfig"] | null;
                     };
                 };
             };
